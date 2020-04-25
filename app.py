@@ -1,5 +1,7 @@
 from flask import Flask, render_template, redirect, url_for, request, session, flash
 from functools import wraps
+from forms import LoginForm, RegisterForm
+#from flask.ext.login import login_user, login_required, logout_user
 
 app = Flask(__name__)
 
@@ -28,6 +30,22 @@ def home():
 @app.route('/welcome')
 def welcome():
 	return render_template("welcome.html")
+
+@app.route('/register',  methods=['GET', 'POST'])
+def register():
+	form = RegisterForm()
+	if form.validate_on_submit():
+		user = User(
+			name=form.username.data,
+			email=form.email.data,
+			password=form.password.data
+			)
+		#db.session.add(user)
+		#db.session.commit()
+		login_user(user)
+		return redirect(url_for('home.home'))
+	return render_template('register.html', form=form)
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

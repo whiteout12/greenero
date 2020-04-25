@@ -5,8 +5,15 @@
 <br>
 <form action="" method="post">
   <input type="text" placeholder="Username" name="username" value="{{request.form.username }}">
+  <br>
   <input type="password" placeholder="Password" name="password" value="{{request.form.password }}">
-  <input class="btn btn-default" type="submit" value="Login">
+  <br>
+  <br>
+  <input class="btn btn-sm btn-success" type="submit" value="Login">
+  <br>
+  <br>
+  <p><a href="/register">Create account</a></p>
+
 </form>
 
 {% endblock %}

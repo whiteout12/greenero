@@ -1,3 +1,4 @@
 greenero
 *.pyc
 *.db
+*.DS_Store
