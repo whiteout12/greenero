@@ -2,3 +2,7 @@ greenero
 *.pyc
 *.db
 *.DS_Store
+commands.txt
+__pycache__
+db_create.py
+db_create_users.py
