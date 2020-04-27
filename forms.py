@@ -1,21 +1,21 @@
-from flask_wtf import Form
+from flask_wtf import FlaskForm
 from wtforms import TextField, PasswordField
-from wtforms.validators import DataRequired, Length, Email, EqualTo
+from wtforms.validators import DataRequired, Length, Email, EqualTo, NoneOf
 
 
-class LoginForm(Form):
+class LoginForm(FlaskForm):
     username = TextField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
 
 
-class RegisterForm(Form):
+class RegisterForm(FlaskForm):
     username = TextField(
         'username',
-        validators=[DataRequired(), Length(min=3, max=25)]
+        validators=[DataRequired(), Length(min=3, max=25),NoneOf(['m'], message='email already in database', values_formatter=None)]
     )
     email = TextField(
         'email',
-        validators=[DataRequired(), Email(message=None), Length(min=6, max=40)]
+        validators=[DataRequired(), Email(message=None), Length(min=6, max=40), NoneOf(['bjorncarlsson87@gmail.com','hej@test.com','h@t.m'], message='email already in database', values_formatter=None)]
     )
     password = PasswordField(
         'password',
