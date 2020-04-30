@@ -1,11 +1,46 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h1>Welcome to Greenero!</h1>
+
 <br>
-<p>You are now on the index page</p>
-<br>
+<p align="right">
+Logged in as: {{current_user.name}}
 <a href="/logout" class="btn btn-sm btn-danger">Logout</a>
+<p/>
+<h1>Greenero - You know you owe me</h1>
 <br>
+<h2>Main menu</h2>
+<p><a href="/">Home</a></p>
+<p><a href="#" id="user">Friends and Foes</a></p>
+<p><a href="#" id="claim">Claims and Debts</a></p>
+
+<script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
+    <script>
+      $("#user").on("click", function(){
+        $("#sub-menu").load("/user");
+      });
+      $("#claim").on("click", function(){
+        $("#sub-menu").load("/claim");
+      });
+    </script>
+<br>
+<div id="sub-menu" style="overflow:scroll">
+  <br>
+  
+
+</div>
+
+</div>
+{% if user %} 
+
+{% include 'user.html' %}
+
+{% endif %}
+{% if claim %} 
+
+{% include 'claim.html' %}
+
+{% endif %}
+
 
 {% endblock %}

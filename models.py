@@ -1,8 +1,7 @@
 from app import db, bcrypt
-#from flask_login import LoginManager
 from flask_login import UserMixin
 
-
+# create user 
 class User(db.Model, UserMixin):
 
     __tablename__ = "users"
@@ -16,20 +15,33 @@ class User(db.Model, UserMixin):
     def __init__(self, name, email, password):
         self.name = name
         self.email = email
-        self.password = bcrypt.generate_password_hash(password)
+        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
         #self.password = password
 
-	def is_authenticated(self):
-		return True
-
-	def is_active(self):
-		return True
-	
-	def is_anonymous(self):
-		return False
-
-	def get_id(self):
-		return unicode(self.id)
+#	def is_authenticated(self):
+#		return True
+#
+#	def is_active(self):
+#		return True
+#	
+#	def is_anonymous(self):
+#		return False
+#
+#	def get_id(self):
+#		return unicode(self.id)
+	def to_json(self):
+	#"""Return object data in easily serializable format"""
+		return {
+			'id' : self.id,
+			'name' : self.name,
+			'email' : self.email
+		}
 
     def __repr__(self):
-        return '<name {}'.format(self.name)
+    	#return '<name {}'.format(self.name).decode('utf-8')
+    	#return '<name - {}>'.format(self.name)
+		return '<name %r>' % self.name
+		#return f"User('{self.name}','{self.email}')"
+	#def __repr__(self):
+		#return f"User('{self.name}','{self.email}')"
+		#return '<User %r>' % self.username

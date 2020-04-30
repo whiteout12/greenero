@@ -1,0 +1,60 @@
+{% extends "index.html" %}
+
+{% block content %}
+
+<h3>Friends and Foes</h3>
+<br>
+<p></p>
+<input type="text" id="user_search" name="user_search" placeholder="search new friends..">
+<input type="button" class="btn btn-sm btn-primary" onclick="list_users(user_search.value)" value="Search"/>
+<br>
+<br>
+<script>
+
+function list_users(user_search){
+console.log(user_search)
+/*if(!user_search){
+  user_search = '*te'
+}*/
+console.log(user_search)
+var url = '/users/'
+fetch(url+user_search)
+    .then(function (response) {
+
+        return response.json();
+    })
+    .then(function (data) {
+      /*build_output_window()*/
+      /*console.log(data);*/
+      var resultString = "<body><table style=\"text-align:left;\" class=\"table-striped\"><tr><th>Namn<\/th><th><\/th><\/tr>"
+      /*for (var i = 0; i < data.length; i++) {
+        console.log(i)
+        console.log(data[i].name)
+
+        resultString += "<tr><td>"+data[i].name+"<\/td><th><input type=\"button\" class=\"btn btn-sm btn-primary\" onclick=\"build_change_user_window()\" value=\"Friend request\"\/><\/th><th><\/th><\/tr>";
+
+      };*/
+      resultString += "<tr><td>"+data.name+"<\/td><th><input type=\"button\" class=\"btn btn-sm btn-primary\" onclick=\"build_change_user_window()\" value=\"Friend request\"\/><\/th><th><\/th><\/tr>";
+      resultString += "<\/table><\/body>"
+      /*document.getElementById("SW").innerHTML +=  `${JSON.stringify(data)}`*/
+      document.getElementById("user-search").innerHTML =  resultString
+    });
+}
+
+</script>
+<div id="user-search" style="overflow:scroll">
+  <br>
+  </div>
+<div id="pending_friends" style="overflow:scroll">
+  <br>
+  <h4>Pending</h4>
+  Pending friend requests
+</div>
+<div id="list_friends" style="overflow:scroll">
+  <br>
+  <h4>Friends list</h4>
+  Here current friends should show
+</div>
+
+
+{% endblock %}

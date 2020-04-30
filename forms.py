@@ -9,9 +9,11 @@ class LoginForm(FlaskForm):
 
 
 class RegisterForm(FlaskForm):
+    
     username = TextField(
         'username',
         validators=[DataRequired(), Length(min=3, max=25),NoneOf(['m'], message='email already in database', values_formatter=None)]
+        #validators=[DataRequired(), Length(min=3, max=25),NoneOf([User.query.filter_by(name=username).first()], message='email already in database', values_formatter=None)]
     )
     email = TextField(
         'email',
