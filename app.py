@@ -1,8 +1,16 @@
+<<<<<<< HEAD
 from flask import Flask, render_template, redirect, url_for, request, flash, jsonify
 from forms import LoginForm, RegisterForm
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
+=======
+from flask import Flask, render_template, redirect, url_for, request, flash
+from forms import LoginForm, RegisterForm
+from flask_sqlalchemy import SQLAlchemy
+from flask_bcrypt import Bcrypt
+from flask_login import LoginManager, login_user, login_required, logout_user
+>>>>>>> 400a8281184cc1ca8bb014707cc75b71f73bdf25
 
 #from flask.ext.sqlalchemy import SQLAlchemy
 #from sqlalchemy import create_engine, text
@@ -23,16 +31,25 @@ login_manager.init_app(app)
 db = SQLAlchemy(app)
 
 
+<<<<<<< HEAD
 
 
 login_manager.login_view = "login"
 
 # get user by id, used by login_manager
+=======
+#print(db)
+#print(app.config)
+
+login_manager.login_view = "login"
+
+>>>>>>> 400a8281184cc1ca8bb014707cc75b71f73bdf25
 @login_manager.user_loader
 def load_user(user_id):
 	from models import User
 	return User.query.filter(User.id == int(user_id)).first()
 
+<<<<<<< HEAD
 # our beloved index page, here is where the magic will happen
 @app.route('/')
 @login_required
@@ -50,6 +67,20 @@ def welcome():
 @app.route('/register',  methods=['GET', 'POST'])
 def register():
 	from models import User
+=======
+
+@app.route('/')
+@login_required
+def home():
+	return render_template("index.html")
+
+@app.route('/welcome')
+def welcome():
+	return render_template("welcome.html")
+
+@app.route('/register',  methods=['GET', 'POST'])
+def register():
+>>>>>>> 400a8281184cc1ca8bb014707cc75b71f73bdf25
 	form = RegisterForm()
 	if form.validate_on_submit():
 		user = User(
@@ -57,6 +88,7 @@ def register():
 			email=form.email.data,
 			password=form.password.data
 			)
+<<<<<<< HEAD
 		db.session.add(user)
 		db.session.commit()
 		flash('You were just logged in as: ' + (user.name))
@@ -65,6 +97,15 @@ def register():
 	return render_template('register.html', form=form)
 
 #login user
+=======
+		#db.session.add(user)
+		#db.session.commit()
+		login_user(user)
+		return redirect(url_for('home.home'))
+	return render_template('register.html', form=form)
+
+
+>>>>>>> 400a8281184cc1ca8bb014707cc75b71f73bdf25
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 	from models import User
@@ -78,14 +119,21 @@ def login():
 			#if request.form['username'] != 'admin' or request.form['password'] != 'admin':
 				login_user(user)
 				#session['logged_in'] = True
+<<<<<<< HEAD
 				flash('You were just logged in as: ' + current_user.name)
+=======
+				flash('You were just logged in as: ' + str(user.name))
+>>>>>>> 400a8281184cc1ca8bb014707cc75b71f73bdf25
 				return redirect(url_for('home'))
 
 			else:
 				error = 'Invalid credentials. Please try again!'
 	return render_template("login.html", form=form, error=error)
 
+<<<<<<< HEAD
 #logout user
+=======
+>>>>>>> 400a8281184cc1ca8bb014707cc75b71f73bdf25
 @app.route('/logout')
 @login_required
 def logout():
@@ -93,6 +141,7 @@ def logout():
 	flash('You were just logged out')
 	return redirect(url_for('welcome'))
 
+<<<<<<< HEAD
 @app.route('/user')
 @login_required
 def user():
@@ -159,4 +208,9 @@ def users(query):
 
 
 if __name__ == '__main__':
+=======
+
+if __name__ == '__main__':
+	#app.run(debug=True)
+>>>>>>> 400a8281184cc1ca8bb014707cc75b71f73bdf25
 	app.run()

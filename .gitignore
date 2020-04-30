@@ -5,5 +5,9 @@ greenero
 commands.txt
 __pycache__
 db_create.py
+<<<<<<< HEAD
 db_create_users.py
 config.py
+=======
+db_create_users.py
+>>>>>>> 400a8281184cc1ca8bb014707cc75b71f73bdf25
