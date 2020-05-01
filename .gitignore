@@ -7,3 +7,5 @@ __pycache__
 db_create.py
 db_create_users.py
 config.py
+.python-version
+
