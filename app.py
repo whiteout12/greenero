@@ -7,6 +7,8 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 #from flask.ext.sqlalchemy import SQLAlchemy
 #from sqlalchemy import create_engine, text
 import psycopg2
+
+from config import DevelopmentConfig
 #from flask.ext.login import login_user, login_required, logout_user
 
 app = Flask(__name__)
@@ -17,7 +19,7 @@ bcrypt = Bcrypt(app)
 
 # config
 import os
-app.config.from_object(os.environ['APP_SETTINGS'])
+app.config.from_object(DevelopmentConfig)
 login_manager = LoginManager()
 login_manager.init_app(app)
 db = SQLAlchemy(app)
