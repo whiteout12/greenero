@@ -28,7 +28,8 @@ class User(db.Model, UserMixin):
         return False
 
     def get_id(self):
-        return unicode(self.id)
+        return (self.id)
+
     def serialize(self):
         return {
         'id' : self.id,
