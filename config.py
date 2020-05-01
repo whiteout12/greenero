@@ -9,10 +9,11 @@ class BaseConfig(object):
 # dev config
 class DevelopmentConfig(BaseConfig):
 	DEBUG = True
-	#SECRET_KEY = 'mySecretKeyDev'
+	SQLALCHEMY_DATABASE_URI = 'postgresql://bjorn:kerbus@whiteout.ddns.net:5432/PROD01FAKK'
 
 
 # prod config
 class ProductionConfig(BaseConfig):
 	DEBUG = False
-	SECRET_KEY = 'mySecretKeyProd'
+	#SECRET_KEY = 'mySecretKeyProd'
+	SQLALCHEMY_DATABASE_URI = 'postgresql://bjorn:kerbus@localhost:5432/PROD01FAKK'

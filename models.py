@@ -18,30 +18,23 @@ class User(db.Model, UserMixin):
         self.password = bcrypt.generate_password_hash(password).decode('utf-8')
         #self.password = password
 
-#	def is_authenticated(self):
-#		return True
-#
-#	def is_active(self):
-#		return True
-#	
-#	def is_anonymous(self):
-#		return False
-#
-#	def get_id(self):
-#		return unicode(self.id)
-	def to_json(self):
-	#"""Return object data in easily serializable format"""
-		return {
-			'id' : self.id,
-			'name' : self.name,
-			'email' : self.email
-		}
+    def is_authenticated(self):
+        return True
+
+    def is_active(self):
+        return True
+
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        return unicode(self.id)
+    def serialize(self):
+        return {
+        'id' : self.id,
+        'name' : self.name,
+        'email' : self.email
+        }
 
     def __repr__(self):
-    	#return '<name {}'.format(self.name).decode('utf-8')
-    	#return '<name - {}>'.format(self.name)
-		return '<name %r>' % self.name
-		#return f"User('{self.name}','{self.email}')"
-	#def __repr__(self):
-		#return f"User('{self.name}','{self.email}')"
-		#return '<User %r>' % self.username
+    	return '<name - {}>'.format(self.name)

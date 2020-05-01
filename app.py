@@ -47,7 +47,7 @@ def welcome():
 	return render_template("welcome.html", user=current_user)
 
 #register new user
-@app.route('/register',  methods=['GET', 'POST'])
+@app.route('/register', methods=['GET', 'POST'])
 def register():
 	from models import User
 	form = RegisterForm()
@@ -59,7 +59,7 @@ def register():
 			)
 		db.session.add(user)
 		db.session.commit()
-		flash('You were just logged in as: ' + (user.name))
+		#flash('You were just logged in as: ' + (user.name))
 		login_user(user)
 		return redirect(url_for('home'))
 	return render_template('register.html', form=form)
@@ -110,54 +110,11 @@ def claim():
 @app.route('/users/<query>')
 @login_required
 def users(query):
+	print(current_user)
 	from models import User
-	print query
-	print('try to query all')
-	
-	#print(user.name)
-	#print(user.email)
-	#print(user.password)
-	if query == '*':
-		users = db.session.query(User).all()
-		all_users = []
-		for d in users:
-			d = {
-				'id' : d.id,
-				'name' : d.name,
-				'email' : d.email
-			}
-			all_users.append(d)
-			print (all_users)
-			jsonify(all_users)
-		return jsonify(all_users)
-	else:
-		user = User.query.filter_by(name = query).first()
-		user_2 = {
-		'id' : user.id,
-		'name' : user.name,
-		'email' : user.email
-		}
-		print (user_2)
-	return jsonify(user_2)
-		
-	#print(user.toJson())
-	#users = User.query().all()
-	#print(users)
-	#users = db.session.query(User).all()
-	#result = [dict(zip(tuple (users.keys()) ,user)) for user in users]
-	#for user in users
-	#users = session.query(User).all()
-	#users = User.query.all()
-	#for user in users:
-	#print (users)
-	#print (db.session.query(User).all())
-	#result = [d.__dict__ for d in users]
-	#print jsonify(all_users)
-	#json_list=[i.serialize() for i in users]
-	#print(json_list)
-	#return jsonify(all_users)
-	#return jsonify(user_2)
-
+	if query == '*':		
+		return jsonify([i.serialize() for i in db.session.query(User).all()])
+	return jsonify(User.query.filter_by(name = query).first().serialize())
 
 if __name__ == '__main__':
 	app.run()
