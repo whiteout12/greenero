@@ -13,28 +13,30 @@
 
 function list_users(user_search){
 console.log(user_search)
-/*if(!user_search){
-  user_search = '*te'
-}*/
+if(!user_search){
+  user_search = '*'
+}
 console.log(user_search)
 var url = '/users/'
 fetch(url+user_search)
     .then(function (response) {
-
+        
         return response.json();
     })
     .then(function (data) {
-      /*build_output_window()*/
-      /*console.log(data);*/
       var resultString = "<body><table style=\"text-align:left;\" class=\"table-striped\"><tr><th>Namn<\/th><th><\/th><\/tr>"
-      /*for (var i = 0; i < data.length; i++) {
+      if(data.length>1){
+      
+      for (var i = 0; i < data.length; i++) {
         console.log(i)
         console.log(data[i].name)
 
         resultString += "<tr><td>"+data[i].name+"<\/td><th><input type=\"button\" class=\"btn btn-sm btn-primary\" onclick=\"build_change_user_window()\" value=\"Friend request\"\/><\/th><th><\/th><\/tr>";
 
-      };*/
+      };
+    }else{
       resultString += "<tr><td>"+data.name+"<\/td><th><input type=\"button\" class=\"btn btn-sm btn-primary\" onclick=\"build_change_user_window()\" value=\"Friend request\"\/><\/th><th><\/th><\/tr>";
+      }
       resultString += "<\/table><\/body>"
       /*document.getElementById("SW").innerHTML +=  `${JSON.stringify(data)}`*/
       document.getElementById("user-search").innerHTML =  resultString
