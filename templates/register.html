@@ -1,13 +1,29 @@
 {% extends "base.html" %}
 
 {% block content %}
-
+{% if change %}
+<br>
+<p align="right">
+Logged in as: {{current_user.username}}
+<a href="/changeuser" class="btn btn-sm btn-warning">Update account</a>
+<a href="/logout" class="btn btn-sm btn-danger">Logout</a>
+<p/>
+<h1>Update your account information</h1>
+<br>
+<p>You only need to fill the infomration you want to add or change.</p>
+{% else %}
 <h1>Please Register</h1>
+{% endif %}
 <br>
 <form class="form-signin" role="form" method="post" action="">
   {{ form.csrf_token }}
   <p>
+    {% if change %}
+    {{ form.username(placeholder=username) }}
+    {% else %}
     {{ form.username(placeholder="username") }}
+    {% endif %}
+    
     <span class="error">
       {% if form.username.errors %}
         {% for error in form.username.errors %}
@@ -17,7 +33,14 @@
     </span>
   </p>
   <p>
-  {{ form.email(placeholder="email") }}
+    {% if change %} 
+    {% if email %} 
+     {{ form.email(placeholder=email) }}
+     {% else %}
+    {{ form.email(placeholder="email") }}
+    {% endif %}
+    
+
     <span class="error">
       {% if form.email.errors %}
         {% for error in form.email.errors %}
@@ -26,6 +49,24 @@
       {% endif %}
     </span>
   </p>
+  {% endif %}
+
+ {% if change %} 
+    {% if phone %} 
+     {{ form.phone(placeholder=phone) }}
+     {% else %}
+    {{ form.phone(placeholder="phone") }}
+    {% endif %}
+    <span class="error">
+      {% if form.phone.errors %}
+        {% for error in form.phone.errors %}
+          {{ error }}
+        {% endfor %}
+      {% endif %}
+    </span>
+  </p>
+{% endif %}
+
   <p>
   {{ form.password(placeholder="password") }}
     <span class="error">
@@ -37,7 +78,7 @@
     </span>
   </p>
   <p>
-  {{ form.confirm(placeholder="confirm") }}
+  {{ form.confirm(placeholder="confirm password") }}
     <span class="error">
       {% if form.confirm.errors %}
         {% for error in form.confirm.errors %}
@@ -46,9 +87,24 @@
       {% endif %}
     </span>
   </p>
+{% if change %} 
+<button class="btn btn-sm btn-success" type="submit">Update!</button>
+{% else %}
   <button class="btn btn-sm btn-success" type="submit">Register!</button>
+{% endif %}
 </form>
 <br>
+{% if change %} 
+
+<a href="/deleteaccount" class="btn btn-sm btn-danger" onclick="return confirm('Press OK to remove your account. This can not be undone!')">Remove my account!</a>
+<br>   
+<br>
+<p><a href="/">Back</a></p>
+
+{% else %}
+
 <p><a href="/welcome">Back</a></p>
+{% endif %}
+
 
 {% endblock %}

@@ -25,17 +25,17 @@ fetch(url+user_search)
     })
     .then(function (data) {
       var resultString = "<body><table style=\"text-align:left;\" class=\"table-striped\"><tr><th>Namn<\/th><th><\/th><\/tr>"
-      if(data.length>1){
+      if(data.length>0){
       
       for (var i = 0; i < data.length; i++) {
         console.log(i)
-        console.log(data[i].name)
+        console.log(data[i].username)
 
-        resultString += "<tr><td>"+data[i].name+"<\/td><th><input type=\"button\" class=\"btn btn-sm btn-primary\" onclick=\"build_change_user_window()\" value=\"Friend request\"\/><\/th><th><\/th><\/tr>";
+        resultString += "<tr><td>"+data[i].username+"<\/td><th><input type=\"button\" class=\"btn btn-sm btn-primary\" onclick=\"build_change_user_window()\" value=\"Friend request\"\/><\/th><th><\/th><\/tr>";
 
       };
     }else{
-      resultString += "<tr><td>"+data.name+"<\/td><th><input type=\"button\" class=\"btn btn-sm btn-primary\" onclick=\"build_change_user_window()\" value=\"Friend request\"\/><\/th><th><\/th><\/tr>";
+      resultString += "<tr><td>"+data.username+"<\/td><th><input type=\"button\" class=\"btn btn-sm btn-primary\" onclick=\"build_change_user_window()\" value=\"Friend request\"\/><\/th><th><\/th><\/tr>";
       }
       resultString += "<\/table><\/body>"
       /*document.getElementById("SW").innerHTML +=  `${JSON.stringify(data)}`*/
