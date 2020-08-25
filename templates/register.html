@@ -89,22 +89,19 @@ Logged in as: {{current_user.username}}
   </p>
 {% if change %} 
 <button class="btn btn-sm btn-success" type="submit">Update!</button>
-{% else %}
-  <button class="btn btn-sm btn-success" type="submit">Register!</button>
-{% endif %}
 </form>
 <br>
-{% if change %} 
-
-<a href="/deleteaccount" class="btn btn-sm btn-danger" onclick="return confirm('Press OK to remove your account. This can not be undone!')">Remove my account!</a>
+<br> 
+<form method="post" action="/deleteaccount">
+  <input class="btn btn-sm btn-danger" type="submit" value="Remove my account!" onclick="return confirm('Press OK to remove your account. This can not be undone!')">
+</form>
 <br>   
-<br>
 <p><a href="/">Back</a></p>
-
 {% else %}
-
-<p><a href="/welcome">Back</a></p>
+  <button class="btn btn-sm btn-success" type="submit">Register!</button>
+</form>
 {% endif %}
+
 
 
 {% endblock %}

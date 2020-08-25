@@ -1,61 +1,46 @@
 {% extends "index.html" %}
 
 {% block content %}
-
 <h3>Friends and Foes</h3>
+
 <br>
 <p></p>
+
 <input type="text" id="user_search" name="user_search" placeholder="search new friends..">
 <input type="button" class="btn btn-sm btn-primary" onclick="list_users(user_search.value)" value="Search"/>
-<br>
-<br>
-<script>
 
-function list_users(user_search){
-console.log(user_search)
-if(!user_search){
-  user_search = '*'
-}
-console.log(user_search)
-var url = '/users/'
-fetch(url+user_search)
-    .then(function (response) {
-        
-        return response.json();
-    })
-    .then(function (data) {
-      var resultString = "<body><table style=\"text-align:left;\" class=\"table-striped\"><tr><th>Namn<\/th><th><\/th><\/tr>"
-      if(data.length>0){
+
+<script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
+    <script>
       
-      for (var i = 0; i < data.length; i++) {
-        console.log(i)
-        console.log(data[i].username)
+        $(document).ready(function() {   //same as: $(function() { 
 
-        resultString += "<tr><td>"+data[i].username+"<\/td><th><input type=\"button\" class=\"btn btn-sm btn-primary\" onclick=\"build_change_user_window()\" value=\"Friend request\"\/><\/th><th><\/th><\/tr>";
+     get_user_relations();
 
-      };
-    }else{
-      resultString += "<tr><td>"+data.username+"<\/td><th><input type=\"button\" class=\"btn btn-sm btn-primary\" onclick=\"build_change_user_window()\" value=\"Friend request\"\/><\/th><th><\/th><\/tr>";
-      }
-      resultString += "<\/table><\/body>"
-      /*document.getElementById("SW").innerHTML +=  `${JSON.stringify(data)}`*/
-      document.getElementById("user-search").innerHTML =  resultString
-    });
-}
+});
 
-</script>
+    </script>
+<br>
+<br>
+
+
 <div id="user-search" style="overflow:scroll">
   <br>
   </div>
+
 <div id="pending_friends" style="overflow:scroll">
   <br>
   <h4>Pending</h4>
   Pending friend requests
+  <input type="button" class="btn btn-sm btn-primary" onclick="get_user_relations()" value="List pending"/>
 </div>
 <div id="list_friends" style="overflow:scroll">
   <br>
   <h4>Friends list</h4>
   Here current friends should show
+  <br>
+  
+
 </div>
 
 

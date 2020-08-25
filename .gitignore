@@ -11,3 +11,4 @@ db_create_users.py
 config.py
 .python-version
 user_check.py
+db_remove_relations.py

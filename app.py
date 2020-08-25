@@ -120,13 +120,21 @@ def changeuser():
 			return redirect(url_for('changeuser'))
 	return render_template('register.html', form=form, change=True, username=current_user.username, email=current_user.email, phone=current_user.phone)
 
-@app.route('/deleteaccount')
+@app.route('/deleteaccount', methods=['GET', 'POST'])
 @login_required
 def deleteaccount():
-	current_user.delete()
-	logout_user()
-	flash('You were just logged out and your account was removed')
-	return redirect(url_for('welcome'))
+	if request.method == 'POST':
+		from models import User, Relationship
+		for i in Relationship.query.filter_by(userid=current_user.userid).all():
+			i.delete()
+		for i in Relationship.query.filter_by(frienduserid=current_user.userid).all():
+			i.delete()
+		current_user.delete()
+		logout_user()
+		flash('You were just logged out and your account was removed')
+		return redirect(url_for('welcome'))
+	#flash('Delete not possible')
+	return {"message": "Delete not possible with get method"} 
 
 #logout user
 @app.route('/logout')
@@ -157,11 +165,111 @@ def friendrequest():
 	#print(friends)
 	return 'friend relations '+str(myFriends)
 
+#route to send a friend request from current user to selected user i request mestod = POST. If request method= GET then friends status string is returned
+@app.route('/relations/request', methods=['GET', 'POST'])
+@login_required
+def friendrequest2():
+	from models import User, Relationship
+	if request.method == 'POST':
+		print('to post friendrequest')
+		data = request.get_json()
+		#print(user.username)
+		user_sending_req = Relationship(user=current_user.userid,
+			receiving_user=data['FriendUserID'],
+			status=1)
+		user_receiving_req = Relationship(user=data['FriendUserID'],
+			receiving_user=current_user.userid,
+			status=2)
+		#print(new_rel.userid)
+		db.session.add(user_sending_req)
+		db.session.add(user_receiving_req)
+		db.session.commit()
+		return {"message": 'friend request sent from '+str(current_user.username)+' to '+str(User.query.filter_by(userid=data['FriendUserID']).first().username)}
+
+	return {'message' : "No post in friend request"}
+
+@app.route('/relations/accept', methods=['GET', 'POST'])
+@login_required
+def accept_friendrequest():
+	from models import User, Relationship
+	if request.method == 'POST':
+
+		data = request.get_json()
+		print(data)
+		if(Relationship.query.filter_by(userid=data['FriendUserID'], frienduserid=current_user.userid, statusid=1).first()):
+			#print(user.username)
+			Relationship.query.filter_by(userid=data['FriendUserID'], frienduserid=current_user.userid).first().accept_req()
+			Relationship.query.filter_by(userid=current_user.userid, frienduserid=data['FriendUserID']).first().accept_req()
+			return {'message' : "friendrequest acepted"}
+		else:
+			return {'error' : "there was no friend request"}
+
+		return {"message": 'friend request sent from '+str(current_user.username)+' to '+str(User.query.filter_by(userid=data['FriendUserID']).first().username)}
+
+	return {'message' : "No post in accept friend request"}	
+
+@app.route('/relation/getrelations')
+@login_required
+def relation():
+	from models import User, Relationship
+	relations = Relationship.query.filter_by(userid=current_user.userid).all()
+	#allrel = db.session.query(Relationship).all()
+	#print(relations)
+	#print(allrel)
+	results = []
+	friends =[]
+	request_by_me = []
+	request_to_me = []
+	blocked_by_me = []
+	blocked_to_me = []
+	for i in relations:
+		if User.query.filter_by(userid=i.frienduserid).first():
+			username = User.query.filter_by(userid=i.frienduserid).first().username
+		else:
+			username = 'N/A'
+		r = {
+		'id' : i.frienduserid,
+		'username' : username,
+		#'id' : User.query.filter_by(userid=i.frienduserid).first().username,
+		'status' : i.statusid
+		}
+		#print(i.frienduserid)
+		if i.statusid == 3:
+			friends.append(r)
+		elif i.statusid == 1:
+				request_by_me.append(r)
+		elif i.statusid == 2:
+				request_to_me.append(r)
+		elif i.statusid == 4:
+			blocked_by_me.append(r)
+		elif i.statusid == 5:
+			blocked_to_me.append(r)
+	#print(request_by_me)
+	#print(friends)
+		#results.append(r)
+	results.append({
+		'friends' : friends,
+		'request_by_me' : request_by_me,
+		'request_to_me' : request_to_me,
+		'blocked_by_me' : blocked_by_me,
+		'blocked_to_me' : blocked_to_me,
+		})
+	
+	print(results)
+
+	
+	#results.append('request_by_me' : { for i in request_by_me})
+	#result = [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]
+			
+	print(jsonify(results))
+
+	return jsonify(results)
+
 @app.route('/test')
 @login_required
 def test():
 	print('going to test procedures')
-
+	
 	allusers = db.engine.execute("SELECT * FROM users")
 	result = [dict(zip(tuple (allusers.keys()) ,i)) for i in allusers.cursor]
 	print(result)
@@ -211,6 +319,8 @@ def users(query):
 	from models import User
 	if query == '*':		
 		return jsonify([i.serialize() for i in db.session.query(User).all()])
+		#return  jsonify([i.serialize() for i in User.query.filter_by(userid = current_user.userid).all()])
+		#User.query.filter_by(userid=data['FriendUserID']).first()
 	return jsonify(User.query.filter_by(username = query).first().serialize())
 
 if __name__ == '__main__':
