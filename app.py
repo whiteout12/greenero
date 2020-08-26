@@ -171,20 +171,28 @@ def friendrequest():
 def friendrequest2():
 	from models import User, Relationship
 	if request.method == 'POST':
-		print('to post friendrequest')
 		data = request.get_json()
-		#print(user.username)
-		user_sending_req = Relationship(user=current_user.userid,
-			receiving_user=data['FriendUserID'],
-			status=1)
-		user_receiving_req = Relationship(user=data['FriendUserID'],
-			receiving_user=current_user.userid,
-			status=2)
-		#print(new_rel.userid)
-		db.session.add(user_sending_req)
-		db.session.add(user_receiving_req)
-		db.session.commit()
-		return {"message": 'friend request sent from '+str(current_user.username)+' to '+str(User.query.filter_by(userid=data['FriendUserID']).first().username)}
+		if Relationship.query.filter_by(userid=data['FriendUserID'], frienduserid=current_user.userid, statusid=3).first():
+			return {'message' : "already friends"}
+		if Relationship.query.filter_by(userid=data['FriendUserID'], frienduserid=current_user.userid, statusid=2).first():
+			return {'message' : "friend request already sent, wait for confirmation"}
+		if Relationship.query.filter_by(userid=data['FriendUserID'], frienduserid=current_user.userid, statusid=1).first():
+			return {'message' : "friend request pending. Either accept or reject."}
+		else:
+			print('to post friendrequest')
+			
+			#print(user.username)
+			user_sending_req = Relationship(user=current_user.userid,
+				receiving_user=data['FriendUserID'],
+				status=1)
+			user_receiving_req = Relationship(user=data['FriendUserID'],
+				receiving_user=current_user.userid,
+				status=2)
+			#print(new_rel.userid)
+			db.session.add(user_sending_req)
+			db.session.add(user_receiving_req)
+			db.session.commit()
+			return {"message": 'friend request sent from '+str(current_user.username)+' to '+str(User.query.filter_by(userid=data['FriendUserID']).first().username)}
 
 	return {'message' : "No post in friend request"}
 
@@ -206,6 +214,65 @@ def accept_friendrequest():
 
 		return {"message": 'friend request sent from '+str(current_user.username)+' to '+str(User.query.filter_by(userid=data['FriendUserID']).first().username)}
 
+	return {'message' : "No post in accept friend request"}
+
+@app.route('/relations/reject', methods=['GET', 'POST'])
+@login_required
+def reject_friendrequest():
+	from models import User, Relationship
+	if request.method == 'POST':
+
+		data = request.get_json()
+		print(data)
+		if(Relationship.query.filter_by(userid=data['FriendUserID'], frienduserid=current_user.userid, statusid=1).first()):
+			Relationship.query.filter_by(userid=data['FriendUserID'], frienduserid=current_user.userid).first().delete()
+			Relationship.query.filter_by(userid=current_user.userid, frienduserid=data['FriendUserID']).first().delete()
+			return {'message' : "friendrequest rejected"}
+		else:
+			return {'error' : "there was no friend request"}
+
+		return {"message": 'friend request sent from '+str(current_user.username)+' to '+str(User.query.filter_by(userid=data['FriendUserID']).first().username)}
+
+	return {'message' : "No post in accept friend request"}
+
+@app.route('/relations/withdraw', methods=['GET', 'POST'])
+@login_required
+def withdraw_friendrequest():
+	from models import User, Relationship
+	if request.method == 'POST':
+
+		data = request.get_json()
+		print(data)
+		if(Relationship.query.filter_by(userid=data['FriendUserID'], frienduserid=current_user.userid, statusid=2).first()):
+			#print(user.username)
+			Relationship.query.filter_by(userid=data['FriendUserID'], frienduserid=current_user.userid).first().delete()
+			Relationship.query.filter_by(userid=current_user.userid, frienduserid=data['FriendUserID']).first().delete()
+			return {'message' : "friendrequest withdrawn"}
+		else:
+			return {'error' : "there was no friend request"}
+
+		return {"message": 'friend request sent from '+str(current_user.username)+' to '+str(User.query.filter_by(userid=data['FriendUserID']).first().username)}
+
+	return {'message' : "No post in accept friend request"}
+
+@app.route('/relations/unfriend', methods=['GET', 'POST'])
+@login_required
+def unfriend():
+	from models import User, Relationship
+	if request.method == 'POST':
+
+		data = request.get_json()
+		print(data)
+		if(Relationship.query.filter_by(userid=data['FriendUserID'], frienduserid=current_user.userid, statusid=3).first()):
+			#print(user.username)
+			Relationship.query.filter_by(userid=data['FriendUserID'], frienduserid=current_user.userid, statusid=3).first().delete()
+			Relationship.query.filter_by(userid=current_user.userid, frienduserid=data['FriendUserID'], statusid=3).first().delete()
+			return {'message' : "friend removed"}
+		else:
+			return {'error' : "there was no friend request"}
+
+		return {"message": 'friend request sent from '+str(current_user.username)+' to '+str(User.query.filter_by(userid=data['FriendUserID']).first().username)}
+
 	return {'message' : "No post in accept friend request"}	
 
 @app.route('/relation/getrelations')
@@ -213,9 +280,7 @@ def accept_friendrequest():
 def relation():
 	from models import User, Relationship
 	relations = Relationship.query.filter_by(userid=current_user.userid).all()
-	#allrel = db.session.query(Relationship).all()
-	#print(relations)
-	#print(allrel)
+
 	results = []
 	friends =[]
 	request_by_me = []
@@ -233,7 +298,7 @@ def relation():
 		#'id' : User.query.filter_by(userid=i.frienduserid).first().username,
 		'status' : i.statusid
 		}
-		#print(i.frienduserid)
+
 		if i.statusid == 3:
 			friends.append(r)
 		elif i.statusid == 1:
@@ -244,58 +309,48 @@ def relation():
 			blocked_by_me.append(r)
 		elif i.statusid == 5:
 			blocked_to_me.append(r)
-	#print(request_by_me)
-	#print(friends)
-		#results.append(r)
-	results.append({
+
+	return jsonify({
 		'friends' : friends,
 		'request_by_me' : request_by_me,
 		'request_to_me' : request_to_me,
 		'blocked_by_me' : blocked_by_me,
 		'blocked_to_me' : blocked_to_me,
 		})
-	
-	print(results)
-
-	
-	#results.append('request_by_me' : { for i in request_by_me})
-	#result = [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]
-			
-	print(jsonify(results))
-
-	return jsonify(results)
 
 @app.route('/test')
 @login_required
 def test():
 	print('going to test procedures')
-	
+	from models import Relationship
+
 	allusers = db.engine.execute("SELECT * FROM users")
 	result = [dict(zip(tuple (allusers.keys()) ,i)) for i in allusers.cursor]
 	print(result)
 
 	return jsonify(result)
-@app.route('/testprocedure')
-@login_required
-def testprocedure():
-	print('going to test procedures')
-	print(current_user.username)
 
-	myFriends = db.engine.execute("SELECT getfriendsbyusername(%s)", (current_user.username))
-	print(myFriends)
-	result = [dict(zip(tuple (myFriends.keys()) ,i)) for i in myFriends.cursor]
-	print(jsonify(result))
-	friends = []
-	for i in myFriends.cursor:
-		friends.append(i)
-		print(friends, ' vänner')
-	print('vänner')
-	return 'test'
+#@app.route('/testprocedure')
+#@login_required
+#def testprocedure():
+#	print('going to test procedures')
+#	print(current_user.username)
 
-@app.route('/usernames')
-@login_required
-def usernames():
-	return jsonify(listAllUserNames())
+#	myFriends = db.engine.execute("SELECT getfriendsbyusername(%s)", (current_user.username))
+#	print(myFriends)
+#	result = [dict(zip(tuple (myFriends.keys()) ,i)) for i in myFriends.cursor]
+#	print(jsonify(result))
+#	friends = []
+#	for i in myFriends.cursor:
+#		friends.append(i)
+#		print(friends, ' vänner')
+#	print('vänner')
+#	return 'test'
+
+#@app.route('/usernames')
+#@login_required
+#def usernames():
+#	return jsonify(listAllUserNames())
 	#return 'hej'
 
 @app.route('/user')
@@ -318,10 +373,10 @@ def users(query):
 	print(current_user.userid)
 	from models import User
 	if query == '*':		
-		return jsonify([i.serialize() for i in db.session.query(User).all()])
-		#return  jsonify([i.serialize() for i in User.query.filter_by(userid = current_user.userid).all()])
-		#User.query.filter_by(userid=data['FriendUserID']).first()
-	return jsonify(User.query.filter_by(username = query).first().serialize())
+		return jsonify([i.serialize() for i in User.query.filter(current_user.username!=User.username).all()])
+	search = "%{}%".format(query)
+	return jsonify([i.serialize() for i in User.query.filter(User.username.ilike(search), current_user.username!=User.username).all()])
+
 
 if __name__ == '__main__':
 	app.run()

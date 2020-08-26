@@ -95,6 +95,92 @@ fetch(url,{
 
 }
 
+function reject_friend_req(userid){
+console.log(userid)
+
+var url = '/relations/reject'
+fetch(url,{
+            method : 'POST',
+      headers: {
+            'Content-Type': 'application/json;charset=utf-8'      
+          },        
+          body : JSON.stringify({
+            "FriendUserID": userid
+        })
+    })
+    .then(function (response) {
+
+      console.log(response);
+        return response.json();
+    })
+    .then(function (data) {
+      console.log(data);
+      get_user_relations();
+      document.getElementById("user-search").innerHTML +=  "<br>"+data.message
+    });
+
+/*document.getElementById("pending_friends").innerHTML +=  "<br>"+"friend request sent to: "+username
+*/
+
+}
+
+function withdraw_friend_req(userid){
+console.log(userid)
+
+var url = '/relations/withdraw'
+fetch(url,{
+            method : 'POST',
+      headers: {
+            'Content-Type': 'application/json;charset=utf-8'      
+          },        
+          body : JSON.stringify({
+            "FriendUserID": userid
+        })
+    })
+    .then(function (response) {
+
+      console.log(response);
+        return response.json();
+    })
+    .then(function (data) {
+      console.log(data);
+      get_user_relations();
+      document.getElementById("user-search").innerHTML +=  "<br>"+data.message
+    });
+
+/*document.getElementById("pending_friends").innerHTML +=  "<br>"+"friend request sent to: "+username
+*/
+
+}
+
+function unfriend(userid){
+console.log(userid)
+
+var url = '/relations/unfriend'
+fetch(url,{
+            method : 'POST',
+      headers: {
+            'Content-Type': 'application/json;charset=utf-8'      
+          },        
+          body : JSON.stringify({
+            "FriendUserID": userid
+        })
+    })
+    .then(function (response) {
+
+      console.log(response);
+        return response.json();
+    })
+    .then(function (data) {
+      console.log(data);
+      get_user_relations();
+      document.getElementById("user-search").innerHTML +=  "<br>"+data.message
+    });
+
+/*document.getElementById("pending_friends").innerHTML +=  "<br>"+"friend request sent to: "+username
+*/
+
+}
 
 
 function get_user_relations(){
@@ -107,32 +193,32 @@ fetch(url)
         return response.json();
     })
     .then(function (data) {
-      var pending_friends2 = "<br><h4>Pending</h4><br><body><h5>Awaiting your confirmation</h5><table style=\"text-align:left;\" class=\"table-striped\">"
-      var pending_friends1 = "<br><body><h5>Sent friend requests</h5><table style=\"text-align:left;\" class=\"table-striped\">"
+      var pending_to_me = "<br><h4>Pending</h4><br><body><h5>Awaiting your confirmation</h5><table style=\"text-align:left;\" class=\"table-striped\">"
+      var pending_by_me = "<br><body><h5>Sent friend requests</h5><table style=\"text-align:left;\" class=\"table-striped\">"
       var friends = "<br><h4>Friends</h4><body><h5></h5><table style=\"text-align:left;\" class=\"table-striped\">"
       console.log(data)
-      console.log(data[0].request_by_me.length)
+      console.log(data.request_by_me.length)
       
-      for (var i = 0; i < data[0].request_by_me.length; i++) {
+      for (var i = 0; i < data.request_to_me.length; i++) {
+        console.log(i)
+  
+       pending_to_me += "<tr><td>"+data.request_to_me[i].username+"<\/td><th><input type=\"button\" class=\"btn btn-sm btn-success\" onclick=\"accept_friend_req("+data.request_to_me[i].id+")\" value=\"Accept\"\/><\/th><th><input type=\"button\" class=\"btn btn-sm btn-danger\" onclick=\"reject_friend_req("+data.request_to_me[i].id+")\" value=\"Reject\"\/><\/th><\/tr>"; 
+        };
+
+      for (var i = 0; i < data.request_by_me.length; i++) {
         console.log(i)
         
-       pending_friends1 += "<tr><td>"+data[0].request_by_me[i].username+"<\/td><th><input type=\"button\" class=\"btn btn-sm btn-danger\" onclick=\"create_friend_req("+0+",\'"+0+"\')\" value=\"Withdraw request\"\/><\/th><th><\/th><\/tr>"; 
+       pending_by_me += "<tr><td>"+data.request_by_me[i].username+"<\/td><th><input type=\"button\" class=\"btn btn-sm btn-danger\" onclick=\"withdraw_friend_req("+data.request_by_me[i].id+")\" value=\"Withdraw request\"\/><\/th><th><\/th><\/tr>"; 
         };
 
-      for (var i = 0; i < data[0].request_to_me.length; i++) {
+      for (var i = 0; i < data.friends.length; i++) {
         console.log(i)
   
-       pending_friends2 += "<tr><td>"+data[0].request_to_me[i].username+"<\/td><th><input type=\"button\" class=\"btn btn-sm btn-success\" onclick=\"accept_friend_req("+data[0].request_to_me[i].id+")\" value=\"Accept\"\/><\/th><th><\/th><\/tr>"; 
-        };
-
-      for (var i = 0; i < data[0].friends.length; i++) {
-        console.log(i)
-  
-       friends += "<tr><td>"+data[0].friends[i].username+"<\/td><th><input type=\"button\" class=\"btn btn-sm btn-danger\" onclick=\"accept_friend_req("+0+"\')\" value=\"Unfriend\"\/><\/th><th><\/th><\/tr>"; 
+       friends += "<tr><td>"+data.friends[i].username+"<\/td><th><input type=\"button\" class=\"btn btn-sm btn-danger\" onclick=\"unfriend("+data.friends[i].id+")\" value=\"Unfriend\"\/><\/th><th><\/th><\/tr>"; 
         };
       
-      document.getElementById("pending_friends").innerHTML =  pending_friends2
-      document.getElementById("pending_friends").innerHTML +=  pending_friends1
+      document.getElementById("pending_friends").innerHTML =  pending_to_me
+      document.getElementById("pending_friends").innerHTML +=  pending_by_me
       document.getElementById("list_friends").innerHTML = friends
       
 
