@@ -41,7 +41,7 @@ fetch(url+user_search)
         return response.json();
     })
     .then(function (data) {
-      var resultString = "<body><table style=\"text-align:left;\" class=\"table-striped\"><tr><th>Namn<\/th><th><\/th><\/tr>"
+      var resultString = "<body><table style=\"text-align:left;\" class=\"table-striped\">"
       if(data.length>0){
       
       for (var i = 0; i < data.length; i++) {

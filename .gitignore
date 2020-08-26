@@ -12,3 +12,5 @@ config.py
 .python-version
 user_check.py
 db_remove_relations.py
+user_check.py
+users_db.py
