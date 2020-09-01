@@ -243,13 +243,16 @@ def withdraw_friendrequest():
 
 		data = request.get_json()
 		print(data)
+		if(Relationship.query.filter_by(userid=data['FriendUserID'], frienduserid=current_user.userid, statusid=3).first()):
+			return {'message' : "request already accepted"}
 		if(Relationship.query.filter_by(userid=data['FriendUserID'], frienduserid=current_user.userid, statusid=2).first()):
 			#print(user.username)
 			Relationship.query.filter_by(userid=data['FriendUserID'], frienduserid=current_user.userid).first().delete()
 			Relationship.query.filter_by(userid=current_user.userid, frienduserid=data['FriendUserID']).first().delete()
 			return {'message' : "friendrequest withdrawn"}
 		else:
-			return {'error' : "there was no friend request"}
+			return {'error' : "there was no friend request",
+					'message' : "already rejected"}
 
 		return {"message": 'friend request sent from '+str(current_user.username)+' to '+str(User.query.filter_by(userid=data['FriendUserID']).first().username)}
 

@@ -58,7 +58,7 @@ fetch(url+user_search)
       };
 
     }else{
-      resultString += "<tr><td>"+data.username+"<\/td><th><input type=\"button\" class=\"btn btn-sm btn-primary\" onclick=\"build_change_user_window()\" value=\"Friend request\"\/><\/th><th><\/th><\/tr>";
+      resultString = "no results"
       }
       resultString += "<\/table><\/body>"
       /*document.getElementById("SW").innerHTML +=  `${JSON.stringify(data)}`*/
