@@ -48,9 +48,7 @@ fetch(url+user_search)
       
         console.log(data[i].username)
         console.log(data[i].userid)
-        console.log("test")
-
-
+        
         resultString += "<tr><td>"+data[i].username+"<\/td><th><input type=\"button\" class=\"btn btn-sm btn-primary\" onclick=\"create_friend_req("+data[i].userid+",\'"+data[i].username+"\')\" value=\"Friend request\"\/><\/th><th><\/th><\/tr>";
 
         /*resultString += "<tr><td>"+data[i].username+"<\/td><th><input type=\"button\" class=\"btn btn-sm btn-primary\" onclick=\"build_change_user_window()\" value=\"Friend request\"\/><\/th><th><\/th><\/tr>";
@@ -186,14 +184,14 @@ fetch(url,{
 function get_user_relations(){
 console.log("get_user_relations")
 
-var url = '/relation/getrelations'
+var url = '/relations/getrelations'
 fetch(url)
     .then(function (response) {
         
         return response.json();
     })
     .then(function (data) {
-      var pending_to_me = "<br><h4>Pending</h4><br><body><h5>Awaiting your confirmation</h5><table style=\"text-align:left;\" class=\"table-striped\">"
+      var pending_to_me = "<br><h4>Pending</h4><body><h5>Awaiting your confirmation</h5><table style=\"text-align:left;\" class=\"table-striped\">"
       var pending_by_me = "<br><body><h5>Sent friend requests</h5><table style=\"text-align:left;\" class=\"table-striped\">"
       var friends = "<br><h4>Friends</h4><body><h5></h5><table style=\"text-align:left;\" class=\"table-striped\">"
       console.log(data)

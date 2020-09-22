@@ -1,10 +1,7 @@
-{% extends "index.html" %}
-
 {% block content %}
+<script src="{{url_for('static', filename='javascript/friends.js')}}"></script>
 <h3>Friends and Foes</h3>
 
-<br>
-<p></p>
 
 <input type="text" id="user_search" name="user_search" placeholder="search new friends..">
 <input type="button" class="btn btn-sm btn-primary" onclick="list_users(user_search.value)" value="Search"/>
@@ -19,13 +16,10 @@
 
 });
 
-    </script>
-<br>
-<br>
+</script>
 
 
 <div id="user-search" >
-  <br>
 </div>
 
 <div id="pending_friends">

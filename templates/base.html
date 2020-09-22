@@ -8,7 +8,29 @@
   </head>
   <body>
     <div class="container">
+<style>
+    body {
+        background-color: #778899;
+    }
+    div {
+       
+        background-color: #DCDCDC;
+    }
+    table, th, td {
+  padding: 5px;
+  width: 100%;
+  text-align: left;
+  table-layout: fixed;
 
+
+}
+th:last-child,
+td:last-child,
+th:nth-last-child(2),
+td:nth-last-child(2) {
+    text-align: right;
+}
+</style>
       <!-- child template -->
       {% block content %}{% endblock %}
 
@@ -22,7 +44,8 @@
         {{ message }}
       {% endfor %}
     </div>
-      
+  
+  <small>Powered by Kerbus Finans</small>
 
   </body>
 </html>

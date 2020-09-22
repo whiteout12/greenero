@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import TextField, PasswordField
-from wtforms.validators import DataRequired, Length, Email, EqualTo, NoneOf, ValidationError, Optional
+from wtforms import TextField, PasswordField, SelectField, TextAreaField, IntegerField
+from wtforms.validators import DataRequired, Length, Email, EqualTo, NoneOf, ValidationError, Optional, NumberRange
 #from users_db import listAllUserNames
 
 
@@ -25,6 +25,11 @@ def validate_phone(self,field):
     from models import User
     if User.query.filter_by(phone=field.data).first():
         raise ValidationError('The phone number has been registered already!')
+
+def validate_receiver(self,field):
+    if field.data==-1:
+        raise ValidationError('choose a receiver!')
+        
 
 def is_password_inserted(self,field):
     if field.data:
@@ -76,4 +81,26 @@ class ChangeUserForm(FlaskForm):
         validators=[is_password_inserted, 
             EqualTo('password', message='Passwords must match.')
         ]
+    )
+
+class CreateInvoice(FlaskForm):
+    
+    receiver = SelectField('Receiver', coerce=int,
+        
+        validators=[DataRequired(), validate_receiver]
+    )
+    description = TextAreaField(
+        'description',
+        validators=[DataRequired(), Length(min=6, max=400)]
+    )
+    amount = IntegerField('amount', validators=[NumberRange(min=1, message='Invalid length')]
+    )
+
+class ChangeInvoice(FlaskForm):
+    
+    description = TextAreaField(
+        'description',
+        validators=[Optional(), Length(min=6, max=400)]
+    )
+    amount = IntegerField('amount', validators=[Optional(), NumberRange(min=1, message='Invalid length')]
     )

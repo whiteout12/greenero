@@ -1,0 +1,129 @@
+function get_user_invoices(){
+
+var url = '/invoice/getinvoices'
+fetch(url)
+    .then(function (response) {
+        
+        return response.json();
+    })
+    .then(function (data) {
+      var sent = "<br><h4>Claims</h4><h5>Pending</h5><body><table class=\"table-striped\"><tr><th>Invoice<\/th><th>The sad<\/th><th>Description<\/th><th>How much<\/th><th><\/th><th><\/th><\/tr>"
+      var sent_rejected = "<br><h4></h4><h5>Rejected</h5><body><table class=\"table-striped\"><tr><th>Invoice<\/th><th>The sad<\/th><th>Description<\/th><th>How much<\/th><th>Reason<\/th><th><\/th><th><\/th><\/tr>"
+      var sent_history = "<br><h5>History/Claimed</h5><body><table style=\"text-align:right\" class=\"table-striped\"><tr><th>Invoice<\/th><th>The sad<\/th><th>Description<\/th><th>How much<\/th><th><\/th><th><\/th><\/tr>"
+      var received_pend = "<br><h4>Debts</h4><h5>Pending</h5><body><h5></h4><table style=\"text-align:right\" class=\"table-striped\"><tr><th>Invoice<\/th><th>The happy<\/th><th>Description<\/th><th>How much<\/th><th><\/th><th><\/th><\/tr>"
+      var received_history = "<br><h5>History/Paid</h5><body><h5></h4><table style=\"text-align:right;\" class=\"table-striped\"><tr><th>Invoice<\/th><th>The happy<\/th><th>Description<\/th><th>How much<\/th><th><\/th><th><\/th><\/tr>"
+      console.log(data)
+      console.log(data.sent.length)
+      console.log(data.received.length)
+      var rejected = 0
+      for (var i = 0; i < data.sent.length; i++) {
+
+        if(data.sent[i].invoicestatus==1){
+        sent += "<tr><td>invoice"+data.sent[i].invoiceid+"<\/td><td>"+data.sent[i].receiver+"<\/td><td>"+data.sent[i].description+"<\/td><td>"+data.sent[i].amount+"<\/td><td><input type=\"button\" class=\"btn btn-sm btn-warning\" onclick=\"change("+data.sent[i].invoiceid+")\" value=\"Change\"\/><\/td><td><input type=\"button\" class=\"btn btn-sm btn-danger\" value=\"Delete\" onclick=\"remove("+data.sent[i].invoiceid+")\"><\/td><\/tr>"; 
+       
+        }
+        if(data.sent[i].invoicestatus==3){
+        sent_rejected += "<tr><td>invoice"+data.sent[i].invoiceid+"<\/td><td>"+data.sent[i].receiver+"<\/td><td>"+data.sent[i].description+"<\/td><td>"+data.sent[i].amount+"<\/td><td>"+data.sent[i].message+"<\/td><td><input type=\"button\" class=\"btn btn-sm btn-warning\" onclick=\"change("+data.sent[i].invoiceid+")\" value=\"Change\"\/><\/td><td><input type=\"button\" class=\"btn btn-sm btn-danger\" value=\"Delete\" onclick=\"remove("+data.sent[i].invoiceid+")\"><\/td><\/tr>"; 
+        rejected++;
+        }
+        if(data.sent[i].invoicestatus==2){
+        sent_history += "<tr><td>invoice"+data.sent[i].invoiceid+"<\/td><td>"+data.sent[i].receiver+"<\/td><td>"+data.sent[i].description+"<\/td><td>"+data.sent[i].amount+"<\/td><td><input type=\"button\" class=\"btn btn-sm btn-primary\" onclick=\"withdraw_friend_req("+data.sent[i].amount+")\" value=\"Reopen\"\/><\/td><\/tr>"; 
+        }
+        };
+      
+      for (var i = 0; i < data.received.length; i++) {
+        console.log("sent invoice id "+data.received[i].invoiceid)
+      if(data.received[i].invoicestatus==1){
+        received_pend += "<tr><td>invoice"+data.received[i].invoiceid+"<\/td><td>"+data.received[i].sender+"<\/td><td>"+data.received[i].description+"<\/td><td>"+data.received[i].amount+"<\/td><td><input type=\"button\" class=\"btn btn-sm btn-warning\" onclick=\"reject("+data.received[i].invoiceid+")\" value=\"Reject\"\/><\/td><td><input type=\"button\" class=\"btn btn-sm btn-success\" onclick=\"pay("+data.received[i].invoiceid+")\" value=\"Confirm pay\"\/><\/td><\/tr>"; 
+        }
+       
+      if(data.received[i].invoicestatus==2){
+        received_history += "<tr><td>invoice"+data.received[i].invoiceid+"<\/td><td>"+data.received[i].sender+"<\/td><td>"+data.received[i].description+"<\/td><td>"+data.received[i].amount+"<\/td><td>Payed\"\/><\/td><\/tr>"; 
+        }
+       };
+     
+      console.log(rejected)
+      document.getElementById("claims-pending").innerHTML =  sent
+      if(rejected>0){
+        document.getElementById("claims-rejected").innerHTML =  sent_rejected
+      }
+      document.getElementById("claims-history").innerHTML =  sent_history
+      document.getElementById("debts").innerHTML = received_pend
+      document.getElementById("debts-history").innerHTML = received_history
+      
+
+    });
+}
+
+function pay(invoiceid){
+console.log(invoiceid)
+
+var url = '/invoice/pay'
+fetch(url,{
+            method : 'POST',
+      headers: {
+            'Content-Type': 'application/json;charset=utf-8'      
+          },        
+          body : JSON.stringify({
+            "InvoiceID" : invoiceid
+        })
+    })
+    .then(function (response) {
+
+      console.log(response);
+        return response.json();
+    })
+    .then(function (data) {
+      console.log(data);
+      get_user_invoices();
+      document.getElementById("invoice_overview").innerHTML +=  "<br>"+data.message
+    });
+
+/*document.getElementById("pending_friends").innerHTML +=  "<br>"+"friend request sent to: "+username
+*/
+
+}
+
+function change(invoiceid){
+console.log(invoiceid)
+
+
+        //$("#invoice_quick").load("/invoice/create?embedded=True");
+        $("#invoice_quick").load("/invoice/change"+invoiceid);
+        
+      
+
+/*document.getElementById("pending_friends").innerHTML +=  "<br>"+"friend request sent to: "+username
+*/
+
+}
+
+function reject(invoiceid){
+console.log(invoiceid)
+               var input_message = prompt("Enter reason for rejection", "");
+               
+if (input_message === null) {
+        return; //break out of the function early
+    }
+var url = '/invoice/reject'
+fetch(url,{
+            method : 'POST',
+      headers: {
+            'Content-Type': 'application/json;charset=utf-8'      
+          },        
+          body : JSON.stringify({
+            "InvoiceID" : invoiceid,
+            "message" : input_message
+        })
+    })
+    .then(function (response) {
+
+      console.log(response);
+        return response.json();
+    })
+    .then(function (data) {
+      console.log(data);
+      get_user_invoices();
+      document.getElementById("invoice_overview").innerHTML +=  "<br>"+data.message
+    });
+}

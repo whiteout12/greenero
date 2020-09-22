@@ -1,10 +1,82 @@
-{% extends "index.html" %}
-
 {% block content %}
-
+<script src="{{url_for('static', filename='javascript/invoice.js')}}"></script>
 <h3>Claims and Debts</h3>
-<br>
-<p>Here is the user sub page where you should be able to see Claims and Debts</p>
+
+<p><a href="#" id="invoice" class="btn btn-sm btn-primary">Create invoice</a></p>
+<script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
+    <script>
+      $("#invoice").on("click", function(){
+        //$("#invoice_quick").load("/invoice/create?embedded=True");
+        $("#invoice_quick").load("/invoice/create-emb=True");
+        
+      });
+
+ </script>
+ <script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
+    <script>
+      
+        $(document).ready(function() {   //same as: $(function() { 
+
+     get_user_invoices();
+
+});
+
+</script>
+
+<script>
+function myFunction() {
+  var x = document.getElementById("claims-history");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+}
+ 
+ function myFunction2() {
+  var x = document.getElementById("debts-history");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+}
+
+</script>
+
+ <div id="invoice_quick" style="background-color:#778899">
+
+ 
+</div>
+
+<div id="invoice_overview">
+ 
+</div>
+
+<div id="claims-pending">
+  
+</div>
+
+
+<div id="claims-rejected" >
+ 
+</div>
+<a href="#" onclick="myFunction()">Show/Hide History</a>
+<div id="claims-history" style="display:none">
+ 
+</div>
+
+<div id="debts">
+ <br>
+</div>
+<button onclick="myFunction2()" class="btn btn-sm btn-primary">Show/Hide History</button>
+
+</div>
+<div id="debts-history" style="display:none">
+ 
+</div>
+
+
 
 
 {% endblock %}

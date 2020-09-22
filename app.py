@@ -1,5 +1,5 @@
 from flask import Flask, render_template, redirect, url_for, request, flash, jsonify
-from forms import LoginForm, RegisterForm, ChangeUserForm
+from forms import LoginForm, RegisterForm, ChangeUserForm, CreateInvoice, ChangeInvoice
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
 from flask_bcrypt import Bcrypt
@@ -74,26 +74,12 @@ def login():
 	from models import User
 	error = None
 	form = LoginForm()
-	print('try to login1')
-	#print(request.form)
-	#print(request.form['username'])
-	#print(request.form['password'])
-	#print(str(request.method()))
 	if request.method == 'POST':
-		print(request.form['username'])
 		if form.validate_on_submit():
-
-			print('try to login')
-
 			user = User.query.filter_by(username=request.form['username']).first()
 			if user is not None and bcrypt.check_password_hash(user.password, request.form['password']):
-			#user.password == request.form['password']:
-			#if request.form['username'] != 'admin' or request.form['password'] != 'admin':
 				login_user(user)
-				#session['logged_in'] = True
-				#flash('You were just logged in as: ' + current_user.username)
 				return redirect(url_for('home'))
-
 			else:
 				error = 'Invalid credentials. Please try again!'
 	return render_template("login.html", form=form, error=error)
@@ -103,7 +89,6 @@ def login():
 @login_required
 def changeuser():
 	from models import User
-	#form = RegisterForm(listAllUserNames(), listAllUserNames())
 	form = ChangeUserForm()
 	if form.validate_on_submit():
 		current_user.update(
@@ -112,7 +97,6 @@ def changeuser():
 			phone=form.phone.data,
 			password=form.password.data
 			)
-		print("username from form: ", form.username.data)
 		if(form.username.data == "" and form.email.data =="" and form.phone.data =="" and form.password.data ==""):
 			flash('Nothing to update')
 		else:
@@ -133,7 +117,6 @@ def deleteaccount():
 		logout_user()
 		flash('You were just logged out and your account was removed')
 		return redirect(url_for('welcome'))
-	#flash('Delete not possible')
 	return {"message": "Delete not possible with get method"} 
 
 #logout user
@@ -145,30 +128,9 @@ def logout():
 	return redirect(url_for('welcome'))
 
 #route to send a friend request from current user to selected user i request mestod = POST. If request method= GET then friends status string is returned
-@app.route('/friendrequest', methods=['GET', 'POST'])
-@login_required
-def friendrequest():
-	
-	if request.method == 'POST':
-		#print('to post friendrequest')
-		data = request.get_json()
-		t="CALL createfriendrequest('"+str(current_user.userid)+"','"+str(data['FriendUserID'])+"');"
-		db.session.execute(t)
-		db.session.commit()
-		
-		return {"message": 'friend request sent from '+str(current_user.userid)+' to '+str(data['FriendUserID'])}
-
-	print('trying to fetch friends by username')
-	t="SELECT getfriendsbyusername('"+current_user.username+"');"
-	#print(t)
-	myFriends = db.session.execute(t).fetchall()
-	#print(friends)
-	return 'friend relations '+str(myFriends)
-
-#route to send a friend request from current user to selected user i request mestod = POST. If request method= GET then friends status string is returned
 @app.route('/relations/request', methods=['GET', 'POST'])
 @login_required
-def friendrequest2():
+def friendrequest():
 	from models import User, Relationship
 	if request.method == 'POST':
 		data = request.get_json()
@@ -179,9 +141,6 @@ def friendrequest2():
 		if Relationship.query.filter_by(userid=data['FriendUserID'], frienduserid=current_user.userid, statusid=1).first():
 			return {'message' : "friend request pending. Either accept or reject."}
 		else:
-			print('to post friendrequest')
-			
-			#print(user.username)
 			user_sending_req = Relationship(user=current_user.userid,
 				receiving_user=data['FriendUserID'],
 				status=1)
@@ -205,7 +164,6 @@ def accept_friendrequest():
 		data = request.get_json()
 		print(data)
 		if(Relationship.query.filter_by(userid=data['FriendUserID'], frienduserid=current_user.userid, statusid=1).first()):
-			#print(user.username)
 			Relationship.query.filter_by(userid=data['FriendUserID'], frienduserid=current_user.userid).first().accept_req()
 			Relationship.query.filter_by(userid=current_user.userid, frienduserid=data['FriendUserID']).first().accept_req()
 			return {'message' : "friendrequest acepted"}
@@ -221,7 +179,6 @@ def accept_friendrequest():
 def reject_friendrequest():
 	from models import User, Relationship
 	if request.method == 'POST':
-
 		data = request.get_json()
 		print(data)
 		if(Relationship.query.filter_by(userid=data['FriendUserID'], frienduserid=current_user.userid, statusid=1).first()):
@@ -267,6 +224,7 @@ def unfriend():
 		data = request.get_json()
 		print(data)
 		if(Relationship.query.filter_by(userid=data['FriendUserID'], frienduserid=current_user.userid, statusid=3).first()):
+		#if(current_user.rel_sender.frienduserid=:
 			#print(user.username)
 			Relationship.query.filter_by(userid=data['FriendUserID'], frienduserid=current_user.userid, statusid=3).first().delete()
 			Relationship.query.filter_by(userid=current_user.userid, frienduserid=data['FriendUserID'], statusid=3).first().delete()
@@ -278,27 +236,22 @@ def unfriend():
 
 	return {'message' : "No post in accept friend request"}	
 
-@app.route('/relation/getrelations')
+@app.route('/relations/getrelations')
 @login_required
-def relation():
-	from models import User, Relationship
-	relations = Relationship.query.filter_by(userid=current_user.userid).all()
-
+def relations():
+	from models import User
+	
 	results = []
 	friends =[]
 	request_by_me = []
 	request_to_me = []
 	blocked_by_me = []
 	blocked_to_me = []
-	for i in relations:
-		if User.query.filter_by(userid=i.frienduserid).first():
-			username = User.query.filter_by(userid=i.frienduserid).first().username
-		else:
-			username = 'N/A'
+	for i in current_user.friend_requester:
+
 		r = {
 		'id' : i.frienduserid,
-		'username' : username,
-		#'id' : User.query.filter_by(userid=i.frienduserid).first().username,
+		'username' : i.rel_receiver.username,
 		'status' : i.statusid
 		}
 
@@ -333,28 +286,6 @@ def test():
 
 	return jsonify(result)
 
-#@app.route('/testprocedure')
-#@login_required
-#def testprocedure():
-#	print('going to test procedures')
-#	print(current_user.username)
-
-#	myFriends = db.engine.execute("SELECT getfriendsbyusername(%s)", (current_user.username))
-#	print(myFriends)
-#	result = [dict(zip(tuple (myFriends.keys()) ,i)) for i in myFriends.cursor]
-#	print(jsonify(result))
-#	friends = []
-#	for i in myFriends.cursor:
-#		friends.append(i)
-#		print(friends, ' vänner')
-#	print('vänner')
-#	return 'test'
-
-#@app.route('/usernames')
-#@login_required
-#def usernames():
-#	return jsonify(listAllUserNames())
-	#return 'hej'
 
 @app.route('/user')
 @login_required
@@ -369,6 +300,155 @@ def claim():
 	print('going to claim page')
 	#flash('You were just logged out')
 	return render_template("claim.html", claim=True)
+
+@app.route('/invoice/create-emb=<embedded>', methods=['GET', 'POST'])
+@login_required
+def createInvoice(embedded):
+	print("invoice")
+	from models import User, Invoice
+	form = CreateInvoice()
+	#form.receiver.choices = [(g.frienduserid, User.query.filter_by(userid=g.frienduserid).first().username) for g in Relationship.query.filter_by(userid=current_user.userid, statusid=3).all()]
+	#form.receiver.choices = [(g.frienduserid, g.rel_receiver.username) for g in current_user.get_friends()]
+	choices = [(-1, 'Select receiver')]
+	print(choices)
+	for i in current_user.get_friends():
+		choices.append((i.frienduserid, i.rel_receiver.username))
+	#choices.append((g.frienduserid, g.rel_receiver.username) for g in current_user.get_friends())
+	print(choices)
+	form.receiver.choices = choices
+	#form.receiver.choices = ([(g.frienduserid, g.rel_receiver.username) for g in current_user.get_friends()])
+	if embedded=="false":
+		emb=False
+	else:
+		emb=True
+	#print("username: ", form.username.data)
+	if form.validate_on_submit():
+		invoice = Invoice(
+			amount=form.amount.data,
+			description=form.description.data,
+			userid=current_user.userid,
+			receiving_user=form.receiver.data
+			
+			)
+		print(invoice)
+		db.session.add(invoice)
+		db.session.commit()
+		print(form.receiver.data, form.description.data, form.amount.data)
+		print({'message' : "Invoice sent"})
+		return {'message' : "Invoice sent"}
+	return render_template('invoice.html', form=form, embedded=emb)
+
+@app.route('/invoice/getinvoices')
+@login_required
+def getInvoices():
+	from models import User, Invoice
+	print(current_user.userid)
+	received = []
+	sent = []
+	
+	for i in current_user.invoice_receiver:
+		
+		r = {
+		'invoiceid' : i.invoiceid,
+		'senderid' : i.userid,
+		'sender' : i.sender.username,
+		'description' : i.description,
+		'amount' : i.amount,
+		'invoicestatus' : i.statusid,
+		'message' : i.message
+		}
+		#print(r)
+		received.append(r)
+	
+	for i in current_user.invoice_sender:
+		
+		r = {
+		'invoiceid' : i.invoiceid,
+		'recieverid' : i.frienduserid,
+		'receiver' : i.receiver.username,
+		'description' : i.description,
+		'amount' : i.amount,
+		'invoicestatus' : i.statusid,
+		'message' : i.message
+		}
+		#print(r)
+		sent.append(r)
+
+	return jsonify({
+		'received' : received,
+		'sent' : sent
+		})
+
+@app.route('/invoice/pay', methods=['GET', 'POST'])
+@login_required
+def payInvoice():
+
+	from models import Invoice
+	if request.method == 'POST':
+		data = request.get_json()
+		print(data)
+		Invoice.query.filter_by(invoiceid=data['InvoiceID']).first().change_status(2)
+
+	
+
+	return jsonify({
+		'message' : 'invoice marked as payed'
+		})
+
+@app.route('/invoice/reject', methods=['GET', 'POST'])
+@login_required
+def rejectInvoice():
+
+	from models import Invoice
+	if request.method == 'POST':
+		data = request.get_json()
+		print(data)
+		invoice_to_reject=Invoice.query.filter_by(invoiceid=data['InvoiceID']).first()
+		invoice_to_reject.reject(data['message'])
+	
+
+		return jsonify({
+			'message' : 'invoice marked as rejected'
+			})
+	return {'message' : "No post in reject invoice"}	
+
+@app.route('/invoice/remove', methods=['GET', 'POST'])
+@login_required
+def removeInvoice():
+	print("invoice")
+	#print(invoiceid)
+	from models import Invoice
+	if request.method == 'POST':
+		data = request.get_json()
+
+		invoice_to_delete=Invoice.query.filter_by(invoiceid=data['InvoiceID']).first()
+		invoice_to_delete.delete()
+		return {'message' : "invoice removed"}
+
+	return {'message' : "No post in accept friend request"}	
+
+@app.route('/invoice/change<invoice>', methods=['GET', 'POST'])
+@login_required
+def changeInvoice(invoice):
+	print("invoice")
+	print(invoice)
+	from models import User, Invoice
+	form = ChangeInvoice()
+	
+	emb=True
+	invoice_to_change=Invoice.query.filter_by(invoiceid=invoice).first()
+	print(invoice_to_change)
+	#print("username: ", form.username.data)
+	if form.validate_on_submit():
+		invoice_to_change.update(form.description.data, form.amount.data)
+		print(invoice_to_change)
+		#db.session.add(invoice)
+		#db.session.commit()
+		#print(form.receiver.data, form.description.data, form.amount.data)
+		print({'message' : "Invoice changed"})
+		return {'message' : "Invoice changed"}
+	return render_template('invoice.html', form=form, embedded=emb, change=True, invoice=invoice_to_change)
+
 
 @app.route('/users/<query>')
 @login_required
