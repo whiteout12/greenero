@@ -379,6 +379,46 @@ def getInvoices():
 		'sent' : sent
 		})
 
+@app.route('/invoice/getinvoice<invoiceid>')
+@login_required
+def getInvoice(invoiceid):
+	from models import User, Invoice
+	print('currentuserID ', current_user.userid)
+	print('invoiceid to look for ',invoiceid)
+	
+	invoice_to_get=Invoice.query.filter_by(invoiceid=invoiceid).first()
+	
+	if(invoice_to_get):
+		if(invoice_to_get.userid==current_user.userid or invoice_to_get.frienduserid==current_user.userid):
+			invoice = {
+				'invoiceid' : invoice_to_get.invoiceid,
+				'recieverid' : invoice_to_get.frienduserid,
+				'receiver' : invoice_to_get.receiver.username,
+				'description' : invoice_to_get.description,
+				'amount' : invoice_to_get.amount,
+				'invoicestatus' : invoice_to_get.statusid,
+				'message' : invoice_to_get.message,
+				'senderid' : invoice_to_get.userid,
+				'sender' : invoice_to_get.sender.username,
+				'duedate' : invoice_to_get.duedate,
+				'createddate' : invoice_to_get.invoice_date,
+				'version' : invoice_to_get.invoice_version
+				}
+
+			return jsonify({
+					'success' : True,
+					'invoice' : invoice
+					})
+		return jsonify({
+		'success' : False,
+		'message' : 'not authorized'
+		})
+	return jsonify({
+		'success' : False,
+		'message' : 'no invoice found'
+		})
+
+
 @app.route('/invoice/pay', methods=['GET', 'POST'])
 @login_required
 def payInvoice():
