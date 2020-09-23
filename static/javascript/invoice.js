@@ -35,11 +35,11 @@ fetch(url)
       for (var i = 0; i < data.received.length; i++) {
       
         if(data.received[i].invoicestatus==1){
-          received_pend += "<tr><td><a onclick=\"openInvoice("+data.sent[i].invoiceid+")\" href=\"#\">invoice"+data.sent[i].invoiceid+"<\/><\/td><td>"+data.received[i].sender+"<\/td><td>"+data.received[i].description+"<\/td><td>"+data.received[i].amount+"<\/td><td><input type=\"button\" class=\"btn btn-sm btn-warning\" onclick=\"reject("+data.received[i].invoiceid+")\" value=\"Reject\"\/><\/td><td><input type=\"button\" class=\"btn btn-sm btn-success\" onclick=\"pay("+data.received[i].invoiceid+")\" value=\"Confirm pay\"\/><\/td><\/tr>"; 
+          received_pend += "<tr><td><a onclick=\"openInvoice("+data.received[i].invoiceid+")\" href=\"#\">invoice"+data.received[i].invoiceid+"<\/><\/td><td>"+data.received[i].sender+"<\/td><td>"+data.received[i].description+"<\/td><td>"+data.received[i].amount+"<\/td><td><input type=\"button\" class=\"btn btn-sm btn-warning\" onclick=\"reject("+data.received[i].invoiceid+")\" value=\"Reject\"\/><\/td><td><input type=\"button\" class=\"btn btn-sm btn-success\" onclick=\"pay("+data.received[i].invoiceid+")\" value=\"Confirm pay\"\/><\/td><\/tr>"; 
           }
        
        if(data.received[i].invoicestatus==2){
-          received_history += "<tr><td><a onclick=\"openInvoice("+data.sent[i].invoiceid+")\" href=\"#\">invoice"+data.sent[i].invoiceid+"<\/><\/td><td>"+data.received[i].sender+"<\/td><td>"+data.received[i].description+"<\/td><td>"+data.received[i].amount+"<\/td><td>Payed\"\/><\/td><\/tr>"; 
+          received_history += "<tr><td><a onclick=\"openInvoice("+data.received[i].invoiceid+")\" href=\"#\">invoice"+data.received[i].invoiceid+"<\/><\/td><td>"+data.received[i].sender+"<\/td><td>"+data.received[i].description+"<\/td><td>"+data.received[i].amount+"<\/td><td>Payed\"\/><\/td><\/tr>"; 
           }
           };
      
