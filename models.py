@@ -118,9 +118,6 @@ class Relationship(db.Model):
     def __repr__(self):
         #return '<rel-friendshipid - {}>'.format(self.friendshipid)
         return 'Relationship(Id: %s, Sender: %s, Receiver: %s, Statusid: %s)' % (self.friendshipid, self.userid, self.frienduserid, self.statusid)
-   # def create_friend_req(self, receiving_user):
-    #    
-     #   return {'message' : friend request sent}
 
 class Invoice(db.Model):
 
@@ -177,13 +174,7 @@ class Invoice(db.Model):
         self.statusid = status
         db.session.commit()
 
-    def delete(self):
-        db.session.delete(self)
-        db.session.commit()
 
     def __repr__(self):
         #return '<rel-invoiceid - {}>'.format(self.invoiceid)
         return 'Invoice(Id: %s, Receiver: %s, amount: %s, description: %s, sender: %s, receiver: %s)' % (self.invoiceid, self.frienduserid, self.amount, self.description, self.sender, self.receiver)
-   # def create_friend_req(self, receiving_user):
-    #    
-     #   return {'message' : friend request sent}

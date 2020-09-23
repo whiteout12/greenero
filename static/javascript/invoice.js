@@ -19,28 +19,29 @@ fetch(url)
       for (var i = 0; i < data.sent.length; i++) {
 
         if(data.sent[i].invoicestatus==1){
-        sent += "<tr><td>invoice"+data.sent[i].invoiceid+"<\/td><td>"+data.sent[i].receiver+"<\/td><td>"+data.sent[i].description+"<\/td><td>"+data.sent[i].amount+"<\/td><td><input type=\"button\" class=\"btn btn-sm btn-warning\" onclick=\"change("+data.sent[i].invoiceid+")\" value=\"Change\"\/><\/td><td><input type=\"button\" class=\"btn btn-sm btn-danger\" value=\"Delete\" onclick=\"remove("+data.sent[i].invoiceid+")\"><\/td><\/tr>"; 
-       
+      
+        sent += "<tr><td><a onclick=\"openInvoice("+data.sent[i].invoiceid+")\" href=\"#\">invoice"+data.sent[i].invoiceid+"<\/><\/td><td>"+data.sent[i].receiver+"<\/td><td>"+data.sent[i].description+"<\/td><td>"+data.sent[i].amount+"<\/td><td><input type=\"button\" class=\"btn btn-sm btn-warning\" onclick=\"change("+data.sent[i].invoiceid+")\" value=\"Change\"\/><\/td><td><input type=\"button\" class=\"btn btn-sm btn-danger\" value=\"Delete\" onclick=\"remove("+data.sent[i].invoiceid+")\"><\/td><\/tr>"; 
+
         }
         if(data.sent[i].invoicestatus==3){
-        sent_rejected += "<tr><td>invoice"+data.sent[i].invoiceid+"<\/td><td>"+data.sent[i].receiver+"<\/td><td>"+data.sent[i].description+"<\/td><td>"+data.sent[i].amount+"<\/td><td>"+data.sent[i].message+"<\/td><td><input type=\"button\" class=\"btn btn-sm btn-warning\" onclick=\"change("+data.sent[i].invoiceid+")\" value=\"Change\"\/><\/td><td><input type=\"button\" class=\"btn btn-sm btn-danger\" value=\"Delete\" onclick=\"remove("+data.sent[i].invoiceid+")\"><\/td><\/tr>"; 
+        sent_rejected += "<tr><td><a onclick=\"openInvoice("+data.sent[i].invoiceid+")\" href=\"#\">invoice"+data.sent[i].invoiceid+"<\/><\/td><td>"+data.sent[i].receiver+"<\/td><td>"+data.sent[i].description+"<\/td><td>"+data.sent[i].amount+"<\/td><td>"+data.sent[i].message+"<\/td><td><input type=\"button\" class=\"btn btn-sm btn-warning\" onclick=\"change("+data.sent[i].invoiceid+")\" value=\"Change\"\/><\/td><td><input type=\"button\" class=\"btn btn-sm btn-danger\" value=\"Delete\" onclick=\"remove("+data.sent[i].invoiceid+")\"><\/td><\/tr>"; 
         rejected++;
         }
         if(data.sent[i].invoicestatus==2){
-        sent_history += "<tr><td>invoice"+data.sent[i].invoiceid+"<\/td><td>"+data.sent[i].receiver+"<\/td><td>"+data.sent[i].description+"<\/td><td>"+data.sent[i].amount+"<\/td><td><input type=\"button\" class=\"btn btn-sm btn-primary\" onclick=\"withdraw_friend_req("+data.sent[i].amount+")\" value=\"Reopen\"\/><\/td><\/tr>"; 
+        sent_history += "<tr><td><a onclick=\"openInvoice("+data.sent[i].invoiceid+")\" href=\"#\">invoice"+data.sent[i].invoiceid+"<\/><\/td><td>"+data.sent[i].receiver+"<\/td><td>"+data.sent[i].description+"<\/td><td>"+data.sent[i].amount+"<\/td><td><input type=\"button\" class=\"btn btn-sm btn-primary\" onclick=\"withdraw_friend_req("+data.sent[i].amount+")\" value=\"Reopen\"\/><\/td><\/tr>"; 
         }
         };
       
       for (var i = 0; i < data.received.length; i++) {
-        console.log("sent invoice id "+data.received[i].invoiceid)
-      if(data.received[i].invoicestatus==1){
-        received_pend += "<tr><td>invoice"+data.received[i].invoiceid+"<\/td><td>"+data.received[i].sender+"<\/td><td>"+data.received[i].description+"<\/td><td>"+data.received[i].amount+"<\/td><td><input type=\"button\" class=\"btn btn-sm btn-warning\" onclick=\"reject("+data.received[i].invoiceid+")\" value=\"Reject\"\/><\/td><td><input type=\"button\" class=\"btn btn-sm btn-success\" onclick=\"pay("+data.received[i].invoiceid+")\" value=\"Confirm pay\"\/><\/td><\/tr>"; 
-        }
+      
+        if(data.received[i].invoicestatus==1){
+          received_pend += "<tr><td><a onclick=\"openInvoice("+data.sent[i].invoiceid+")\" href=\"#\">invoice"+data.sent[i].invoiceid+"<\/><\/td><td>"+data.received[i].sender+"<\/td><td>"+data.received[i].description+"<\/td><td>"+data.received[i].amount+"<\/td><td><input type=\"button\" class=\"btn btn-sm btn-warning\" onclick=\"reject("+data.received[i].invoiceid+")\" value=\"Reject\"\/><\/td><td><input type=\"button\" class=\"btn btn-sm btn-success\" onclick=\"pay("+data.received[i].invoiceid+")\" value=\"Confirm pay\"\/><\/td><\/tr>"; 
+          }
        
-      if(data.received[i].invoicestatus==2){
-        received_history += "<tr><td>invoice"+data.received[i].invoiceid+"<\/td><td>"+data.received[i].sender+"<\/td><td>"+data.received[i].description+"<\/td><td>"+data.received[i].amount+"<\/td><td>Payed\"\/><\/td><\/tr>"; 
-        }
-       };
+       if(data.received[i].invoicestatus==2){
+          received_history += "<tr><td><a onclick=\"openInvoice("+data.sent[i].invoiceid+")\" href=\"#\">invoice"+data.sent[i].invoiceid+"<\/><\/td><td>"+data.received[i].sender+"<\/td><td>"+data.received[i].description+"<\/td><td>"+data.received[i].amount+"<\/td><td>Payed\"\/><\/td><\/tr>"; 
+          }
+          };
      
       console.log(rejected)
       document.getElementById("claims-pending").innerHTML =  sent
@@ -50,6 +51,7 @@ fetch(url)
       document.getElementById("claims-history").innerHTML =  sent_history
       document.getElementById("debts").innerHTML = received_pend
       document.getElementById("debts-history").innerHTML = received_history
+      /*document.getElementById("myModal").innerHTML += script*/
       
 
     });
@@ -98,6 +100,37 @@ console.log(invoiceid)
 
 }
 
+function remove(invoiceid){
+console.log(invoiceid)
+           var r=confirm("Are you sure you want to remove this invoice?");
+if (r==true){
+
+var url = '/invoice/remove'
+fetch(url,{
+            method : 'POST',
+      headers: {
+            'Content-Type': 'application/json;charset=utf-8'      
+          },        
+          body : JSON.stringify({
+            "InvoiceID" : invoiceid,
+            
+        })
+    })
+    .then(function (response) {
+
+      console.log(response);
+        return response.json();
+    })
+    .then(function (data) {
+      console.log(data);
+      get_user_invoices();
+      document.getElementById("invoice_overview").innerHTML +=  "<br>"+data.message
+    });
+  }else{
+    return;
+  }
+}
+
 function reject(invoiceid){
 console.log(invoiceid)
                var input_message = prompt("Enter reason for rejection", "");
@@ -127,3 +160,21 @@ fetch(url,{
       document.getElementById("invoice_overview").innerHTML +=  "<br>"+data.message
     });
 }
+
+function openInvoice(invoiceid){
+console.log(invoice)
+var invoice_modal_header = '<h5>invoice'+invoiceid+'</h5>'
+var invoice_modal_body = [
+    '<p>Invoice'+invoiceid+'shwon by bjorn</p>',
+    '<p>thrse mpre...</p>'
+  ].join("\n");
+
+var invoice_modal_footer = '<h5><input type=\"button\" class=\"btn btn-sm btn-warning\" onclick=\"change('+invoiceid+')\" value=\"Change\"\/></h5>'
+
+document.getElementById("invoice-modal-header").innerHTML = invoice_modal_header
+document.getElementById("invoice-modal-body").innerHTML = invoice_modal_body
+document.getElementById("invoice-modal-footer").innerHTML = invoice_modal_footer
+modal.style.display = "block";
+
+}
+
