@@ -7,11 +7,11 @@ fetch(url)
         return response.json();
     })
     .then(function (data) {
-      var sent = "<br><h4>Claims</h4><h5>Pending</h5><body><table class=\"table-striped\"><tr><th>Invoice<\/th><th>Description<\/th><th>How much<\/th><th><\/th><th><\/th><\/tr>"
-      var sent_rejected = "<br><h4></h4><h5>Rejected</h5><body><table class=\"table-striped\"><tr><th>Invoice<\/th><th>Description<\/th><th>How much<\/th><th>Reason<\/th><th><\/th><th><\/th><\/tr>"
-      var sent_history = "<br><h5>History/Claimed</h5><body><table style=\"text-align:right\" class=\"table-striped\"><tr><th>Invoice<\/th><th>Description<\/th><th>How much<\/th><th><\/th><th><\/th><\/tr>"
-      var received_pend = "<br><h4>Debts</h4><h5>Pending</h5><body><h5></h4><table style=\"text-align:right\" class=\"table-striped\"><tr><th>Invoice<\/th><th>Description<\/th><th>How much<\/th><th><\/th><th><\/th><\/tr>"
-      var received_history = "<br><h5>History/Paid</h5><body><h5></h4><table style=\"text-align:right;\" class=\"table-striped\"><tr><th>Invoice<\/th><th>Description<\/th><th>How much<\/th><th><\/th><th><\/th><\/tr>"
+      var sent = "<br><h4>Claims</h4><h5>Pending</h5><body><table class=\"table-striped\" style=\"white-space:nowrap;\"><tr><th style=\" width:80px\">Invoice<\/th><th style=\" width:120px\">Description<\/th><th>Amount<\/th><th><\/th><\/tr>"
+      var sent_rejected = "<br><h4></h4><h5>Rejected</h5><body><table class=\"table-striped\" style=\"white-space:nowrap;\"><tr><th style=\" width:80px\">Invoice<\/th><th style=\" width:120px\">Description<\/th><th>Amount<\/th><th>Reason<\/th><th><\/th><\/tr>"
+      var sent_history = "<br><h5>History/Claimed</h5><body><table style=\"text-align:left\" class=\"table-striped\" style=\"white-space:nowrap;\"><tr><th style=\" width:120px\">Invoice<\/th><th style=\" width:100px\">Description<\/th><th>Amount<\/th><th><\/th><th><\/th><\/tr>"
+      var received_pend = "<br><h4>Debts</h4><h5>Pending</h5><body><h5></h4><table class=\"table-striped\" style=\"white-space:nowrap;\"><tr><th style=\" width:80px\">Invoice<\/th><th style=\" width:120px\">Description<\/th><th>Amount<\/th><th><\/th><\/tr>"
+      var received_history = "<br><h5>History/Paid</h5><body><h5></h4><table class=\"table-striped\" style=\"white-space:nowrap;\"><tr><th style=\" width:80px\">Invoice<\/th><th style=\" width:120px\">Description<\/th><th>Amount<\/th><th><\/th><th><\/th><\/tr>"
       console.log(data)
       console.log(data.sent.length)
       console.log(data.received.length)
@@ -20,11 +20,11 @@ fetch(url)
 
         if(data.sent[i].invoicestatus==1){
       
-        sent += "<tr><td><a onclick=\"openInvoice("+data.sent[i].invoiceid+")\" href=\"#\">invoice"+data.sent[i].invoiceid+"<\/><\/td><td>"+data.sent[i].description+"<\/td><td>"+data.sent[i].amount+"<\/td><td><input type=\"button\" class=\"btn btn-sm btn-warning\" onclick=\"change("+data.sent[i].invoiceid+")\" value=\"Change\"\/><\/td><td><input type=\"button\" class=\"btn btn-sm btn-danger\" value=\"Delete\" onclick=\"remove("+data.sent[i].invoiceid+")\"><\/td><\/tr>"; 
+        sent += "<tr><td><a onclick=\"openInvoice("+data.sent[i].invoiceid+")\" href=\"#\">invoice"+data.sent[i].invoiceid+"<\/><\/td><td>"+data.sent[i].description+"<\/td><td>"+data.sent[i].amount+"<\/td><td><input type=\"button\" style=\"margin-right:5px;\" class=\"btn btn-sm btn-warning\" onclick=\"change("+data.sent[i].invoiceid+")\" value=\"Change\"\/><input type=\"button\" class=\"btn btn-sm btn-danger\" value=\"Delete\" onclick=\"remove("+data.sent[i].invoiceid+")\"><\/td><\/tr>"; 
 
         }
         if(data.sent[i].invoicestatus==3){
-        sent_rejected += "<tr><td><a onclick=\"openInvoice("+data.sent[i].invoiceid+")\" href=\"#\">invoice"+data.sent[i].invoiceid+"<\/><\/td><td>"+data.sent[i].description+"<\/td><td>"+data.sent[i].amount+"<\/td><td>"+data.sent[i].message+"<\/td><td><input type=\"button\" class=\"btn btn-sm btn-warning\" onclick=\"change("+data.sent[i].invoiceid+")\" value=\"Change\"\/><\/td><td><input type=\"button\" class=\"btn btn-sm btn-danger\" value=\"Delete\" onclick=\"remove("+data.sent[i].invoiceid+")\"><\/td><\/tr>"; 
+        sent_rejected += "<tr><td><a onclick=\"openInvoice("+data.sent[i].invoiceid+")\" href=\"#\">invoice"+data.sent[i].invoiceid+"<\/><\/td><td>"+data.sent[i].description+"<\/td><td>"+data.sent[i].amount+"<\/td><td><b style=\"color:red\">"+data.sent[i].message+"<b><\/td><td><input type=\"button\" style=\"margin-right:5px;\" class=\"btn btn-sm btn-warning\" onclick=\"change("+data.sent[i].invoiceid+")\" value=\"Change\"\/><input type=\"button\" class=\"btn btn-sm btn-danger\" value=\"Delete\" onclick=\"remove("+data.sent[i].invoiceid+")\"><\/td><\/tr>"; 
         rejected++;
         }
         if(data.sent[i].invoicestatus==2){
@@ -35,11 +35,11 @@ fetch(url)
       for (var i = 0; i < data.received.length; i++) {
       
         if(data.received[i].invoicestatus==1){
-          received_pend += "<tr><td><a onclick=\"openInvoice("+data.received[i].invoiceid+")\" href=\"#\">invoice"+data.received[i].invoiceid+"<\/><\/td><td>"+data.received[i].description+"<\/td><td>"+data.received[i].amount+"<\/td><td><input type=\"button\" class=\"btn btn-sm btn-warning\" onclick=\"reject("+data.received[i].invoiceid+")\" value=\"Reject\"\/><\/td><td><input type=\"button\" class=\"btn btn-sm btn-success\" onclick=\"pay("+data.received[i].invoiceid+")\" value=\"Confirm pay\"\/><\/td><\/tr>"; 
+          received_pend += "<tr><td><a onclick=\"openInvoice("+data.received[i].invoiceid+")\" href=\"#\">invoice"+data.received[i].invoiceid+"<\/><\/td><td>"+data.received[i].description+"<\/td><td>"+data.received[i].amount+"<\/td><td><input type=\"button\" style=\"margin-right:5px;\" class=\"btn btn-sm btn-warning\" onclick=\"reject("+data.received[i].invoiceid+")\" value=\"Reject\"\/><input type=\"button\" class=\"btn btn-sm btn-success\" onclick=\"pay("+data.received[i].invoiceid+")\" value=\"Confirm pay\"\/><\/td><\/tr>"; 
           }
        
        if(data.received[i].invoicestatus==2){
-          received_history += "<tr><td><a onclick=\"openInvoice("+data.received[i].invoiceid+")\" href=\"#\">invoice"+data.received[i].invoiceid+"<\/><\/td><td>"+data.received[i].description+"<\/td><td>"+data.received[i].amount+"<\/td><td>Payed\"\/><\/td><\/tr>"; 
+          received_history += "<tr><td><a onclick=\"openInvoice("+data.received[i].invoiceid+")\" href=\"#\">invoice"+data.received[i].invoiceid+"<\/><\/td><td>"+data.received[i].description+"<\/td><td>"+data.received[i].amount+"<\/td><td>Payed<\/td><\/tr>"; 
           }
           };
      
@@ -177,6 +177,24 @@ fetch(url)
 return data;
 }
 
+function emailInvoice(invoiceid){
+
+var url = '/invoices/email/'+invoiceid
+console.log('url', url)
+fetch(url)
+    .then(function (response) {
+        
+        return response.json();
+    })
+    .then(function (data) {
+      console.log('email status', data.message)
+      document.getElementById("invoice-modal-footer").innerHTML +=  "<br>"+data.message
+
+
+    })
+
+}
+
 
 function openInvoice(invoiceid){
 console.log(invoiceid)
@@ -194,17 +212,17 @@ fetch(url)
   var invoice_modal_header = '<h5>invoice'+invoiceid+'</h5>'
   var invoice_modal_body = [
     '<p>Invoice details</p>',
-    '<p><table>',
-    '<tr><td style="text-align:left">Description</td><td style="text-align:left">'+data.invoice.description+'</td></tr>',
-    '<tr><td style="text-align:left">Sender</td><td style="text-align:left">'+data.invoice.sender+'</td></tr>',
-    '<tr><td style="text-align:left">Receiver</td><td style="text-align:left">'+data.invoice.receiver+'</td></tr>',
-    '<tr><td style="text-align:left">Amount</td><td style="text-align:left">'+data.invoice.amount+'</td></tr>',
-    '<tr><td style="text-align:left">Created date</td><td style="text-align:left">'+data.invoice.createddate+'</td></tr>',
-    '<tr><td style="text-align:left">Due date</td><td style="text-align:left">'+data.invoice.duedate+'</td></tr>',
-    '<tr><td style="text-align:left">Version</td><td style="text-align:left">'+data.invoice.version+'</td></tr></p>'
+    '<p><table class=\"table-striped\">',
+    '<tr><th style="text-align:left; width:120px\"">Description</td><td style="text-align:left">'+data.invoice.description+'</td></tr>',
+    '<tr><th style="text-align:left">Sender</td><td style="text-align:left">'+data.invoice.sender+'</td></tr>',
+    '<tr><th style="text-align:left">Payee</td><td style="text-align:left">'+data.invoice.receiver+'</td></tr>',
+    '<tr><th style="text-align:left">Amount</td><td style="text-align:left">'+data.invoice.amount+'</td></tr>',
+    '<tr><th style="text-align:left">Created date</td><td style="text-align:left">'+data.invoice.createddate+'</td></tr>',
+    '<tr><th style="text-align:left">Due date</td><td style="text-align:left">'+data.invoice.duedate+'</td></tr>',
+    '<tr><th style="text-align:left">Version</td><td style="text-align:left">'+data.invoice.version+'</td></tr></p>'
   ].join("\n");
 
-  var invoice_modal_footer = '<h5><input type=\"button\" class=\"btn btn-sm btn-warning\" onclick=\"change('+invoiceid+')\" value=\"Change\"\/></h5>'
+  var invoice_modal_footer = '<h5><a href="/invoices/renderpdf/'+invoiceid+'" class="btn btn-sm btn-primary">Download PDF</a><input type=\"button\" style=\"margin-right:5px;\" class=\"btn btn-sm btn-primary\" onclick=\"emailInvoice('+invoiceid+')\" value=\"Email invoice\"\/></h5>'
   document.getElementById("invoice-modal-header").innerHTML = invoice_modal_header
   document.getElementById("invoice-modal-body").innerHTML = invoice_modal_body
   document.getElementById("invoice-modal-footer").innerHTML = invoice_modal_footer

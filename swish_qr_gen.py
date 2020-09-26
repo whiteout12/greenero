@@ -1,14 +1,32 @@
 import requests
 import json
 from json import dumps
+import base64
 
-def swishQR():
+def swishQR(payee, amount, message):
+	#print(payee)
+	#print(amount)
+	#print(message)
 	url = "https://mpc.getswish.net/qrg-swish/api/v1/prefilled"
-	data = {'format':'svg','size':300,'message':{'value':'test message','editable':'false'},'amount':{'value':110,'editable':'false'}, 'payee':{'value':'0730514019','editable':'false'}}
+	#data = {”format”:”png”,”size”:300,”message”:{”value”:”test message”,”editable”:false},”amount”:{”value”:100,”editable”:false}}
+	data = {'format':'svg','size':300,'message':{'value':message,'editable':'false'},'amount':{'value':amount,'editable':'false'}, 'payee':{'value':payee,'editable':'false'}}
 	headers = {'Content-type': 'application/json'}
 	r = requests.post(url, data=json.dumps(data), headers=headers)
-	#print(r)
+	print(r.content)
 	#file = open("sample_image.png", "wb")
-	#file = open("sample_image.svg", "wb")
-	#file.write(r.content)
-	#file.close()
+	file = open("static/swish_qr.svg", "wb")
+	file.write(r.content)
+	file.close()
+
+	return file
+
+def swishQRbase64(payee, amount, message):
+	#print(payee)
+	#print(amount)
+	#print(message)
+	url = "https://mpc.getswish.net/qrg-swish/api/v1/prefilled"
+	data = {'format':'svg','size':300,'message':{'value':message,'editable':'false'},'amount':{'value':amount,'editable':'false'}, 'payee':{'value':payee,'editable':'false'}}
+	headers = {'Content-type': 'application/json'}
+	r = requests.post(url, data=json.dumps(data), headers=headers)
+
+	return base64.b64encode(r.content).decode("utf-8")

@@ -1,4 +1,5 @@
-from flask import Flask, render_template, redirect, url_for, request, flash, jsonify
+from flask import Flask, render_template, redirect, url_for, request, flash, jsonify, make_response
+from flask_mail import Mail, Message
 from forms import LoginForm, RegisterForm, ChangeUserForm, CreateInvoice, ChangeInvoice
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
@@ -6,6 +7,12 @@ from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from users_db import listAllUserNames
 import psycopg2
+from swish_qr_gen import swishQR, swishQRbase64
+#from weasyprint import HTML
+from flask_weasyprint import HTML, render_pdf
+import io
+
+#from jinja2 import jinja_template
 
 #from flask.ext.sqlalchemy import SQLAlchemy
 #from sqlalchemy import create_engine, text
@@ -13,6 +20,7 @@ import psycopg2
 #from flask.ext.login import login_user, login_required, logout_user
 
 app = Flask(__name__)
+mail = Mail(app)
 bcrypt = Bcrypt(app)
 #db = create_engine("postgresql://localhost/postgres")
 #db = create_engine("postgresql+psycopg2://localhost/postgres")
@@ -24,6 +32,7 @@ app.config.from_object(os.environ['APP_SETTINGS'])
 login_manager = LoginManager()
 login_manager.init_app(app)
 db = SQLAlchemy(app)
+mail = Mail(app)
 #engine = create_engine('postgresql://bjorn:kerbus@whiteout.ddns.net:5432/DEV01FAKK')
 
 
@@ -392,7 +401,7 @@ def getInvoice(invoiceid):
 		if(invoice_to_get.userid==current_user.userid or invoice_to_get.frienduserid==current_user.userid):
 			invoice = {
 				'invoiceid' : invoice_to_get.invoiceid,
-				'recieverid' : invoice_to_get.frienduserid,
+				'receiverid' : invoice_to_get.frienduserid,
 				'receiver' : invoice_to_get.receiver.username,
 				'description' : invoice_to_get.description,
 				'amount' : invoice_to_get.amount,
@@ -489,6 +498,52 @@ def changeInvoice(invoice):
 		return {'message' : "Invoice changed"}
 	return render_template('invoice.html', form=form, embedded=emb, change=True, invoice=invoice_to_change)
 
+@app.route('/invoices/renderpdf/<inv>')
+@login_required
+def renderpdf(inv):
+	print(current_user.userid)
+	print(inv)
+	username=current_user.username
+	invoice = getInvoice(inv).get_json()
+	print('gotten inv ', list(invoice))
+
+	swish_qr_base64=swishQRbase64(current_user.phone, invoice['invoice']['amount'], invoice['invoice']['description'])
+	print_html = render_template('invoice_pdf_template.html', username=username, invoice=invoice['invoice'], qrCode_base64=swish_qr_base64, css1=url_for('static', filename='invoice_pdf/boilerplate.css'), css2=url_for('static', filename='invoice_pdf/main.css'), css3=url_for('static', filename='invoice_pdf/normalize.css'))
+	
+	
+	return render_pdf(HTML(string=print_html), download_filename='invoice'+str(invoice['invoice']['invoiceid'])+'.pdf')
+	
+@app.route('/invoices/email/<inv>')
+@login_required
+def email_invoice(inv):
+	print(current_user.userid)
+	print(inv)
+	invoice = getInvoice(inv).get_json()
+	from models import User, Invoice
+	payee = User.query.filter_by(userid=invoice['invoice']['receiverid']).first()
+
+	if payee.email:
+		print('payee email: ', payee.email)
+		if current_user.phone:
+			
+			username=current_user.username
+			swish_qr_base64=swishQRbase64(current_user.phone, invoice['invoice']['amount'], invoice['invoice']['description'])
+			html = HTML(string=render_template('invoice_pdf_template.html', username=username, invoice=invoice['invoice'], qrCode_base64=swish_qr_base64, css1=url_for('static', filename='invoice_pdf/boilerplate.css'), css2=url_for('static', filename='invoice_pdf/main.css'), css3=url_for('static', filename='invoice_pdf/normalize.css')))
+			pdf = io.BytesIO(html.write_pdf())
+			msg = Message("Du har blivit fakkad :)",
+		                  sender="bjorncarlsson87@gmail.com",
+		                  recipients=[payee.email])
+			msg.body = "Du har blivit fakkad, se bifogat" 
+			msg.attach('invoice.pdf', 'application/pdf', data=pdf.read())
+			mail.send(msg)
+			return {'message' : "Email sent!"}
+		else:
+			return {'message' : "You have no phone number registred which is needed to genarate swish QRcode :("}
+	else:
+		return {'message' : "Payee has no email address registered :("}
+		
+		
+	
 
 @app.route('/users/<query>')
 @login_required
@@ -500,6 +555,10 @@ def users(query):
 	search = "%{}%".format(query)
 	return jsonify([i.serialize() for i in User.query.filter(User.username.ilike(search), current_user.username!=User.username).all()])
 
+def image_file_path_to_base64_string(filepath: str) -> str:
+  
+	with open(filepath, 'rb') as f:
+		return base64.b64encode(f.read()).decode()
 
 if __name__ == '__main__':
 	app.run()
