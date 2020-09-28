@@ -501,17 +501,20 @@ def changeInvoice(invoice):
 @app.route('/invoices/renderpdf/<inv>')
 @login_required
 def renderpdf(inv):
-	print(current_user.userid)
-	print(inv)
+	
 	username=current_user.username
 	invoice = getInvoice(inv).get_json()
-	print('gotten inv ', list(invoice))
+	if(invoice['success']):
+		
 
-	swish_qr_base64=swishQRbase64(current_user.phone, invoice['invoice']['amount'], invoice['invoice']['description'])
-	print_html = render_template('invoice_pdf_template.html', username=username, invoice=invoice['invoice'], qrCode_base64=swish_qr_base64, css1=url_for('static', filename='invoice_pdf/boilerplate.css'), css2=url_for('static', filename='invoice_pdf/main.css'), css3=url_for('static', filename='invoice_pdf/normalize.css'))
-	
-	
-	return render_pdf(HTML(string=print_html), download_filename='invoice'+str(invoice['invoice']['invoiceid'])+'.pdf')
+		swish_qr_base64=swishQRbase64(current_user.phone, invoice['invoice']['amount'], invoice['invoice']['description'])
+		print_html = render_template('invoice_pdf_template.html', username=username, invoice=invoice['invoice'], qrCode_base64=swish_qr_base64, css1=url_for('static', filename='invoice_pdf/boilerplate.css'), css2=url_for('static', filename='invoice_pdf/main.css'), css3=url_for('static', filename='invoice_pdf/normalize.css'))
+		
+		
+		return render_pdf(HTML(string=print_html), download_filename='invoice'+str(invoice['invoice']['invoiceid'])+'.pdf')
+	else:
+
+		return {'message' : invoice['message']}
 	
 @app.route('/invoices/email/<inv>')
 @login_required
@@ -519,29 +522,32 @@ def email_invoice(inv):
 	print(current_user.userid)
 	print(inv)
 	invoice = getInvoice(inv).get_json()
-	from models import User, Invoice
-	payee = User.query.filter_by(userid=invoice['invoice']['receiverid']).first()
+	if(invoice['success']):
+		from models import User, Invoice
+		payee = User.query.filter_by(userid=invoice['invoice']['receiverid']).first()
 
-	if payee.email:
-		print('payee email: ', payee.email)
-		if current_user.phone:
-			
-			username=current_user.username
-			swish_qr_base64=swishQRbase64(current_user.phone, invoice['invoice']['amount'], invoice['invoice']['description'])
-			html = HTML(string=render_template('invoice_pdf_template.html', username=username, invoice=invoice['invoice'], qrCode_base64=swish_qr_base64, css1=url_for('static', filename='invoice_pdf/boilerplate.css'), css2=url_for('static', filename='invoice_pdf/main.css'), css3=url_for('static', filename='invoice_pdf/normalize.css')))
-			pdf = io.BytesIO(html.write_pdf())
-			msg = Message("Du har blivit fakkad :)",
-		                  sender="bjorncarlsson87@gmail.com",
-		                  recipients=[payee.email])
-			msg.body = "Du har blivit fakkad, se bifogat" 
-			msg.attach('invoice.pdf', 'application/pdf', data=pdf.read())
-			mail.send(msg)
-			return {'message' : "Email sent!"}
+		if payee.email:
+			print('payee email: ', payee.email)
+			if current_user.phone:
+				
+				username=current_user.username
+				swish_qr_base64=swishQRbase64(current_user.phone, invoice['invoice']['amount'], invoice['invoice']['description'])
+				html = HTML(string=render_template('invoice_pdf_template.html', username=username, invoice=invoice['invoice'], qrCode_base64=swish_qr_base64, css1=url_for('static', filename='invoice_pdf/boilerplate.css'), css2=url_for('static', filename='invoice_pdf/main.css'), css3=url_for('static', filename='invoice_pdf/normalize.css')))
+				pdf = io.BytesIO(html.write_pdf())
+				msg = Message("Du har blivit fakkad :)",
+			                  sender="bjorncarlsson87@gmail.com",
+			                  recipients=[payee.email])
+				msg.body = "Du har blivit fakkad, se bifogat" 
+				msg.attach('invoice.pdf', 'application/pdf', data=pdf.read())
+				mail.send(msg)
+				return {'message' : "Email sent!"}
+			else:
+				return {'message' : "You have no phone number registred which is needed to genarate swish QRcode :("}
 		else:
-			return {'message' : "You have no phone number registred which is needed to genarate swish QRcode :("}
+			return {'message' : "Payee has no email address registered :("}
 	else:
-		return {'message' : "Payee has no email address registered :("}
-		
+
+		return {'message' : invoice['message']}	
 		
 	
 

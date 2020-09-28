@@ -222,7 +222,7 @@ fetch(url)
     '<tr><th style="text-align:left">Version</td><td style="text-align:left">'+data.invoice.version+'</td></tr></p>'
   ].join("\n");
 
-  var invoice_modal_footer = '<h5><a href="/invoices/renderpdf/'+invoiceid+'" class="btn btn-sm btn-primary">Download PDF</a><input type=\"button\" style=\"margin-right:5px;\" class=\"btn btn-sm btn-primary\" onclick=\"emailInvoice('+invoiceid+')\" value=\"Email invoice\"\/></h5>'
+  var invoice_modal_footer = '<tr><td><h5><a href="/invoices/renderpdf/'+invoiceid+'" style=\"margin-right:5px;\" class="btn btn-sm btn-primary">Download PDF</a><\/td><td><input type=\"button\" style=\"margin-right:5px;\" class=\"btn btn-sm btn-primary\" onclick=\"emailInvoice('+invoiceid+')\" value=\"Email invoice\"\/></h5><\/td><\/tr>'
   document.getElementById("invoice-modal-header").innerHTML = invoice_modal_header
   document.getElementById("invoice-modal-body").innerHTML = invoice_modal_body
   document.getElementById("invoice-modal-footer").innerHTML = invoice_modal_footer
