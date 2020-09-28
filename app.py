@@ -5,7 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
-from users_db import listAllUserNames
+#from users_db import listAllUserNames
 import psycopg2
 from swish_qr_gen import swishQR, swishQRbase64
 #from weasyprint import HTML
@@ -34,6 +34,7 @@ login_manager.init_app(app)
 db = SQLAlchemy(app)
 mail = Mail(app)
 #engine = create_engine('postgresql://bjorn:kerbus@whiteout.ddns.net:5432/DEV01FAKK')
+
 
 
 login_manager.login_view = "welcome"
@@ -561,10 +562,6 @@ def users(query):
 	search = "%{}%".format(query)
 	return jsonify([i.serialize() for i in User.query.filter(User.username.ilike(search), current_user.username!=User.username).all()])
 
-def image_file_path_to_base64_string(filepath: str) -> str:
-  
-	with open(filepath, 'rb') as f:
-		return base64.b64encode(f.read()).decode()
 
 if __name__ == '__main__':
 	app.run()

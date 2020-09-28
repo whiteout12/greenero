@@ -1,6 +1,7 @@
 from app import db, bcrypt
 #from flask_login import UserMixin
 from sqlalchemy import ForeignKey, func, DateTime
+from datetime import datetime, timedelta
 from sqlalchemy.orm import relationship, backref
 
 # create user 
@@ -129,7 +130,7 @@ class Invoice(db.Model):
     userid = db.Column(db.Integer, db.ForeignKey("users.userid"), nullable=False)
     frienduserid = db.Column(db.Integer, db.ForeignKey("users.userid"), nullable=False)
     statusid = db.Column(db.Integer)
-    invoice_date = db.Column(db.Date)
+    invoice_date = db.Column(DateTime(timezone=True), server_default=func.now())
     duedate = db.Column(db.Date)
     message = db.Column(db.String)
     invoice_version = db.Column(db.Integer)
@@ -144,6 +145,7 @@ class Invoice(db.Model):
         self.amount = amount
         self.invoice_version = 1
         self.description = description
+        self.duedate = datetime.now() + timedelta(days=7)
 
     def update(self, description, amount):
         if(amount):
