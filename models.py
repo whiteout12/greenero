@@ -130,8 +130,11 @@ class Invoice(db.Model):
     userid = db.Column(db.Integer, db.ForeignKey("users.userid"), nullable=False)
     frienduserid = db.Column(db.Integer, db.ForeignKey("users.userid"), nullable=False)
     statusid = db.Column(db.Integer)
-    invoice_date = db.Column(DateTime(timezone=True), server_default=func.now())
-    duedate = db.Column(db.Date)
+    #invoice_date = db.Column(DateTime(timezone=True), server_default=func.now())
+    date_created = db.Column(DateTime(timezone=True), server_default=func.now())
+    date_updated = db.Column(DateTime(timezone=True))
+    date_due = db.Column(DateTime(timezone=True))
+    #duedate = db.Column(db.Date)
     message = db.Column(db.String)
     invoice_version = db.Column(db.Integer)
     sender = relationship('User', foreign_keys='Invoice.userid')
@@ -145,7 +148,7 @@ class Invoice(db.Model):
         self.amount = amount
         self.invoice_version = 1
         self.description = description
-        self.duedate = datetime.now() + timedelta(days=7)
+        self.date_due = func.now() + timedelta(days=7)
 
     def update(self, description, amount):
         if(amount):
@@ -155,6 +158,7 @@ class Invoice(db.Model):
         self.invoice_version += 1
         self.statusid = 1
         self.message = None
+        self.date_updated = func.now()
         db.session.commit()
 
     def get_id(self):

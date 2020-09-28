@@ -410,8 +410,8 @@ def getInvoice(invoiceid):
 				'message' : invoice_to_get.message,
 				'senderid' : invoice_to_get.userid,
 				'sender' : invoice_to_get.sender.username,
-				'duedate' : invoice_to_get.duedate,
-				'createddate' : invoice_to_get.invoice_date,
+				'duedate' : invoice_to_get.date_due,
+				'createddate' : invoice_to_get.date_created,
 				'version' : invoice_to_get.invoice_version
 				}
 
