@@ -191,9 +191,9 @@ fetch(url)
         return response.json();
     })
     .then(function (data) {
-      var pending_to_me = "<br><h4>Pending</h4><body><h5>Awaiting your confirmation</h5><table style=\"text-align:left;\" class=\"table-striped\">"
-      var pending_by_me = "<br><body><h5>Sent friend requests</h5><table style=\"text-align:left;\" class=\"table-striped\">"
-      var friends = "<br><h4>Friends</h4><body><h5></h5><table style=\"text-align:left;\" class=\"table-striped\">"
+      var pending_to_me = "<br><h4>Pending</h4><body><h5>Awaiting your confirmation</h5><table style=\"text-align:left;\" class=\"table-responsive table-striped\">"
+      var pending_by_me = "<br><body><h5>Sent friend requests</h5><table style=\"text-align:left;\" class=\"table-responsive table-striped\">"
+      var friends = "<br><h4>Friends</h4><body><h5></h5><table style=\"text-align:left;\" class=\"table-responsive table-striped\">"
       console.log(data)
       console.log(data.request_by_me.length)
       

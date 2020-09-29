@@ -7,11 +7,11 @@ fetch(url)
         return response.json();
     })
     .then(function (data) {
-      var sent = "<br><h4>Claims</h4><h5>Pending</h5><body><table class=\"table-striped\" style=\"white-space:nowrap;\"><tr><th style=\" width:80px\">Invoice<\/th><th style=\" width:120px\">Description<\/th><th>Amount<\/th><th><\/th><\/tr>"
-      var sent_rejected = "<br><h4></h4><h5>Rejected</h5><body><table class=\"table-striped\" style=\"white-space:nowrap;\"><tr><th style=\" width:80px\">Invoice<\/th><th style=\" width:120px\">Description<\/th><th>Amount<\/th><th>Reason<\/th><th><\/th><\/tr>"
-      var sent_history = "<br><h5>History/Claimed</h5><body><table style=\"text-align:left\" class=\"table-striped\" style=\"white-space:nowrap;\"><tr><th style=\" width:120px\">Invoice<\/th><th style=\" width:100px\">Description<\/th><th>Amount<\/th><th><\/th><th><\/th><\/tr>"
-      var received_pend = "<br><h4>Debts</h4><h5>Pending</h5><body><h5></h4><table class=\"table-striped\" style=\"white-space:nowrap;\"><tr><th style=\" width:80px\">Invoice<\/th><th style=\" width:120px\">Description<\/th><th>Amount<\/th><th><\/th><\/tr>"
-      var received_history = "<br><h5>History/Paid</h5><body><h5></h4><table class=\"table-striped\" style=\"white-space:nowrap;\"><tr><th style=\" width:80px\">Invoice<\/th><th style=\" width:120px\">Description<\/th><th>Amount<\/th><th><\/th><th><\/th><\/tr>"
+      var sent = "<br><h4>Claims</h4><h5>Pending</h5><body><table class=\"table-responsive table-striped\" style=\"white-space:nowrap;\"><tr><th style=\" width:80px\">Invoice<\/th><th style=\" width:120px\">Description<\/th><th>Amount<\/th><th><\/th><\/tr>"
+      var sent_rejected = "<br><h4></h4><h5>Rejected</h5><body><table class=\"table-responsive table-striped\" style=\"white-space:nowrap;\"><tr><th style=\" width:80px\">Invoice<\/th><th style=\" width:120px\">Description<\/th><th>Amount<\/th><th>Reason<\/th><th><\/th><\/tr>"
+      var sent_history = "<br><h5>History/Claimed</h5><body><table style=\"text-align:left\"class=\" table-responsive table-striped\" style=\"white-space:nowrap;\"><tr><th style=\" width:120px\">Invoice<\/th><th style=\" width:100px\">Description<\/th><th>Amount<\/th><th><\/th><th><\/th><\/tr>"
+      var received_pend = "<br><h4>Debts</h4><h5>Pending</h5><body><h5></h4><table class=\"table-responsive table-striped\" style=\"white-space:nowrap;\"><tr><th style=\" width:80px\">Invoice<\/th><th style=\" width:120px\">Description<\/th><th>Amount<\/th><th><\/th><\/tr>"
+      var received_history = "<br><h5>History/Paid</h5><body><h5></h4><table class=\"table-responsive table-striped\" style=\"white-space:nowrap;\"><tr><th style=\" width:80px\">Invoice<\/th><th style=\" width:120px\">Description<\/th><th>Amount<\/th><th><\/th><th><\/th><\/tr>"
       console.log(data)
       console.log(data.sent.length)
       console.log(data.received.length)
@@ -208,7 +208,15 @@ fetch(url)
         return response.json();
     })
     .then(function (data) {
-      
+      console.log(data.invoice.createddate);
+      const created_date = new Date(data.invoice.createddate);
+      const due_date = new Date(data.invoice.duedate);
+
+      date_created = new Date(data.invoice.createddate).toLocaleString('en-us', {year: 'numeric', month: '2-digit', day: '2-digit'}).replace(/(\d+)\/(\d+)\/(\d+)/, '$3-$1-$2')+" "+created_date.getHours()+":"+created_date.getMinutes();
+      console.log(date_created)
+      date_due = new Date(data.invoice.duedate).toLocaleString('en-us', {year: 'numeric', month: '2-digit', day: '2-digit'}).replace(/(\d+)\/(\d+)\/(\d+)/, '$3-$1-$2')+" "+due_date.getHours()+":"+due_date.getMinutes();
+      console.log(date_due)
+
   var invoice_modal_header = '<h5>invoice'+invoiceid+'</h5>'
   var invoice_modal_body = [
     '<p>Invoice details</p>',
@@ -217,8 +225,8 @@ fetch(url)
     '<tr><th style="text-align:left">Sender</td><td style="text-align:left">'+data.invoice.sender+'</td></tr>',
     '<tr><th style="text-align:left">Payee</td><td style="text-align:left">'+data.invoice.receiver+'</td></tr>',
     '<tr><th style="text-align:left">Amount</td><td style="text-align:left">'+data.invoice.amount+'</td></tr>',
-    '<tr><th style="text-align:left">Created date</td><td style="text-align:left">'+data.invoice.createddate+'</td></tr>',
-    '<tr><th style="text-align:left">Due date</td><td style="text-align:left">'+data.invoice.duedate+'</td></tr>',
+    '<tr><th style="text-align:left">Created</td><td style="text-align:left">'+date_created+'</td></tr>',
+    '<tr><th style="text-align:left">Due</td><td style="text-align:left">'+date_due+'</td></tr>',
     '<tr><th style="text-align:left">Version</td><td style="text-align:left">'+data.invoice.version+'</td></tr></p>'
   ].join("\n");
 
