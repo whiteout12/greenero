@@ -1,4 +1,4 @@
-from app import db, bcrypt
+from fakk import db, bcrypt
 #from flask_login import UserMixin
 from sqlalchemy import ForeignKey, func, DateTime
 from datetime import datetime, timedelta

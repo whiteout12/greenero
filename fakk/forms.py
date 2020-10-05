@@ -9,19 +9,19 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
 
 def validate_username(self,field):
-    from app import db
+    from fakk import db
     from models import User
     if User.query.filter_by(username=field.data).first():
         raise ValidationError('Username has been taken, please choose another!')
 
 def validate_email(self,field):
-    from app import db
+    from fakk import db
     from models import User
     if User.query.filter_by(email=field.data).first():
         raise ValidationError('The emailadress has been registered already!')
 
 def validate_phone(self,field):
-    from app import db
+    from fakk import db
     from models import User
     if User.query.filter_by(phone=field.data).first():
         raise ValidationError('The phone number has been registered already!')
