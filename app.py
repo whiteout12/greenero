@@ -502,14 +502,19 @@ def changeInvoice(invoice):
 @app.route('/invoices/renderpdf/<inv>')
 @login_required
 def renderpdf(inv):
-	
+	from models import User, Invoice
 	username=current_user.username
 	invoice = getInvoice(inv).get_json()
+	payee = User.query.filter_by(userid=invoice['invoice']['receiverid']).first()
+	sender = User.query.filter_by(userid=invoice['invoice']['senderid']).first()
+	#print('invoice_json: ', invoice)
+	#print('payee: ', payee)
+	#print('sender: ', sender)
 	if(invoice['success']):
 		
 
-		swish_qr_base64=swishQRbase64(current_user.phone, invoice['invoice']['amount'], invoice['invoice']['description'])
-		print_html = render_template('invoice_pdf_template.html', username=username, invoice=invoice['invoice'], qrCode_base64=swish_qr_base64, css1=url_for('static', filename='invoice_pdf/boilerplate.css'), css2=url_for('static', filename='invoice_pdf/main.css'), css3=url_for('static', filename='invoice_pdf/normalize.css'))
+		swish_qr_base64=swishQRbase64(sender.phone, invoice['invoice']['amount'], invoice['invoice']['description'])
+		print_html = render_template('invoice_pdf_template.html', username=sender.username, invoice=invoice['invoice'], qrCode_base64=swish_qr_base64, css1=url_for('static', filename='invoice_pdf/boilerplate.css'), css2=url_for('static', filename='invoice_pdf/main.css'), css3=url_for('static', filename='invoice_pdf/normalize.css'))
 		
 		
 		return render_pdf(HTML(string=print_html), download_filename='invoice'+str(invoice['invoice']['invoiceid'])+'.pdf')
@@ -526,14 +531,15 @@ def email_invoice(inv):
 	if(invoice['success']):
 		from models import User, Invoice
 		payee = User.query.filter_by(userid=invoice['invoice']['receiverid']).first()
+		sender = User.query.filter_by(userid=invoice['invoice']['senderid']).first()
 
 		if payee.email:
 			print('payee email: ', payee.email)
 			if current_user.phone:
 				
 				username=current_user.username
-				swish_qr_base64=swishQRbase64(current_user.phone, invoice['invoice']['amount'], invoice['invoice']['description'])
-				html = HTML(string=render_template('invoice_pdf_template.html', username=username, invoice=invoice['invoice'], qrCode_base64=swish_qr_base64, css1=url_for('static', filename='invoice_pdf/boilerplate.css'), css2=url_for('static', filename='invoice_pdf/main.css'), css3=url_for('static', filename='invoice_pdf/normalize.css')))
+				swish_qr_base64=swishQRbase64(sender.phone, invoice['invoice']['amount'], invoice['invoice']['description'])
+				html = HTML(string=render_template('invoice_pdf_template.html', username=sender.username, invoice=invoice['invoice'], qrCode_base64=swish_qr_base64, css1=url_for('static', filename='invoice_pdf/boilerplate.css'), css2=url_for('static', filename='invoice_pdf/main.css'), css3=url_for('static', filename='invoice_pdf/normalize.css')))
 				pdf = io.BytesIO(html.write_pdf())
 				msg = Message("Du har blivit fakkad :)",
 			                  sender="bjorncarlsson87@gmail.com",
