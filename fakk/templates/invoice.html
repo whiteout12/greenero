@@ -1,5 +1,11 @@
+{% if not embedded %}
+
+{% extends "base.html" %}
+{% endif %}
+
 {% block content %}
 
+{% if embedded %}
 <script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
     <script>
       $("#close").on("click", function(){
@@ -8,7 +14,8 @@
 
     </script>
 
-<h5>{% if change %}Change{% else %}Create{% endif %} invoice <a href="#" id="close" class="btn btn-sm btn-danger"><b>&times</b></a> </h5>
+{% endif %}
+<h5>{% if change %}Change{% else %}Create{% endif %} invoice {% if embedded %}<a href="#" id="close" class="btn btn-sm btn-danger"><b>&times</b></a> {% endif %}</h5>
 <p></p>
 <br>
 <form class="form-signin" role="form" method="post" action="" id="form_inv">

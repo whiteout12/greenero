@@ -2,15 +2,9 @@
 {% block content %}
 
 
-<br>
-<p align="right">
-Logged in as: {{current_user.username}}
-<a href="/changeuser" class="btn btn-sm btn-primary">Account</a>
-<a href="/logout" class="btn btn-sm btn-danger">Logout</a>
-<p/>
-<h1>Greenero - You know you owe me</h1>
-<br>
-<h2>Main menu</h2>
+
+
+
 <p><a href="/">Home</a></p>
 <p><a href="#" id="user">Friends and Foes</a></p>
 <p><a href="#" id="claim">Claims and Debts</a></p>
@@ -23,7 +17,7 @@ Logged in as: {{current_user.username}}
         $("#sub-menu").load("/user");
       });
       $("#claim").on("click", function(){
-        $("#sub-menu").load("/claim");
+        $("#sub-menu").load("{{ url_for('invoices_blueprint.claim') }}");
       });
     </script>
 

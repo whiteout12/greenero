@@ -30,6 +30,7 @@ app.register_blueprint(invoices_blueprint)
 
 # get user by id, used by login_manager
 login_manager.login_view = "main.welcome"
+login_manager.login_message = ""
 
 @login_manager.user_loader
 def load_user(user_id):

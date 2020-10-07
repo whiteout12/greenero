@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, render_template, url_for
+from flask import Blueprint, request, jsonify, render_template, url_for, redirect
 from flask_login import login_required, current_user
 from fakk.forms import CreateInvoice, ChangeInvoice
 from swish_qr_gen import swishQR, swishQRbase64
@@ -10,6 +10,7 @@ from fakk.models import User, Invoice
 
 invoices_blueprint = Blueprint('invoices_blueprint', __name__)
 
+#, url_prefix='/site'
 
 @invoices_blueprint.route('/claim')
 @login_required
@@ -22,8 +23,8 @@ def claim():
 @login_required
 def createInvoice(embedded):
 	print("invoice")
-
-	from fakk import db
+	print(embedded)
+	#from fakk import db
 	form = CreateInvoice()
 	#form.receiver.choices = [(g.frienduserid, User.query.filter_by(userid=g.frienduserid).first().username) for g in Relationship.query.filter_by(userid=current_user.userid, statusid=3).all()]
 	#form.receiver.choices = [(g.frienduserid, g.rel_receiver.username) for g in current_user.get_friends()]
@@ -35,7 +36,7 @@ def createInvoice(embedded):
 	print(choices)
 	form.receiver.choices = choices
 	#form.receiver.choices = ([(g.frienduserid, g.rel_receiver.username) for g in current_user.get_friends()])
-	if embedded=="false":
+	if embedded=="False":
 		emb=False
 	else:
 		emb=True
@@ -53,7 +54,13 @@ def createInvoice(embedded):
 		db.session.commit()
 		print(form.receiver.data, form.description.data, form.amount.data)
 		print({'message' : "Invoice sent"})
-		return {'message' : "Invoice sent"}
+		print(emb)
+		if emb:
+			return {'message' : "Invoice sent"}
+		else:
+			return redirect(url_for('invoices_blueprint.getAll'))
+	
+	print(emb)
 	return render_template('invoice.html', form=form, embedded=emb)
 
 @invoices_blueprint.route('/invoice/getinvoices')
@@ -95,6 +102,23 @@ def getInvoices():
 		'received' : received,
 		'sent' : sent
 		})
+
+@invoices_blueprint.route('/invoice/getall')
+@login_required
+def getAll():
+	print(current_user.invoice_receiver)
+
+	return render_template('invoices.html', title='Fakturor',received=current_user.invoice_receiver, sent=current_user.invoice_sender)
+
+@invoices_blueprint.route('/invoice/<invoice_id>/view')
+@login_required
+def view_invoice_site(invoice_id):
+	
+	invoice = Invoice.query.filter_by(invoiceid=invoice_id).first()
+	swish_qr_base64=swishQRbase64(invoice.sender.phone, invoice.amount, invoice.description)
+	print(swish_qr_base64)
+
+	return render_template('invoice2.html', title='Fakturor',invoice=invoice, qr_code=swish_qr_base64)
 
 @invoices_blueprint.route('/invoice/getinvoice<invoiceid>')
 @login_required

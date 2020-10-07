@@ -1,7 +1,8 @@
 from flask_wtf import FlaskForm
 from wtforms import TextField, PasswordField, SelectField, TextAreaField, IntegerField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, NoneOf, ValidationError, Optional, NumberRange
-#from users_db import listAllUserNames
+#from fakk import db
+from fakk.models import User
 
 
 class LoginForm(FlaskForm):
@@ -9,20 +10,14 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
 
 def validate_username(self,field):
-    from fakk import db
-    from models import User
-    if User.query.filter_by(username=field.data).first():
+     if User.query.filter_by(username=field.data).first():
         raise ValidationError('Username has been taken, please choose another!')
 
 def validate_email(self,field):
-    from fakk import db
-    from models import User
     if User.query.filter_by(email=field.data).first():
         raise ValidationError('The emailadress has been registered already!')
 
 def validate_phone(self,field):
-    from fakk import db
-    from models import User
     if User.query.filter_by(phone=field.data).first():
         raise ValidationError('The phone number has been registered already!')
 

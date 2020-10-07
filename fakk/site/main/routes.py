@@ -5,7 +5,6 @@ from flask_login import login_required
 main = Blueprint('main', __name__)
 
 
-
 # our beloved index page, here is where the magic will happen
 @main.route('/')
 @login_required

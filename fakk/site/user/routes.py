@@ -2,10 +2,10 @@ from flask import render_template, Blueprint, flash, url_for, redirect, request
 from flask_login import login_required, current_user, login_user, logout_user
 from fakk.forms import ChangeUserForm, RegisterForm, LoginForm
 from fakk import bcrypt, db
-from fakk.models import User
+from fakk.models import User, Relationship
 
 
-user = Blueprint('user', __name__)
+user = Blueprint('user', __name__, static_folder='/fakk/static')
 
 
 
@@ -40,6 +40,7 @@ def login():
 			user = User.query.filter_by(username=request.form['username']).first()
 			if user is not None and bcrypt.check_password_hash(user.password, request.form['password']):
 				login_user(user)
+				flash('Inloggad! Välkommen in i värmen', category="success")
 				return redirect(url_for('main.home'))
 			else:
 				error = 'Invalid credentials. Please try again!'
@@ -59,7 +60,7 @@ def changeuser():
 		if(form.username.data == "" and form.email.data =="" and form.phone.data =="" and form.password.data ==""):
 			flash('Nothing to update')
 		else:
-			flash('Your information was updated')
+			flash('Your information was updated', category='success')
 			return redirect(url_for('user.changeuser'))
 	return render_template('register.html', form=form, change=True, username=current_user.username, email=current_user.email, phone=current_user.phone)
 
@@ -69,14 +70,13 @@ def changeuser():
 @login_required
 def deleteaccount():
 	if request.method == 'POST':
-		from models import User, Relationship
 		for i in Relationship.query.filter_by(userid=current_user.userid).all():
 			i.delete()
 		for i in Relationship.query.filter_by(frienduserid=current_user.userid).all():
 			i.delete()
 		current_user.delete()
 		logout_user()
-		flash('You were just logged out and your account was removed')
+		flash('You were just logged out and your account was removed', category='success')
 		return redirect(url_for('main.welcome'))
 	return {"message": "Delete not possible with get method"} 
 
@@ -85,5 +85,5 @@ def deleteaccount():
 @login_required
 def logout():
 	logout_user()
-	flash('You were just logged out')
+	flash('Utloggad, välkommen åter', category='success')
 	return redirect(url_for('main.welcome'))

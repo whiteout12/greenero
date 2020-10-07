@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>{{title}}</h2>
+<br>
+
+        <article class="media content-section">
+        	{% if qr_code %}
+          <img class="rounded article-img" src="data:image/svg+xml;base64,{{qr_code}}"></img>
+          {% else %}
+          <img class="rounded article-img" src="{{ url_for('static', filename='inv_ico.png') }}">
+          {% endif %}
+          <div class="media-body">
+            <div class="article-metadata">
+              <a class="mr-2" href="{{ url_for('main.home')}}">faktura{{ invoice.invoiceid }}</a>
+              <a class="mr-2" href="{{ url_for('relations_blueprint.friend_view_site', friend_id=invoice.sender.userid)}}">{{ invoice.sender.username }}</a>
+              <small class="text-muted">{{ invoice.date_created.strftime('%Y-%m-%d') }}</small>
+              <img width="15" height="15" src="{{ url_for('static', filename='due.png') }}">
+              <small class="text-muted">{{ invoice.date_due.strftime('%Y-%m-%d') }}</small>
+            </div>
+            <h4><a class="article-title" href="{{ url_for('main.home') }}">{{ invoice.description }}</a></h4>
+            <p class="article-content">Belopp: {{ invoice.amount }}kr</p>
+          </div>
+        </article>
+
+    
+{% endblock content %}

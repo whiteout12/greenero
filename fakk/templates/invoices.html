@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>{{title}}</h2>
+<br>
+ <a class="mr-2 btn btn-sm btn-primary" href="{{ url_for('invoices_blueprint.createInvoice', embedded=false)}}">Skapa faktura</a>
+<br></br>
+<h3>Mottagna</h3>
+    {% for invoice1 in received %}
+        <article class="media content-section">
+          <img class="rounded article-img" src="{{ url_for('static', filename='inv_ico.png') }}">
+          <div class="media-body">
+            <div class="article-metadata">
+              <a class="mr-2" href="{{ url_for('invoices_blueprint.view_invoice_site', invoice_id=invoice1.invoiceid)}}">faktura{{ invoice1.invoiceid }}</a>
+              <a class="mr-2" href="{{ url_for('relations_blueprint.friend_view_site', friend_id=invoice1.sender.userid)}}">{{ invoice1.sender.username }}</a>
+              <small class="text-muted">{{ invoice1.date_created.strftime('%Y-%m-%d') }}</small>
+              <img width="15" height="15" src="{{ url_for('static', filename='due.png') }}">
+              <small class="text-muted">{{ invoice1.date_due.strftime('%Y-%m-%d') }}</small>
+            </div>
+            <h4><a class="article-title" href="{{ url_for('main.home') }}">{{ invoice1.description }}</a></h4>
+            <p class="article-content">Belopp: {{ invoice1.amount }}kr</p>
+          </div>
+        </article>
+    {% endfor %}
+<h3>Skickade</h3>
+    {% for invoice in sent %}
+        <article class="media content-section">
+          <img class="rounded article-img" src="{{ url_for('static', filename='inv_ico.png/') }}">
+          <div class="media-body">
+            <div class="article-metadata">
+              <a class="mr-2" href="{{ url_for('invoices_blueprint.view_invoice_site', invoice_id=invoice.invoiceid)}}">faktura{{ invoice.invoiceid }}</a>
+              <a class="mr-2" href="{{ url_for('relations_blueprint.friend_view_site', friend_id=invoice.receiver.userid)}}">{{ invoice.receiver.username }}</a>
+              <small class="text-muted">{{ invoice.date_created.strftime('%Y-%m-%d') }}</small>
+              <small class="text-muted">{{ invoice.date_due.strftime('%Y-%m-%d') }}</small>
+            </div>
+            <h4><a class="article-title" href="{{ url_for('main.home') }}">{{ invoice.description }}</a></h4>
+            <p class="article-content">Belopp: {{ invoice.amount }}kr</p>
+          </div>
+        </article>
+    {% endfor %}
+
+
+    
+{% endblock content %}
