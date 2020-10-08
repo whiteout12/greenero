@@ -44,6 +44,7 @@ def login():
 				return redirect(url_for('main.home'))
 			else:
 				error = 'Invalid credentials. Please try again!'
+				print(error)
 	return render_template("login.html", form=form, error=error)
 
 @user.route('/changeuser', methods=['GET', 'POST'])

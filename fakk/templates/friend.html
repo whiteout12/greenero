@@ -16,7 +16,7 @@
             </div>
             <h4><a class="article-title" href="{{ url_for('main.home') }}">{{ friend.username }}</a></h4>
             <p class="article-content">{{ friend.username }}</p>
-            <a class="mr-2 btn btn-sm btn-primary" href="{{ url_for('relations_blueprint.friendrequest_site', friend_id=friend.userid)}}">Skicka vänförfrågan</a>
+            <a class="mr-2 btn btn-sm btn-primary" href="{{ url_for('contacts.friendrequest_site', friend_id=friend.userid)}}">Skicka vänförfrågan</a>
           </div>
         </article>
 {% endblock content %}

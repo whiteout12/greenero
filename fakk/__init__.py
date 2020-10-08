@@ -20,13 +20,22 @@ mail = Mail(app)
 
 from fakk.site.main.routes import main
 from fakk.site.user.routes import user
-from fakk.site.relations.routes import relations_blueprint
-from fakk.site.invoices.routes import invoices_blueprint
+
+from fakk.site.relations.routes import contacts
+from fakk.site.invoices.routes import invoices
+
+from fakk.api.relations.routes import relations_api
+from fakk.api.invoices.routes import invoices_api
+
 
 app.register_blueprint(main)
 app.register_blueprint(user)
-app.register_blueprint(relations_blueprint)
-app.register_blueprint(invoices_blueprint)
+
+app.register_blueprint(contacts)
+app.register_blueprint(invoices)
+
+app.register_blueprint(relations_api)
+app.register_blueprint(invoices_api)
 
 # get user by id, used by login_manager
 login_manager.login_view = "main.welcome"

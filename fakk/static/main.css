@@ -49,13 +49,6 @@ a.article-title:hover {
   height: 65px;
   width: 65px;
   margin-right: 16px;
-
-}
-
-.article-btn {
-  /*height: 65px;
-  width: 65px;*/
-  margin-left: 16px;
 }
 
 .article-metadata {
@@ -84,31 +77,4 @@ a.article-title:hover {
 
 .account-heading {
   font-size: 2.5rem;
-}
-
-.invoice-section-success {
-  background: #ffffff;
-  padding: 10px 20px;
-  border: 1px solid #dddddd;
-  border-radius: 3px;
-  margin-bottom: 20px;
-  border-color: #8FBC8F;
-}
-.invoice-section-danger {
-  background: #ffffff;
-  padding: 10px 20px;
-  border: 1px solid #dddddd;
-  border-radius: 3px;
-  margin-bottom: 20px;
-}
-
-
-.footer1 {
-  position: fixed;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  background-color: #778899;
-  color: white;
-  text-align: center;
 }

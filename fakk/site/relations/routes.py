@@ -3,17 +3,10 @@ from flask_login import login_required, current_user
 from fakk import db
 from fakk.models import User, Relationship
 
-relations_blueprint = Blueprint('relations_blueprint', __name__)
+contacts = Blueprint('contacts', __name__, url_prefix='/site/contacts')
 
 
-@relations_blueprint.route('/user')
-@login_required
-def user():
-	print('going to user page')
-	#flash('You were just logged out')
-	return render_template("user.html", user=True)
-
-@relations_blueprint.route('/users/<query>')
+@contacts.route('/users/<query>')
 @login_required
 def users(query):
 	print(current_user.userid)
@@ -24,13 +17,13 @@ def users(query):
 	return jsonify([i.serialize() for i in User.query.filter(User.username.ilike(search), current_user.username!=User.username).all()])
 
 
-@relations_blueprint.route('/relations/friends')
+@contacts.route('/friends')
 @login_required
 def friends():
 	friends = current_user.friend_requester
 	return render_template('friends.html', user=current_user, friends=friends, title='Kontakter')
 
-@relations_blueprint.route('/relations/search', methods=['GET', 'POST'])
+@contacts.route('/search', methods=['GET', 'POST'])
 @login_required
 def friend_search():
 	if request.method == 'POST':
@@ -39,7 +32,7 @@ def friend_search():
 		#print(len(request.form['user_search']))
 		#if len(request.form['user_search']) == 0:
 		#	flash('Inget sökord angivet', category="warning")
-		#	return redirect(url_for('relations_blueprint.friends'))
+		#	return redirect(url_for('contacts.friends'))
 
 		result = User.query.filter(User.username.ilike(query), current_user.username!=User.username).all()
 		#print('result: ', result)
@@ -67,7 +60,7 @@ def friend_search():
 		return render_template('friends.html', user=current_user, friends=current_user.friend_requester, title='Kontakter', searchresult=final_list)
 
 #route to send a friend request from current user to selected user i request mestod = POST. If request method= GET then friends status string is returned
-@relations_blueprint.route('/relations/request', methods=['GET', 'POST'])
+@contacts.route('/request', methods=['GET', 'POST'])
 @login_required
 def friendrequest():
 	#from fakk import db
@@ -96,7 +89,7 @@ def friendrequest():
 	return {'message' : "No post in friend request"}
 
 #route to send a friend request from current user to selected user i request mestod = POST. If request method= GET then friends status string is returned
-@relations_blueprint.route('/relations/<friend_id>/request', methods=['GET', 'POST'])
+@contacts.route('/<friend_id>/request', methods=['GET', 'POST'])
 @login_required
 def friendrequest_site(friend_id):
 	#from fakk import db
@@ -104,13 +97,13 @@ def friendrequest_site(friend_id):
 	
 	if Relationship.query.filter_by(userid=friend_id, frienduserid=current_user.userid, statusid=3).first():
 		flash('Redan vänner', category='warning')
-		return redirect(url_for('relations_blueprint.friends'))
+		return redirect(url_for('contacts.friends'))
 	if Relationship.query.filter_by(userid=friend_id, frienduserid=current_user.userid, statusid=2).first():
 		flash('Vänförfrågan redan skickad, invänta svar', category='warning')
-		return redirect(url_for('relations_blueprint.friends'))
+		return redirect(url_for('contacts.friends'))
 	if Relationship.query.filter_by(userid=friend_id, frienduserid=current_user.userid, statusid=1).first():
 		flash('Du har redan en vänförgrågan att svara på.', category='warning')
-		return redirect(url_for('relations_blueprint.friends'))
+		return redirect(url_for('contacts.friends'))
 	else:
 		user_sending_req = Relationship(user=current_user.userid,
 			receiving_user=friend_id,
@@ -123,12 +116,12 @@ def friendrequest_site(friend_id):
 		db.session.add(user_receiving_req)
 		db.session.commit()
 		flash('Vänförfrågan skickad', category='success')
-		return redirect(url_for('relations_blueprint.friends'))
+		return redirect(url_for('contacts.friends'))
 		
 
 	return {'message' : "No post in friend request"}
 
-@relations_blueprint.route('/relations/<friend_id>/accept', methods=['GET', 'POST'])
+@contacts.route('/<friend_id>/accept', methods=['GET', 'POST'])
 @login_required
 def accept_friendrequest_site(friend_id):
 	if(Relationship.query.filter_by(userid=friend_id, frienduserid=current_user.userid, statusid=1).first()):
@@ -136,13 +129,13 @@ def accept_friendrequest_site(friend_id):
 		Relationship.query.filter_by(userid=friend_id, frienduserid=current_user.userid).first().accept_req()
 		Relationship.query.filter_by(userid=current_user.userid, frienduserid=friend_id).first().accept_req()
 		flash('Vänförfrågan godkänd!', category='success')
-		return redirect(url_for('relations_blueprint.friends'))
+		return redirect(url_for('contacts.friends'))
 	else:
 		print('hittade ingen vänförfrågan')
 		flash('Vänförfrågan ej godkänd!', category='warning')
-		return redirect(url_for('relations_blueprint.friends'))
+		return redirect(url_for('contacts.friends'))
 
-@relations_blueprint.route('/relations/<friend_id>/reject', methods=['GET', 'POST'])
+@contacts.route('/<friend_id>/reject', methods=['GET', 'POST'])
 @login_required
 def reject_friendrequest_site(friend_id):
 	if(Relationship.query.filter_by(userid=friend_id, frienduserid=current_user.userid, statusid=1).first()):
@@ -150,13 +143,13 @@ def reject_friendrequest_site(friend_id):
 		Relationship.query.filter_by(userid=friend_id, frienduserid=current_user.userid).first().delete()
 		Relationship.query.filter_by(userid=current_user.userid, frienduserid=friend_id).first().delete()
 		flash('Vänförfrågan avböjd!', category='success')
-		return redirect(url_for('relations_blueprint.friends'))
+		return redirect(url_for('contacts.friends'))
 	else:
 		print('hittade ingen vänförfrågan')
 		flash('Vänförfrågan gick ej att avböja!', category='warning')
-		return redirect(url_for('relations_blueprint.friends'))
+		return redirect(url_for('contacts.friends'))
 
-@relations_blueprint.route('/relations/<friend_id>/withdraw', methods=['GET', 'POST'])
+@contacts.route('/<friend_id>/withdraw', methods=['GET', 'POST'])
 @login_required
 def unfriend_site(friend_id):
 	
@@ -166,27 +159,27 @@ def unfriend_site(friend_id):
 			Relationship.query.filter_by(userid=current_user.userid, frienduserid=friend_id).first().delete()
 			flash('Vänborttagen', category='success')
 			
-			return redirect(url_for('relations_blueprint.friends'))
+			return redirect(url_for('contacts.friends'))
 	
-	return redirect(url_for('relations_blueprint.friends'))
+	return redirect(url_for('contacts.friends'))
 
-@relations_blueprint.route('/relations/<friend_id>/unfriend', methods=['GET', 'POST'])
+@contacts.route('/<friend_id>/unfriend', methods=['GET', 'POST'])
 @login_required
 def withdraw_friendrequest_site(friend_id):
 	if(Relationship.query.filter_by(userid=friend_id, frienduserid=current_user.userid, statusid=3).first()):
 			flash('Vänförfrågan redan accepterad', category='warning')
-			return redirect(url_for('relations_blueprint.friends'))
+			return redirect(url_for('contacts.friends'))
 	if(Relationship.query.filter_by(userid=friend_id, frienduserid=current_user.userid, statusid=2).first()):
 			#print(user.username)
 			Relationship.query.filter_by(userid=friend_id, frienduserid=current_user.userid).first().delete()
 			Relationship.query.filter_by(userid=current_user.userid, frienduserid=friend_id).first().delete()
 			flash('Vänförfrågan tillbakadragen!', category='success')
 			
-			return redirect(url_for('relations_blueprint.friends'))
+			return redirect(url_for('contacts.friends'))
 	
-	return redirect(url_for('relations_blueprint.friends'))
+	return redirect(url_for('contacts.friends'))
 
-@relations_blueprint.route('/relations/<friend_id>/view', methods=['GET', 'POST'])
+@contacts.route('/<friend_id>/view', methods=['GET', 'POST'])
 @login_required
 def friend_view_site(friend_id):
 	friend = User.query.filter_by(userid=friend_id).first()
@@ -198,8 +191,9 @@ def friend_view_site(friend_id):
 	return render_template('friend.html', user=current_user, friend=friend, status=status, title=friend.username)
 
 
+#TO BE MOVED TO API ROUTES
 
-@relations_blueprint.route('/relations/accept', methods=['GET', 'POST'])
+@contacts.route('/accept', methods=['GET', 'POST'])
 @login_required
 def accept_friendrequest():
 	#from models import User, Relationship
@@ -220,7 +214,7 @@ def accept_friendrequest():
 
 
 
-@relations_blueprint.route('/relations/reject', methods=['GET', 'POST'])
+@contacts.route('/reject', methods=['GET', 'POST'])
 @login_required
 def reject_friendrequest():
 	#from models import User, Relationship
@@ -238,7 +232,7 @@ def reject_friendrequest():
 
 	return {'message' : "No post in accept friend request"}
 
-@relations_blueprint.route('/relations/withdraw', methods=['GET', 'POST'])
+@contacts.route('/withdraw', methods=['GET', 'POST'])
 @login_required
 def withdraw_friendrequest():
 	#from models import User, Relationship
@@ -263,7 +257,7 @@ def withdraw_friendrequest():
 
 
 
-@relations_blueprint.route('/relations/unfriend', methods=['GET', 'POST'])
+@contacts.route('/unfriend', methods=['GET', 'POST'])
 @login_required
 def unfriend():
 	#from models import User, Relationship
@@ -284,7 +278,7 @@ def unfriend():
 
 	return {'message' : "No post in accept friend request"}	
 
-@relations_blueprint.route('/relations/getrelations')
+@contacts.route('/getrelations')
 @login_required
 def relations():
 	#from models import User
