@@ -17,6 +17,8 @@ class User(db.Model):
     username = db.Column(db.String)
     email = db.Column(db.String)
     password = db.Column(db.String)
+    confirmed_email = db.Column(db.Boolean, nullable=True)
+    confirmed_email_on = db.Column(db.DateTime, nullable=True)
     #posts = relationship("BlogPost", backref="author")
     friend_requester = db.relationship('Relationship', foreign_keys='Relationship.userid')
     friend_receiver = db.relationship('Relationship', foreign_keys='Relationship.frienduserid')
@@ -29,6 +31,8 @@ class User(db.Model):
         self.username = username
         #self.email = email
         self.password = bcrypt.generate_password_hash(password).decode('utf-8')
+        self.confirmed = False
+        self.confirmed_on = None
         #self.password = password
 
     def is_authenticated(self):

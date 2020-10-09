@@ -1,8 +1,12 @@
 from flask import render_template, Blueprint, flash, url_for, redirect, request
 from flask_login import login_required, current_user, login_user, logout_user
 from fakk.forms import ChangeUserForm, RegisterForm, LoginForm
-from fakk import bcrypt, db
+from fakk import bcrypt, db, mail
 from fakk.models import User, Relationship
+from fakk.utils.token_email import generate_confirmation_token, confirm_token
+from flask_mail import Message
+from datetime import datetime
+
 
 
 user = Blueprint('user', __name__, static_folder='/fakk/static')
@@ -88,3 +92,36 @@ def logout():
 	logout_user()
 	flash('Utloggad, välkommen åter', category='success')
 	return redirect(url_for('main.welcome'))
+
+@user.route('/confirm/<token>')
+#@login_required
+def confirm_email(token):
+	try:
+		email = confirm_token(token)
+	except:
+		flash('The confirmation link is invalid or has expired.', 'danger')
+	user = User.query.filter_by(email=email).first_or_404()
+	if user.confirmed_email:
+		flash('Account already confirmed. Please login.', 'success')
+	else:
+		user.confirmed_email = False
+		user.confirmed_email_on = datetime.now()
+		db.session.add(user)
+		db.session.commit()
+		flash('You have confirmed your account. Thanks!', 'success')
+	return redirect(url_for('main.home'))
+
+@user.route('/send-email-confirmation-link')
+@login_required
+def send_email_confirmation_link():
+	token = generate_confirmation_token(current_user.email)
+	confirm_url = url_for('user.confirm_email', token=token, _external=True)
+	html = render_template('confirm_email.html', confirm_url=confirm_url)
+    #subject = "Please confirm your email"
+    #send_email(current_user.email, subject, html)
+	msg = Message("Du har bekräftelseemail", sender="bjorncarlsson87@gmail.com", recipients=[str(current_user.email)])
+	msg.html = html
+	msg.body = "bekräftelslänk" + str(confirm_url)
+	mail.send(msg)
+	flash('A new confirmation email has been sent.', 'success')
+	return redirect(url_for('main.home'))

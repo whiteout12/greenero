@@ -1,7 +1,8 @@
 from flask import Blueprint, request, jsonify, render_template, url_for, redirect, flash
 from flask_login import login_required, current_user
 from fakk.forms import CreateInvoice, ChangeInvoice
-from swish_qr_gen import swishQR, swishQRbase64
+#from swish_qr_gen import swishQR, swishQRbase64
+from fakk.utils.swish_qr_gen import swishQR, swishQRbase64
 from flask_weasyprint import HTML, render_pdf
 from fakk import mail
 import io

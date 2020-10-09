@@ -12,7 +12,7 @@ def swishQR(payee, amount, message):
 	data = {'format':'svg','size':300,'message':{'value':message,'editable':'false'},'amount':{'value':amount,'editable':'false'}, 'payee':{'value':payee,'editable':'false'}}
 	headers = {'Content-type': 'application/json'}
 	r = requests.post(url, data=json.dumps(data), headers=headers)
-	print(r.content)
+	#print(r.content)
 	#file = open("sample_image.png", "wb")
 	file = open("static/swish_qr.svg", "wb")
 	file.write(r.content)
@@ -28,7 +28,7 @@ def swishQRbase64(payee, amount, message):
 	data = {'format':'svg','size':300,'message':{'value':message,'editable':'false'},'amount':{'value':amount,'editable':'false'}, 'payee':{'value':payee,'editable':'false'}}
 	headers = {'Content-type': 'application/json'}
 	r = requests.post(url, data=json.dumps(data), headers=headers)
-	print(r.status_code)
+	#print(r.status_code)
 	if r.status_code == 200:
 		return base64.b64encode(r.content).decode("utf-8")
 	else:
