@@ -1,15 +1,14 @@
 from flask import render_template, Blueprint, flash, url_for, redirect, request
 from flask_login import login_required, current_user, login_user, logout_user
 from fakk.forms import ChangeUserForm, RegisterForm, LoginForm
-from fakk import bcrypt, db, mail
+from fakk import bcrypt, db
 from fakk.models import User, Relationship
-from fakk.utils.token_email import generate_confirmation_token, confirm_token
-from flask_mail import Message
+from fakk.utils.token_email import generate_confirmation_token, confirm_token, send_confirmation_link_email, send_confirmation_link_email2
 from datetime import datetime
+import random
 
 
-
-user = Blueprint('user', __name__, static_folder='/fakk/static')
+user = Blueprint('user', __name__, url_prefix='/site/contacts')
 
 
 
@@ -51,22 +50,70 @@ def login():
 				print(error)
 	return render_template("login.html", form=form, error=error)
 
+@user.route('/profile', methods=['GET', 'POST'])
+def profile():
+	return render_template("user_profile.html")
+
+
 @user.route('/changeuser', methods=['GET', 'POST'])
 @login_required
 def changeuser():
 	form = ChangeUserForm()
 	if form.validate_on_submit():
-		current_user.update(
-			username=form.username.data,
-			email=form.email.data,
-			phone=form.phone.data,
+		
+		update = False
+		if current_user.username != form.username.data:
+			current_user.username = form.username.data
+			flash('Användarnamnet uppdaterat', category='success')
+			update = True
+		if current_user.email != form.email.data:
+			if len(form.email.data)==0:
+				if current_user.email:
+					current_user.email = None
+					flash('Emailadress borttagen', category='success')
+					update = True
+			else:
+				current_user.email = form.email.data
+				current_user.confirmed_email = None
+				current_user.confirmed_email_on = None				
+				flash('Emailadress uppdaterad', category='success')
+				send_confirmation_link_email(form.email.data)		
+				update = True
+		print('test ', current_user.phone != form.phone.data)
+		if current_user.phone != form.phone.data:
+			if len(form.phone.data)==0:
+				if current_user.phone:
+					current_user.phone = None
+					flash('Telefonnumret borttaget', category='success')
+					update = True
+			else:
+				current_user.phone = form.phone.data
+				n = random.randint(1000,10000)
+				print(n)
+				send_confirmation_link_email2(form.email.data, n)
+				current_user.confirmed_phone_otp = n
+				current_user.confirmed_phone_on = None
+				current_user.confirmed_phone = None
+				flash('Telefonnumret uppdaterat', category='success')
+				update = True
+		
+		if(form.password.data):
+			current_user.updatePassword(
 			password=form.password.data
 			)
-		if(form.username.data == "" and form.email.data =="" and form.phone.data =="" and form.password.data ==""):
-			flash('Nothing to update')
-		else:
-			flash('Your information was updated', category='success')
-			return redirect(url_for('user.changeuser'))
+			flash('Lösenord uppdaterat', category='success')
+			passwordWasUpdated = True
+		if update:
+			db.session.commit()
+		elif update == False or not passwordWasUpdated :
+			flash('Inget att uppdatera', category="warning")
+		#if(form.username.data == "" and form.email.data =="" and form.phone.data =="" and form.password.data ==""):
+		#	flash('Nothing to update')
+		#else:
+		#	flash('Your information was updated', category='success')
+		#	if form.email.data:
+		#		send_confirmation_link_email(form.email.data)
+		return redirect(url_for('user.profile'))
 	return render_template('register.html', form=form, change=True, username=current_user.username, email=current_user.email, phone=current_user.phone)
 
 #change or delete user
@@ -99,29 +146,69 @@ def confirm_email(token):
 	try:
 		email = confirm_token(token)
 	except:
-		flash('The confirmation link is invalid or has expired.', 'danger')
+		flash('Länken har utgått eller är ej gilitg.', category='danger')
 	user = User.query.filter_by(email=email).first_or_404()
 	if user.confirmed_email:
-		flash('Account already confirmed. Please login.', 'success')
+		flash('Emailadressen redan bekräftad.', category='success')
 	else:
-		user.confirmed_email = False
+		user.confirmed_email = True
 		user.confirmed_email_on = datetime.now()
 		db.session.add(user)
 		db.session.commit()
-		flash('You have confirmed your account. Thanks!', 'success')
+		flash('Din emailadress har bekräftats!', category='success')
 	return redirect(url_for('main.home'))
+
+@user.route('/confirm/email', methods=['GET', 'POST'])
+#@login_required
+def confirm_email2():
+	try:
+		email = confirm_token(token)
+	except:
+		flash('Länken har utgått eller är ej gilitg.', category='danger')
+	user = User.query.filter_by(email=email).first_or_404()
+	if user.confirmed_email:
+		flash('Emailadressen redan bekräftad.', category='success')
+	else:
+		user.confirmed_email = True
+		user.confirmed_email_on = datetime.now()
+		db.session.add(user)
+		db.session.commit()
+		flash('Din emailadress har bekräftats!', category='success')
+	return redirect(url_for('user.profile'))
+
+@user.route('/confirm/phone', methods=['GET', 'POST'])
+#@login_required
+def confirm_phone():
+
+	if request.method == 'POST':
+		if int(request.form['sms_code']) == current_user.confirmed_phone_otp:
+
+			current_user.confirmed_phone = True
+			current_user.confirmed_phone_on = datetime.now()
+			current_user.confirmed_phone_otp = None
+			db.session.commit()
+			flash('Telefonummer bekräftat', category='success')
+		else:
+			flash('Kod ej gilitg. Du kan skicka efter en ny', category='warning')
+	
+	return redirect(url_for('user.profile'))
 
 @user.route('/send-email-confirmation-link')
 @login_required
 def send_email_confirmation_link():
-	token = generate_confirmation_token(current_user.email)
-	confirm_url = url_for('user.confirm_email', token=token, _external=True)
-	html = render_template('confirm_email.html', confirm_url=confirm_url)
-    #subject = "Please confirm your email"
-    #send_email(current_user.email, subject, html)
-	msg = Message("Du har bekräftelseemail", sender="bjorncarlsson87@gmail.com", recipients=[str(current_user.email)])
-	msg.html = html
-	msg.body = "bekräftelslänk" + str(confirm_url)
-	mail.send(msg)
-	flash('A new confirmation email has been sent.', 'success')
-	return redirect(url_for('main.home'))
+	send_confirmation_link_email(current_user.email)
+
+	return redirect(url_for('user.profile'))
+
+@user.route('/send-sms-confirmation-code')
+@login_required
+def send_sms_confirmation_code():
+
+	n = random.randint(1000,10000)
+	current_user.confirmed_phone_otp = n
+	current_user.confirmed_phone_on = None
+	current_user.confirmed_phone = None
+	db.session.commit()
+	send_confirmation_link_email2(current_user.email, n)
+
+	return redirect(url_for('user.profile'))

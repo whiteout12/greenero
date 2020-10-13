@@ -3,27 +3,37 @@ from wtforms import TextField, PasswordField, SelectField, TextAreaField, Intege
 from wtforms.validators import DataRequired, Length, Email, EqualTo, NoneOf, ValidationError, Optional, NumberRange
 #from fakk import db
 from fakk.models import User
+from flask_login import current_user
 
 
 class LoginForm(FlaskForm):
     username = TextField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
 
+def validate_username_reg(self,field):
+    if User.query.filter_by(username=field.data).first():
+        raise ValidationError('Användarnament är upptaget, väj ett annat!')
 def validate_username(self,field):
-     if User.query.filter_by(username=field.data).first():
-        raise ValidationError('Username has been taken, please choose another!')
+    if User.query.filter(User.username==field.data, User.username!=current_user.username).first():
+        raise ValidationError('Emailadressen är upptagen, väj ett annat!')
 
 def validate_email(self,field):
-    if User.query.filter_by(email=field.data).first():
-        raise ValidationError('The emailadress has been registered already!')
+    #if User.query.filter(User.email==field.data, User.confirmed_email, User.email!=current_user.email).first():
+    if User.query.filter(User.email==field.data, User.email!=current_user.email).first():
+        raise ValidationError('Emailadressen är upptagen, väj ett annat!')
 
 def validate_phone(self,field):
-    if User.query.filter_by(phone=field.data).first():
-        raise ValidationError('The phone number has been registered already!')
+    #if User.query.filter_by(phone=field.data, id=).first():
+    if User.query.filter(User.phone==field.data, User.phone!=current_user.phone).first():
+        raise ValidationError('Telefonnumret är upptaget, väj ett annat!')
+
+def val_phone_format(self, field):
+    if not field.data.startswith('07'):
+        raise ValidationError('Fel format! Ska vara 07XXXXXXXX :)')
 
 def validate_receiver(self,field):
     if field.data==-1:
-        raise ValidationError('choose a receiver!')
+        raise ValidationError('Välj en mottagare!')
         
 
 def is_password_inserted(self,field):
@@ -37,7 +47,7 @@ class RegisterForm(FlaskForm):
     
     username = TextField(
         'username',
-        validators=[DataRequired(), validate_username, Length(min=3, max=25)]
+        validators=[DataRequired(), validate_username_reg, Length(min=3, max=25)]
     )
     #email = TextField(
     #    'email',
@@ -57,7 +67,7 @@ class ChangeUserForm(FlaskForm):
 
     username = TextField(
         'username',
-        validators=[Optional(), validate_username, Length(min=3, max=25)]
+        validators=[DataRequired(), validate_username, Length(min=3, max=25)]
     )
     email = TextField(
         'email',
@@ -65,7 +75,7 @@ class ChangeUserForm(FlaskForm):
     )
     phone = TextField(
         'phone',
-        validators=[Optional(), validate_phone, Length(min=10, max=10)]
+        validators=[Optional(), validate_phone, val_phone_format,  Length(min=10, max=10)]
     )
     password = PasswordField(
         'password',

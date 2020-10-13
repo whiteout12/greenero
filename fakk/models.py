@@ -19,6 +19,10 @@ class User(db.Model):
     password = db.Column(db.String)
     confirmed_email = db.Column(db.Boolean, nullable=True)
     confirmed_email_on = db.Column(db.DateTime, nullable=True)
+    confirmed_email_otp = db.Column(db.Integer, nullable=True)
+    confirmed_phone = db.Column(db.Boolean, nullable=True)
+    confirmed_phone_on = db.Column(db.DateTime, nullable=True)
+    confirmed_phone_otp =db.Column(db.Integer, nullable=True)
     #posts = relationship("BlogPost", backref="author")
     friend_requester = db.relationship('Relationship', foreign_keys='Relationship.userid')
     friend_receiver = db.relationship('Relationship', foreign_keys='Relationship.frienduserid')
@@ -72,8 +76,19 @@ class User(db.Model):
             self.username = username
         if(email):
             self.email = email
+        else:
+            self.email = None
+            self.confirmed_email = None
+            self.confirmed_email_on = None
         if(phone):
             self.phone = phone
+        else:
+            self.phone =  None
+        if(password):
+            self.password = bcrypt.generate_password_hash(password).decode('utf-8')
+        db.session.commit()
+    def updatePassword(self, password):
+        
         if(password):
             self.password = bcrypt.generate_password_hash(password).decode('utf-8')
         db.session.commit()

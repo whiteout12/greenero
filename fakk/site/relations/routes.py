@@ -4,6 +4,7 @@ from fakk import db
 from fakk.models import User, Relationship
 
 
+
 contacts = Blueprint('contacts', __name__, url_prefix='/site/contacts')
 
 
