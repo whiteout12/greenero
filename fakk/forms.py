@@ -18,13 +18,13 @@ def validate_username(self,field):
         raise ValidationError('Emailadressen är upptagen, väj ett annat!')
 
 def validate_email(self,field):
-    #if User.query.filter(User.email==field.data, User.confirmed_email, User.email!=current_user.email).first():
-    if User.query.filter(User.email==field.data, User.email!=current_user.email).first():
+    if User.query.filter(User.email==field.data, User.confirmed_email, User.email!=current_user.email).first():
+    #if User.query.filter(User.email==field.data, User.email!=current_user.email).first():
         raise ValidationError('Emailadressen är upptagen, väj ett annat!')
 
 def validate_phone(self,field):
     #if User.query.filter_by(phone=field.data, id=).first():
-    if User.query.filter(User.phone==field.data, User.phone!=current_user.phone).first():
+    if User.query.filter(User.phone==field.data, User.confirmed_phone, User.phone!=current_user.phone).first():
         raise ValidationError('Telefonnumret är upptaget, väj ett annat!')
 
 def val_phone_format(self, field):
@@ -60,9 +60,24 @@ class RegisterForm(FlaskForm):
     confirm = PasswordField(
         'Repeat password',
         validators=[
+            DataRequired(), EqualTo('password', message='Lösenorden överensstämmer inte')
+        ]
+    )
+
+class ResetPasswordForm(FlaskForm):
+
+
+    password = PasswordField(
+        'password',
+        validators=[DataRequired(), Length(min=6, max=25)]
+    )
+    confirm = PasswordField(
+        'Repeat password',
+        validators=[
             DataRequired(), EqualTo('password', message='Passwords must match.')
         ]
     )
+
 class ChangeUserForm(FlaskForm):
 
     username = TextField(

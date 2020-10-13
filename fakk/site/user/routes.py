@@ -1,14 +1,14 @@
 from flask import render_template, Blueprint, flash, url_for, redirect, request
 from flask_login import login_required, current_user, login_user, logout_user
-from fakk.forms import ChangeUserForm, RegisterForm, LoginForm
+from fakk.forms import ChangeUserForm, RegisterForm, LoginForm, ResetPasswordForm
 from fakk import bcrypt, db
 from fakk.models import User, Relationship
-from fakk.utils.token_email import generate_confirmation_token, confirm_token, send_confirmation_link_email, send_confirmation_link_email2
+from fakk.utils.token_email import generate_confirmation_token, confirm_token, send_confirmation_link_email, send_confirmation_link_email2, send_password_link_email
 from datetime import datetime
 import random
 
 
-user = Blueprint('user', __name__, url_prefix='/site/contacts')
+user = Blueprint('user', __name__, url_prefix='/site/user')
 
 
 
@@ -31,6 +31,7 @@ def register():
 		login_user(user)
 		return redirect(url_for('main.home'))
 	return render_template('register.html', form=form)
+
 
 #login user
 @user.route('/login', methods=['GET', 'POST'])
@@ -90,7 +91,8 @@ def changeuser():
 				current_user.phone = form.phone.data
 				n = random.randint(1000,10000)
 				print(n)
-				send_confirmation_link_email2(form.email.data, n)
+				if(current_user.confirmed_email):
+					send_confirmation_link_email2(form.email.data, n)
 				current_user.confirmed_phone_otp = n
 				current_user.confirmed_phone_on = None
 				current_user.confirmed_phone = None
@@ -156,8 +158,29 @@ def confirm_email(token):
 		db.session.add(user)
 		db.session.commit()
 		flash('Din emailadress har bekräftats!', category='success')
-	return redirect(url_for('main.home'))
+	return redirect(url_for('user.profile'))
 
+@user.route('/reset/<token>', methods=['GET', 'POST'])
+#@login_required
+def reset_password_token(token):
+	try:
+		email = confirm_token(token)
+	except:
+		flash('Länken har utgått eller är ej gilitg.', category='danger')
+		return redirect(url_for('send-password-reset-link'))
+	
+	else:
+		user = User.query.filter_by(email=email, confirmed_email=True).first_or_404()
+		form=ResetPasswordForm()
+		if form.validate_on_submit():
+			user.updatePassword(form.password.data)
+			flash('Lösenordet uppdaterat.', category="success")
+			return (redirect(url_for('user.login')))
+
+		return render_template('resetpassword.html', form=form, user=user)	
+	#return redirect(url_for('reset/', token=token))
+
+#NOT USED YET
 @user.route('/confirm/email', methods=['GET', 'POST'])
 #@login_required
 def confirm_email2():
@@ -177,7 +200,7 @@ def confirm_email2():
 	return redirect(url_for('user.profile'))
 
 @user.route('/confirm/phone', methods=['GET', 'POST'])
-#@login_required
+@login_required
 def confirm_phone():
 
 	if request.method == 'POST':
@@ -187,6 +210,12 @@ def confirm_phone():
 			current_user.confirmed_phone_on = datetime.now()
 			current_user.confirmed_phone_otp = None
 			db.session.commit()
+			users = User.query.filter(User.phone==current_user.phone, User.confirmed_phone==None).all()
+			print(users)
+			if users:
+				for user in users:
+					user.phone = None
+				db.session.commit()
 			flash('Telefonummer bekräftat', category='success')
 		else:
 			flash('Kod ej gilitg. Du kan skicka efter en ny', category='warning')
@@ -209,6 +238,18 @@ def send_sms_confirmation_code():
 	current_user.confirmed_phone_on = None
 	current_user.confirmed_phone = None
 	db.session.commit()
-	send_confirmation_link_email2(current_user.email, n)
-
+	if(current_user.email and current_user.confirmed_email):
+		send_confirmation_link_email2(current_user.email, n)
+	else:
+		flash('you need a confirmed email address to verify phone', category='danger')
 	return redirect(url_for('user.profile'))
+
+@user.route('/send-password-reset-link', methods=['GET', 'POST'])
+def send_password_reset_link():
+
+	if request.method == 'POST':
+		#request.form['sms_code']
+		if User.query.filter_by(email=request.form['email'], confirmed_email=True).first():
+			send_password_link_email(request.form['email'])
+		flash('Om emailadressen du angav finns bekräftad så har ett email skickats med en länk för återställning av lösenord', category='success')
+	return render_template('forgotpassword.html')
