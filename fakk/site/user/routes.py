@@ -204,7 +204,10 @@ def confirm_email2():
 def confirm_phone():
 
 	if request.method == 'POST':
-		if isinstance(request.form['sms_code'], int):
+		
+		#print(isinstance(int(request.form['sms_code']), int))
+		try:
+			int(request.form['sms_code'])
 			if int(request.form['sms_code']) == current_user.confirmed_phone_otp:
 
 				current_user.confirmed_phone = True
@@ -220,7 +223,7 @@ def confirm_phone():
 				flash('Telefonummer bekräftat', category='success')
 			else:
 				flash('Kod ej gilitg. Du kan skicka efter en ny', category='warning')
-		else:
+		except ValueError:
 			flash('Kod har fel format.', category='danger')
 	return redirect(url_for('user.profile'))
 
