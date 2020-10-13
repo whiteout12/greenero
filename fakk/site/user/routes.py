@@ -204,22 +204,24 @@ def confirm_email2():
 def confirm_phone():
 
 	if request.method == 'POST':
-		if int(request.form['sms_code']) == current_user.confirmed_phone_otp:
+		if isinstance(request.form['sms_code'], int):
+			if int(request.form['sms_code']) == current_user.confirmed_phone_otp:
 
-			current_user.confirmed_phone = True
-			current_user.confirmed_phone_on = datetime.now()
-			current_user.confirmed_phone_otp = None
-			db.session.commit()
-			users = User.query.filter(User.phone==current_user.phone, User.confirmed_phone==None).all()
-			print(users)
-			if users:
-				for user in users:
-					user.phone = None
+				current_user.confirmed_phone = True
+				current_user.confirmed_phone_on = datetime.now()
+				current_user.confirmed_phone_otp = None
 				db.session.commit()
-			flash('Telefonummer bekräftat', category='success')
+				users = User.query.filter(User.phone==current_user.phone, User.confirmed_phone==None).all()
+				print(users)
+				if users:
+					for user in users:
+						user.phone = None
+					db.session.commit()
+				flash('Telefonummer bekräftat', category='success')
+			else:
+				flash('Kod ej gilitg. Du kan skicka efter en ny', category='warning')
 		else:
-			flash('Kod ej gilitg. Du kan skicka efter en ny', category='warning')
-	
+			flash('Kod har fel format.', category='danger')
 	return redirect(url_for('user.profile'))
 
 @user.route('/send-email-confirmation-link')
