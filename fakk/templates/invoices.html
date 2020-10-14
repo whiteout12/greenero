@@ -200,7 +200,7 @@
     {% endfor %}
 {%endif%}
 
-{% if received.inv_closed|length > 0 or received.inv_closed|length > 0 %}
+{% if received.inv_closed|length > 0 or sent.inv_closed|length > 0 %}
 <button onclick="toggleHistory()" class="btn btn-sm btn-primary">Visa/Dölj historik</button>
 <p></p>
 
