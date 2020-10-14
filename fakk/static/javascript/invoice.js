@@ -242,3 +242,25 @@ fetch(url)
 
 }
 
+function swish(payee,amount,message){
+  console.log(payee)
+  console.log(amount)
+  console.log(message)
+  var json = JSON.stringify({
+        
+        "payee":{
+        "value": payee
+        },
+        "amount":{
+        "value":amount
+        },
+        "message":{
+        "value":message,
+        "editable":true
+        } })
+  console.log(json)
+  var url = "swish://payment?data="+json
+  var urlshort = "swish://payment?data=<URL_encoded_JSON_payload>"
+  open(url);
+  }
+

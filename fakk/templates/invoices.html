@@ -37,6 +37,8 @@
             <div class="article-metadata">
              <a href="{{ url_for('contacts.friend_view_site', friend_id=invoice.sender.userid)}}">{{ invoice.sender.username }}</a>&#8594<a class="mr-2" href="{{ url_for('contacts.friend_view_site', friend_id=invoice.receiver.userid)}}">{{ invoice.receiver.username }}</a>
               <a class="btn btn-sm btn-success article-btn" href="{{ url_for('invoices.payInvoice_site', invoice_id=invoice.invoiceid) }}">Betala</a>
+              <a class="btn btn-sm btn-success" href="swish://payment?data=%7B%22version%22%3A%201%2C%20%22payee%22%3A%20%7B%22value%22%3A%20%220730514018%22%7D%2C%20%22message%22%3A%20%7B%22value%22%3A%20%22faktura{{invoice.invoiceid}}%2C%20{{invoice.description}}%22%2C%20%22editable%22%3A%20false%7D%2C%20%22amount%22%3A%20%7B%22value%22%3A%20{{invoice.amount}}%2C%20%22editable%22%3A%20false%7D%7D">Swish</a>
+              
               <button type="button" class="btn btn-warning btn-sm m-1" data-toggle="modal" data-target="#rejectModal{{invoice.invoiceid}}">Bestrid</button>
             </div>
             <h4><a class="article-title" href="{{ url_for('main.home') }}">{{ invoice.description }}</a></h4>

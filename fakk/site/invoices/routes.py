@@ -102,10 +102,43 @@ def getAll():
 		'inv_rejected' : inv_rejected
 		}
 	print(received2)
-	print(sent2)	
+	print(sent2)
+
+	swishjson = {
+ 		'version':1,
+		'payee':{
+  			'value':'0730514019'
+			},
+		'amount':{
+			'value':200,
+			'editable': False
+			},
+		'message':{
+			'value':'Hälsningar the King',
+			'editable' : False
+			}
+		}
+
+	tesjson = {"version":1,"payee":{"value":"0730514018"},"message":{"value":"fakturaID, Description", 'editable' : False}, "amount":{"value":200, 'editable' : False}}
+
+	import json
+	params_json = json.dumps(swishjson, indent=None)
+	params_json2 = json.dumps(tesjson, indent=None)
+	print('nonjson', swishjson)
+	print('json', jsonify(swishjson))
+	import urllib.parse
+	params = urllib.parse.urlencode(swishjson)
+	url = "swish://payment?data=%s" % params
+	result = urllib.parse.urlencode(swishjson)
+	result2 = urllib.parse.quote(params_json, encoding='utf-8')
+	result3 = urllib.parse.quote(params_json2, encoding='utf-8')
+	print(params_json)
+	print('result', result)
+	print('result2', result2)
+	print('url', result3)
 
 	#return render_template('invoices.html', title='Fakturor',received=current_user.invoice_receiver, sent=current_user.invoice_sender)
-	return render_template('invoices.html', title='Fakturor',received=received2, sent=sent2)
+	return render_template('invoices.html', title='Fakturor',received=received2, sent=sent2, swish=result3, url=url)
 
 @invoices.route('/<invoice_id>/view')
 @login_required
@@ -175,7 +208,7 @@ def changeInvoice_site(invoice_id):
 	return render_template('invoice.html', form=form, embedded=emb, change=True, invoice=invoice_to_change)
 
 
-@invoices.route('s/renderpdf/<inv>')
+@invoices.route('/renderpdf/<inv>')
 @login_required
 def renderpdf(inv):
 	username=current_user.username
@@ -197,7 +230,7 @@ def renderpdf(inv):
 
 		return {'message' : invoice['message']}
 	
-@invoices.route('s/email/<inv>')
+@invoices.route('/email/<inv>')
 @login_required
 def email_invoice(inv):
 	print(current_user.userid)
