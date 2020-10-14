@@ -244,7 +244,7 @@
           </article>
     {% endfor %}
 {% endif %}
-{% if received.inv_closed|length > 0 %}
+{% if sent.inv_closed|length > 0 %}
 <h4>Skickade ({{sent.inv_closed|length}})</h4>
     {% for invoice in sent.inv_closed %}
         <article class="media content-section">
