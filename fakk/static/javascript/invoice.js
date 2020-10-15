@@ -247,7 +247,7 @@ function swish(payee,amount,message){
   console.log(amount)
   console.log(message)
   var json = JSON.stringify({
-        
+        "version":1,
         "payee":{
         "value": payee
         },

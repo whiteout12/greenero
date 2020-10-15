@@ -11,6 +11,13 @@
     <link href="{{url_for('static', filename='css/bootstrap.min.css')}}" rel="stylesheet">
     <link rel='icon' href='static/favicon.ico' type='image/x-icon'/ >
     <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/main.css') }}">
+        <!-- Optional JavaScript -->
+     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     
     <script src="{{url_for('static', filename='javascript/friends.js')}}"></script>
     <script src="{{url_for('static', filename='javascript/invoice.js')}}"></script>
@@ -24,15 +31,27 @@
     <header class="site-header">
       <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
         <div class="container">
-          <a class="navbar-brand mr-4" href="{{url_for('main.home')}}">fakk.</a>
+          <a class="navbar-brand mr-2" href="{{url_for('main.home')}}">fakk.</a>
+          <div class="navbar-nav" style="margin-left: 10px; margin-right: 10px;">
+              {% if current_user.is_authenticated %}
+              <a class="nav-item nav-link" href="{{ url_for('contacts.friends') }}">Kontakter</a>
+              
+              {% endif %}
+            </div>
+            <div class="navbar-nav mr-auto">
+              {% if current_user.is_authenticated %}
+              <a class="nav-item nav-link" href="{{ url_for('invoices.getAll') }}">Fakturor</a>
+              
+              {% endif %}
+            </div>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
           <div class="collapse navbar-collapse" id="navbarToggle">
             <div class="navbar-nav mr-auto">
               {% if current_user.is_authenticated %}
-              <a class="nav-item nav-link" href="{{ url_for('contacts.friends') }}">Kontakter</a>
-              <a class="nav-item nav-link" href="{{ url_for('invoices.getAll') }}">Fakturor</a>
+              <!---<a class="nav-item nav-link" href="{{ url_for('contacts.friends') }}">Kontakter</a>
+              <a class="nav-item nav-link" href="{{ url_for('invoices.getAll') }}">Fakturor</a>--->
               {% endif %}
             </div>
             <!-- Navbar Right Side -->
@@ -84,12 +103,7 @@
     </main>
 
 
-    <!-- Optional JavaScript -->
-     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-    <script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
+
 <br>
 <footer class="footer-fakk bg-steel">
 <small>Powered by Kerbus Finans</small>

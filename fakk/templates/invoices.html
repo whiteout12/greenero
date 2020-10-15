@@ -1,14 +1,17 @@
 {% extends "base.html" %}
 {% block content %}
+
 <h2>{{title}}</h2>
 <br>
  <a class="mr-2 btn btn-sm btn-primary" href="{{ url_for('invoices.createInvoice', embedded=false)}}">Skapa faktura</a>
 <br></br>
+
 {% if received.inv_open|length > 0 or sent.inv_open|length > 0 or sent.inv_rejected|length > 0%}
 <h3>Öppna ({{received.inv_open|length + sent.inv_open|length + sent.inv_rejected|length}})</h3>
 {%endif%}
 {% if received.inv_open|length > 0 %}
 <h4>Mottagna ({{received.inv_open|length}})</h4>
+
     {% for invoice in received.inv_open %}
         <article class="media content-section">
           <table>
@@ -36,10 +39,10 @@
             <div class="media-body">
             <div class="article-metadata">
              <a href="{{ url_for('contacts.friend_view_site', friend_id=invoice.sender.userid)}}">{{ invoice.sender.username }}</a>&#8594<a class="mr-2" href="{{ url_for('contacts.friend_view_site', friend_id=invoice.receiver.userid)}}">{{ invoice.receiver.username }}</a>
-              <a class="btn btn-sm btn-success article-btn" href="{{ url_for('invoices.payInvoice_site', invoice_id=invoice.invoiceid) }}">Betala</a>
+              <a class="btn btn-sm btn-primary article-btn m-1" href="{{ url_for('invoices.payInvoice_site', invoice_id=invoice.invoiceid) }}">Betala (manuellt)</a>
               {%if invoice.sender.confirmed_phone %}
-              <a class="btn btn-sm btn-success" href="swish://payment?data=%7B%22version%22%3A%201%2C%20%22payee%22%3A%20%7B%22value%22%3A%20%22{{invoice.sender.phone}}%22%7D%2C%20%22message%22%3A%20%7B%22value%22%3A%20%22faktura{{invoice.invoiceid}}%2C%20{{invoice.description}}%22%2C%20%22editable%22%3A%20false%7D%2C%20%22amount%22%3A%20%7B%22value%22%3A%20{{invoice.amount}}%2C%20%22editable%22%3A%20false%7D%7D">Swish</a>{%endif%}
-              
+              <button type="button" class="btn btn-success btn-sm m-1" data-toggle="modal" data-target="#swishModal{{invoice.invoiceid}}">Betala (Swish)</button>
+              {%endif%}
               <button type="button" class="btn btn-warning btn-sm m-1" data-toggle="modal" data-target="#rejectModal{{invoice.invoiceid}}">Bestrid</button>
             </div>
             <h4><a class="article-title" href="{{ url_for('main.home') }}">{{ invoice.description }}</a></h4>
@@ -77,6 +80,42 @@
       </div>
     </div>
   </div>
+
+      <div class="modal fade" id="swishModal{{invoice.invoiceid}}" tabindex="-1" role="dialog" aria-labelledby="swishModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="swishModalLabel">Betala faktura{{invoice.invoiceid}} med Swish?</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+         <a class="btn btn-primary" href="swish://payment?data=%7B%22version%22%3A%201%2C%20%22payee%22%3A%20%7B%22value%22%3A%20%22{{invoice.sender.phone}}%22%7D%2C%20%22message%22%3A%20%7B%22value%22%3A%20%22faktura{{invoice.invoiceid}}%2C%20{{invoice.description}}%22%2C%20%22editable%22%3A%20false%7D%2C%20%22amount%22%3A%20%7B%22value%22%3A%20{{invoice.amount}}%2C%20%22editable%22%3A%20false%7D%7D&callbackurl={{url_for('invoices.test_callback', invoice_token=invoice.invoiceid, callback=rest, _external=True)}}&callbackresultparameter=res">Till Swish</a>  
+        </div>
+        <div class="modal-footer">
+           <button type="button" onclick="javascript:window.location.reload()" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Stäng</button>
+          
+            
+            
+            
+          
+        </div>
+      </div>
+    </div>
+  </div>
+<script>
+ $(document).ready(function(){
+ 
+  $("#swishModal{{invoice.invoiceid}}").on('hidden.bs.modal', function(){
+    /*alert('The modal is now hidden.');*/
+    console.log("reload")
+    location.reload();
+  });
+});
+</script>
+
     {% endfor %}
 {%endif%}
 {% if sent.inv_open|length > 0 or sent.inv_rejected|length > 0 %}
@@ -301,5 +340,7 @@ function toggleHistory() {
 }
 
 </script>
+<!-- Button trigger modal -->
+
 
 {% endblock content %}

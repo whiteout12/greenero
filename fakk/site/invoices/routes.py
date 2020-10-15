@@ -8,6 +8,8 @@ from fakk import mail
 import io
 from fakk import db
 from fakk.models import User, Invoice
+import urllib.parse
+import json
 
 invoices = Blueprint('invoices', __name__, url_prefix='/site/invoice')
 
@@ -101,8 +103,8 @@ def getAll():
 		'inv_closed' : inv_closed,
 		'inv_rejected' : inv_rejected
 		}
-	print(received2)
-	print(sent2)
+	#print(received2)
+	#print(sent2)
 
 	swishjson = {
  		'version':1,
@@ -119,26 +121,15 @@ def getAll():
 			}
 		}
 
-	tesjson = {"version":1,"payee":{"value":"0730514018"},"message":{"value":"fakturaID, Description", 'editable' : False}, "amount":{"value":200, 'editable' : False}}
-
-	import json
-	params_json = json.dumps(swishjson, indent=None)
-	params_json2 = json.dumps(tesjson, indent=None)
-	print('nonjson', swishjson)
-	print('json', jsonify(swishjson))
-	import urllib.parse
-	params = urllib.parse.urlencode(swishjson)
-	url = "swish://payment?data=%s" % params
-	result = urllib.parse.urlencode(swishjson)
-	result2 = urllib.parse.quote(params_json, encoding='utf-8')
-	result3 = urllib.parse.quote(params_json2, encoding='utf-8')
-	print(params_json)
-	print('result', result)
-	print('result2', result2)
-	print('url', result3)
+	#tesjson = {"version":1,"payee":{"value":"0730514018"},"message":{"value":"fakturaID, Description", 'editable' : False}, "amount":{"value":200, 'editable' : False}}
+	#import json
+	#params_json2 = json.dumps(tesjson, indent=None)
+	#import urllib.parse
+	#result3 = urllib.parse.quote(params_json2, encoding='utf-8')
+	#print('url', result3)
 
 	#return render_template('invoices.html', title='Fakturor',received=current_user.invoice_receiver, sent=current_user.invoice_sender)
-	return render_template('invoices.html', title='Fakturor',received=received2, sent=sent2, swish=result3, url=url)
+	return render_template('invoices.html', title='Fakturor',received=received2, sent=sent2)
 
 @invoices.route('/<invoice_id>/view')
 @login_required
@@ -263,4 +254,26 @@ def email_invoice(inv):
 
 		return {'message' : invoice['message']}	
 
+@invoices.route('/swish/<invoice_token>/res')
+def test_callback(invoice_token):
+	print(invoice_token)
+	result_raw = request.args.get('res', None)
+	
+	result = json.loads(result_raw)
+	print('invoice_token', invoice_token)
+	print(result['result'])
+	if result['result']=='paid':
+		print('will be paid')
+		invoice_to_pay = Invoice.query.filter_by(invoiceid=invoice_token).first()
+		print(invoice_to_pay)
+		invoice_to_pay.change_status(2)
+		flash('Fakturan är markerad som betald', category='success')
+
+	#return render_template('swishcallback.html', token=invoice_token, callback=result['result'])
+	return redirect(url_for('invoices.result_payment'))
+
+@invoices.route('/swish/callback/')
+def result_payment():
+
+	return render_template('swishcallback.html')
 
