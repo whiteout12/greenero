@@ -49,9 +49,9 @@
 
  {% if change %} 
     {% if phone %} 
-     {{ form.phone(value=phone) }}
+     {{ form.phone(value=phone, pattern="[0-9]*") }}
      {% else %}
-    {{ form.phone(placeholder="Telefonnummer") }}
+    {{ form.phone(placeholder="Telefonnummer", pattern="[0-9]*") }}
     {% endif %}
     <span class="error">
       {% if form.phone.errors %}

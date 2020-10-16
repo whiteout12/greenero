@@ -27,7 +27,7 @@ def send_confirmation_link_email(user_email):
     token = generate_confirmation_token(user_email)
     confirm_url = url_for('user.confirm_email', token=token, _external=True)
     html = render_template('confirm_email.html', confirm_url=confirm_url)
-    msg = Message("fakk. - Bekräfta lösenord - länk", sender="fakk.", recipients=[str(user_email)])
+    msg = Message("fakk. - Bekräfta emailadress - länk", sender="fakk.", recipients=[str(user_email)])
     msg.html = html
     msg.body = "Följ länken nedan för att bekräfta din emailadress på fakk. " + str(confirm_url)
     mail.send(msg)

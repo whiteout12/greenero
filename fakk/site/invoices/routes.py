@@ -10,6 +10,7 @@ from fakk import db
 from fakk.models import User, Invoice
 import urllib.parse
 import json
+from fakk.utils.send_sms import sendSMS
 
 invoices = Blueprint('invoices', __name__, url_prefix='/site/invoice')
 
@@ -66,6 +67,7 @@ def createInvoice(embedded):
 @login_required
 def getAll():
 	#print(current_user.invoice_receiver)
+	
 	final_list = []
 
 	received=current_user.invoice_receiver
@@ -75,7 +77,7 @@ def getAll():
 	inv_rejected = []
 	for i in received:
 		
-		print('received',i.statusid)
+		#print('received',i.statusid)
 		if i.statusid == 1:
 			inv_open.append(i)
 		if i.statusid == 2:
@@ -91,7 +93,7 @@ def getAll():
 	inv_closed = []
 	inv_rejected = []
 	for i in sent:
-		print(i.statusid)
+		#print(i.statusid)
 		if i.statusid == 1:
 			inv_open.append(i)
 		if i.statusid == 2:

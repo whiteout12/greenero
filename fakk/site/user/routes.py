@@ -6,6 +6,8 @@ from fakk.models import User, Relationship
 from fakk.utils.token_email import generate_confirmation_token, confirm_token, send_confirmation_link_email, send_confirmation_link_email2, send_password_link_email
 from datetime import datetime
 import random
+from fakk.utils.send_sms import sendSMS
+
 
 
 user = Blueprint('user', __name__, url_prefix='/site/user')
@@ -91,12 +93,15 @@ def changeuser():
 				current_user.phone = form.phone.data
 				n = random.randint(1000,10000)
 				print(n)
-				if(current_user.confirmed_email):
-					send_confirmation_link_email2(form.email.data, n)
+				message = 'ange koden för att bekräfta telefonnummer. Kod: ' + str(n)
+				sms_status = sendSMS(form.phone.data, message)
+				print('sms_status', sms_status)
+				#send_confirmation_link_email2(form.email.data, n)
 				current_user.confirmed_phone_otp = n
 				current_user.confirmed_phone_on = None
 				current_user.confirmed_phone = None
 				flash('Telefonnumret uppdaterat', category='success')
+				flash('Ett SMS har skickats till ' +str(form.phone.data), category='success')
 				update = True
 		
 		if(form.password.data):
@@ -243,10 +248,10 @@ def send_sms_confirmation_code():
 	current_user.confirmed_phone_on = None
 	current_user.confirmed_phone = None
 	db.session.commit()
-	if(current_user.email and current_user.confirmed_email):
-		send_confirmation_link_email2(current_user.email, n)
-	else:
-		flash('you need a confirmed email address to verify phone', category='danger')
+	message = 'ange koden för att bekräfta telefonnummer. Kod: ' + str(n)
+	sms_status = sendSMS(current_user.phone, message)
+	print('sms_status', sms_status)
+	flash('Ett SMS har skickats till ' +str(current_user.phone), category='success')
 	return redirect(url_for('user.profile'))
 
 @user.route('/send-password-reset-link', methods=['GET', 'POST'])
