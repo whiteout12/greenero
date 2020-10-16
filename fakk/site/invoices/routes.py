@@ -111,7 +111,7 @@ def getAll():
 	swishjson = {
  		'version':1,
 		'payee':{
-  			'value':'0730514019'
+  			'value':''
 			},
 		'amount':{
 			'value':200,
@@ -278,4 +278,7 @@ def test_callback(invoice_token):
 def result_payment():
 
 	return render_template('swishcallback.html')
+
+
+
 

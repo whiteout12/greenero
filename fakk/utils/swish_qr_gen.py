@@ -2,6 +2,7 @@ import requests
 import json
 from json import dumps
 import base64
+from fakk import app
 
 def swishQR(payee, amount, message):
 	#print(payee)
@@ -20,6 +21,7 @@ def swishQR(payee, amount, message):
 
 	return file
 
+@app.template_filter('qrbase64')
 def swishQRbase64(payee, amount, message):
 	#print(payee)
 	#print(amount)

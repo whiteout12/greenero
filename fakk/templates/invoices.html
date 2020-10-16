@@ -39,10 +39,11 @@
             <div class="media-body">
             <div class="article-metadata">
              <a href="{{ url_for('contacts.friend_view_site', friend_id=invoice.sender.userid)}}">{{ invoice.sender.username }}</a>&#8594<a class="mr-2" href="{{ url_for('contacts.friend_view_site', friend_id=invoice.receiver.userid)}}">{{ invoice.receiver.username }}</a>
-              <a class="btn btn-sm btn-primary article-btn m-1" href="{{ url_for('invoices.payInvoice_site', invoice_id=invoice.invoiceid) }}">Betala (manuellt)</a>
               {%if invoice.sender.confirmed_phone %}
-              <button type="button" class="btn btn-success btn-sm m-1" data-toggle="modal" data-target="#swishModal{{invoice.invoiceid}}">Betala (Swish)</button>
+              <button type="button" class="btn btn-outline-secondary btn-sm m-1" data-toggle="modal" data-target="#swishModal{{invoice.invoiceid}}"><img src="{{ url_for('static', filename='swish-logotype.svg') }}" width="59"></button>
               {%endif%}
+              <a class="btn btn-sm btn-primary article-btn m-1" href="{{ url_for('invoices.payInvoice_site', invoice_id=invoice.invoiceid) }}">Markera som betald</a>
+              
               <button type="button" class="btn btn-warning btn-sm m-1" data-toggle="modal" data-target="#rejectModal{{invoice.invoiceid}}">Bestrid</button>
             </div>
             <h4><a class="article-title" href="{{ url_for('main.home') }}">{{ invoice.description }}</a></h4>
@@ -91,7 +92,11 @@
           </button>
         </div>
         <div class="modal-body">
-         <a class="btn btn-primary" href="swish://payment?data=%7B%22version%22%3A%201%2C%20%22payee%22%3A%20%7B%22value%22%3A%20%22{{invoice.sender.phone}}%22%7D%2C%20%22message%22%3A%20%7B%22value%22%3A%20%22faktura{{invoice.invoiceid}}%2C%20{{invoice.description}}%22%2C%20%22editable%22%3A%20false%7D%2C%20%22amount%22%3A%20%7B%22value%22%3A%20{{invoice.amount}}%2C%20%22editable%22%3A%20false%7D%7D&callbackurl={{url_for('invoices.test_callback', invoice_token=invoice.invoiceid, callback=rest, _external=True)}}&callbackresultparameter=res">Till Swish</a>  
+
+          Till Swishappen<br>
+         <a class="btn btn-outline-success" href="swish://payment?data=%7B%22version%22%3A%201%2C%20%22payee%22%3A%20%7B%22value%22%3A%20%22{{invoice.sender.phone}}%22%7D%2C%20%22message%22%3A%20%7B%22value%22%3A%20%22faktura{{invoice.invoiceid}}%2C%20{{invoice.description}}%22%2C%20%22editable%22%3A%20false%7D%2C%20%22amount%22%3A%20%7B%22value%22%3A%20{{invoice.amount}}%2C%20%22editable%22%3A%20false%7D%7D&callbackurl={{url_for('invoices.test_callback', invoice_token=invoice.invoiceid, callback=rest, _external=True)}}&callbackresultparameter=res"><img src="{{ url_for('static', filename='swish-logotype.svg') }}" width="59"></a><p></p><p></p>
+         <p>QR-kod</p>
+         <img src="data:image/svg+xml;base64,{{ (invoice.sender.phone)|qrbase64(invoice.amount, invoice.description) }}" width="200"></img>
         </div>
         <div class="modal-footer">
            <button type="button" onclick="javascript:window.location.reload()" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
