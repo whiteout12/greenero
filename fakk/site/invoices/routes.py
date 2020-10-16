@@ -206,8 +206,8 @@ def changeInvoice_site(invoice_id):
 def renderpdf(inv):
 	username=current_user.username
 	invoice = Invoice.query.filter_by(invoiceid=inv).first()
-	payee = User.query.filter_by(userid=invoice.userid).first()
-	sender = User.query.filter_by(userid=invoice.frienduserid).first()
+	payee = User.query.filter_by(userid=invoice.frienduserid).first()
+	sender = User.query.filter_by(userid=invoice.userid).first()
 	#print('invoice_json: ', invoice)
 	#print('payee: ', payee)
 	#print('sender: ', sender)
