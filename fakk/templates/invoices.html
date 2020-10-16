@@ -91,16 +91,17 @@
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
-        <div class="modal-body">
+        <div class="modal-body text-center">
 
-          Till Swishappen<br>
-         <a class="btn btn-outline-success" href="swish://payment?data=%7B%22version%22%3A%201%2C%20%22payee%22%3A%20%7B%22value%22%3A%20%22{{invoice.sender.phone}}%22%7D%2C%20%22message%22%3A%20%7B%22value%22%3A%20%22faktura{{invoice.invoiceid}}%2C%20{{invoice.description}}%22%2C%20%22editable%22%3A%20false%7D%2C%20%22amount%22%3A%20%7B%22value%22%3A%20{{invoice.amount}}%2C%20%22editable%22%3A%20false%7D%7D&callbackurl={{url_for('invoices.test_callback', invoice_token=invoice.invoiceid, callback=rest, _external=True)}}&callbackresultparameter=res"><img src="{{ url_for('static', filename='swish-logotype.svg') }}" width="59"></a><p></p><p></p>
-         <p>QR-kod</p>
-         <img src="data:image/svg+xml;base64,{{ (invoice.sender.phone)|qrbase64(invoice.amount, invoice.description) }}" width="200"></img>
+        
+         <a class="btn btn-success" href="swish://payment?data=%7B%22version%22%3A%201%2C%20%22payee%22%3A%20%7B%22value%22%3A%20%22{{invoice.sender.phone}}%22%7D%2C%20%22message%22%3A%20%7B%22value%22%3A%20%22faktura{{invoice.invoiceid}}%2C%20{{invoice.description}}%22%2C%20%22editable%22%3A%20false%7D%2C%20%22amount%22%3A%20%7B%22value%22%3A%20{{invoice.amount}}%2C%20%22editable%22%3A%20false%7D%7D&callbackurl={{url_for('invoices.test_callback', invoice_token=invoice.invoiceid, callback=rest, _external=True)}}&callbackresultparameter=res"><img src="{{ url_for('static', filename='swish-logotype.svg') }}" width="100"></a><p></p><p></p>
+         
+         <a>
+         <img src="data:image/svg+xml;base64,{{ (invoice.sender.phone)|qrbase64(invoice.amount, invoice.description) }}" width="150"></img></a>
         </div>
         <div class="modal-footer">
-           <button type="button" onclick="javascript:window.location.reload()" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Stäng</button>
+        
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
           
             
             
