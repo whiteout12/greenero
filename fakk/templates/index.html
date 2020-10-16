@@ -11,27 +11,27 @@
 <br>
 <b>Old version links</b><br>
 <small>
-<a href="/">Home</a><br>
-<a href="#" id="user">Friends and Foes</a><br>
-<a href="#" id="claim">Claims and Debts</a><br>
-<a href="{{ url_for('relations_api.user') }}">Kontakter(old)</a><br>
-<a href="{{ url_for('invoices_api.claim') }}">Fakturor(old)</a><br></small>
-<script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
-    <script>
-      $("#user").on("click", function(){
-        $("#sub-menu").load("{{ url_for('relations_api.user') }}");
-      });
-      $("#claim").on("click", function(){
-        $("#sub-menu").load("{{ url_for('invoices_api.claim') }}");
-      });
-    </script>
+	<a href="/">Home</a><br>
+	<a href="#" id="user">Friends and Foes</a><br>
+	<a href="#" id="claim">Claims and Debts</a><br>
+	<a href="{{ url_for('relations_api.user') }}">Kontakter(old)</a><br>
+	<a href="{{ url_for('invoices_api.claim') }}">Fakturor(old)</a><br></small>
+	<script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
+	<script>
+		$("#user").on("click", function(){
+			$("#sub-menu").load("{{ url_for('relations_api.user') }}");
+		});
+		$("#claim").on("click", function(){
+			$("#sub-menu").load("{{ url_for('invoices_api.claim') }}");
+		});
+	</script>
 
-<div id="sub-menu">
+	<div id="sub-menu">
 
-  
+		
 
-</div>
-<br>
+	</div>
+	<br>
 </div>
 {% if user %} 
 

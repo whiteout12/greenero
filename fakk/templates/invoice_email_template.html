@@ -1,24 +1,24 @@
 
 <html>
 <body>
-<h1> Faktura från {{ username }}</h1>
-<br>
-<p> Du har blivit (duktigt) fakturerad</p>
+	<h1> Faktura från {{ username }}</h1>
+	<br>
+	<p> Du har blivit (duktigt) fakturerad</p>
 
-<br>
-<table>
-<tr><td style="text-align:left">Description</td><td style="text-align:left">{{invoice.description}}</td></tr>
-    <tr><td style="text-align:left">Sender</td><td style="text-align:left">{{invoice.sender}}</td></tr>
-    <tr><td style="text-align:left">Receiver</td><td style="text-align:left">{{invoice.receiver}}</td></tr>
-    <tr><td style="text-align:left">Amount</td><td style="text-align:left">{{invoice.amount}}</td></tr>
-    <tr><td style="text-align:left">Created date</td><td style="text-align:left">{{invoice.createddate}}</td></tr>
-    <tr><td style="text-align:left">Due date</td><td style="text-align:left">{{invoice.duedate}}</td></tr>
-    <tr><td style="text-align:left">Version</td><td style="text-align:left">{{invoice.version}}</td></tr></p>
-</table>
-<table><tr><td style=" width:20px; height:20px">
-              <img src="data:image/svg+xml;base64,{{qrCode_base64}}" width="100" height="100" id="logo"></img></td></tr>
+	<br>
+	<table>
+		<tr><td style="text-align:left">Description</td><td style="text-align:left">{{invoice.description}}</td></tr>
+		<tr><td style="text-align:left">Sender</td><td style="text-align:left">{{invoice.sender}}</td></tr>
+		<tr><td style="text-align:left">Receiver</td><td style="text-align:left">{{invoice.receiver}}</td></tr>
+		<tr><td style="text-align:left">Amount</td><td style="text-align:left">{{invoice.amount}}</td></tr>
+		<tr><td style="text-align:left">Created date</td><td style="text-align:left">{{invoice.createddate}}</td></tr>
+		<tr><td style="text-align:left">Due date</td><td style="text-align:left">{{invoice.duedate}}</td></tr>
+		<tr><td style="text-align:left">Version</td><td style="text-align:left">{{invoice.version}}</td></tr></p>
+	</table>
+	<table><tr><td style=" width:20px; height:20px">
+		<img src="data:image/svg+xml;base64,{{qrCode_base64}}" width="100" height="100" id="logo"></img></td></tr>
 
-</table>
+	</table>
 </body>
 </html>
 

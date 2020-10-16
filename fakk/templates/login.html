@@ -11,28 +11,28 @@
     {{ form.username(placeholder="användarnamn") }}
     <span class="error">{% if error %}{{error}}{%endif%}
       {% if form.username.errors %}
-        {% for error in form.username.errors %}
-          {{ error }}
-        {% endfor %}
+      {% for error in form.username.errors %}
+      {{ error }}
+      {% endfor %}
       {% endif %}
     </span>
   </p>
   
   <p>
-  {{ form.password(placeholder="lösenord") }}
+    {{ form.password(placeholder="lösenord") }}
     <span class="error">{% if error %}{{error}}{%endif%}
       {% if form.password.errors %}
-        {% for error in form.password.errors %}
-          {{ error }}
-        {% endfor %}
+      {% for error in form.password.errors %}
+      {{ error }}
+      {% endfor %}
       {% endif %}
     </span>
   </p>
   
   <button class="btn btn-sm btn-primary" type="submit">Logga in</button>
 </form>
-  <br>
-  <br>
-  <p><a href="{{url_for('user.send_password_reset_link')}}">Glömt lösenord</a></p>
+<br>
+<br>
+<p><a href="{{url_for('user.send_password_reset_link')}}">Glömt lösenord</a></p>
 
 {% endblock %}

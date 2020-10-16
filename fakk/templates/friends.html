@@ -7,7 +7,7 @@
   <form class="form-inline" action="{{ url_for('contacts.friend_search')}}" method="POST">
     <input class="form-control mr-sm-2" type="search" name="user_search" id="user_search" placeholder="Sök efter kontakter" aria-label="Search">
     <button class="mr-2 btn btn-sm btn-primary my-2 my-sm-0" type="submit">Sök</button>
- 
+
   </form>
 </nav>
 <br></br>
@@ -15,27 +15,27 @@
 <h3>Sökresultat</h3>
 {% for friend in searchresult %}
 
-        <article class="media content-section">
-          <img class="rounded article-img" src="{{ url_for('static', filename='person.png') }}">
-          <div class="media-body">
-            <div class="article-metadata">
-              
-              <a class="mr-2" href="{{ url_for('contacts.friend_view_site', friend_id=friend.user.userid)}}">{{ friend.user.username }}</a>
-              <small class="text-muted">{%if friend.status == 0 %}Ej vänner än{% elif friend.status == 1 %}Väntar på svar{% elif friend.status == 2 %}Du har en förfrågan{% elif friend.status == 3 %}Vänner{% endif %}</small>
-            </div>
-            <h4><a class="article-title" href="{{ url_for('main.home') }}">{{ friend.user.username }}</a></h4>
-            <p class="article-content">{{ friend.user.username }}</p>
-            {%if friend.status == 0 %}
-            <a class="mr-2 btn btn-sm btn-primary" href="{{ url_for('contacts.friendrequest_site', friend_id=friend.user.userid)}}">Skicka vänförfrågan</a>
-            {% elif friend.status == 1 %}
-            <a class="mr-2 btn btn-sm btn-danger" href="{{ url_for('contacts.withdraw_friendrequest_site', friend_id=friend.user.userid)}}">Dra tillbaka</a>
-            {% elif friend.status == 2 %}
-            <a class="mr-2 btn btn-sm btn-primary" href="{{ url_for('contacts.accept_friendrequest_site', friend_id=friend.user.userid)}}">Acceptera!</a>
-            <a class="mr-2 btn btn-sm btn-warning" href="{{ url_for('contacts.reject_friendrequest_site', friend_id=friend.user.userid)}}">Avböj!</a>
-            {% elif friend.status == 3 %}
-            {% endif %}
-          </div>
-        </article>
+<article class="media content-section">
+  <img class="rounded article-img" src="{{ url_for('static', filename='person.png') }}">
+  <div class="media-body">
+    <div class="article-metadata">
+
+      <a class="mr-2" href="{{ url_for('contacts.friend_view_site', friend_id=friend.user.userid)}}">{{ friend.user.username }}</a>
+      <small class="text-muted">{%if friend.status == 0 %}Ej vänner än{% elif friend.status == 1 %}Väntar på svar{% elif friend.status == 2 %}Du har en förfrågan{% elif friend.status == 3 %}Vänner{% endif %}</small>
+    </div>
+    <h4><a class="article-title" href="{{ url_for('main.home') }}">{{ friend.user.username }}</a></h4>
+    <p class="article-content">{{ friend.user.username }}</p>
+    {%if friend.status == 0 %}
+    <a class="mr-2 btn btn-sm btn-primary" href="{{ url_for('contacts.friendrequest_site', friend_id=friend.user.userid)}}">Skicka vänförfrågan</a>
+    {% elif friend.status == 1 %}
+    <a class="mr-2 btn btn-sm btn-danger" href="{{ url_for('contacts.withdraw_friendrequest_site', friend_id=friend.user.userid)}}">Dra tillbaka</a>
+    {% elif friend.status == 2 %}
+    <a class="mr-2 btn btn-sm btn-primary" href="{{ url_for('contacts.accept_friendrequest_site', friend_id=friend.user.userid)}}">Acceptera!</a>
+    <a class="mr-2 btn btn-sm btn-warning" href="{{ url_for('contacts.reject_friendrequest_site', friend_id=friend.user.userid)}}">Avböj!</a>
+    {% elif friend.status == 3 %}
+    {% endif %}
+  </div>
+</article>
 {% endfor %}
 {% endif %}
 
@@ -45,20 +45,20 @@
 
 {% if friend.statusid == 2 %}
 
-        <article class="media content-section">
-          <img class="rounded article-img" src="{{ url_for('static', filename='person.png') }}">
-          <div class="media-body">
-            <div class="article-metadata">
-              
-              <a class="mr-2" href="{{ url_for('contacts.friend_view_site', friend_id=friend.rel_receiver.userid)}}">{{ friend.rel_receiver.username }}</a>
-              <small class="text-muted">{{ friend.rel_receiver.username }}</small>
-            </div>
-            <h4><a class="article-title" href="{{ url_for('main.home') }}">{{ friend.rel_receiver.username }}</a></h4>
-            <p class="article-content">{{ friend.rel_receiver.username }}</p>
-            <a class="mr-2 btn btn-sm btn-primary" href="{{ url_for('contacts.accept_friendrequest_site', friend_id=friend.rel_receiver.userid)}}">Acceptera!</a>
-            <a class="mr-2 btn btn-sm btn-warning" href="{{ url_for('contacts.reject_friendrequest_site', friend_id=friend.rel_receiver.userid)}}">Avböj!</a>
-          </div>
-        </article>
+<article class="media content-section">
+  <img class="rounded article-img" src="{{ url_for('static', filename='person.png') }}">
+  <div class="media-body">
+    <div class="article-metadata">
+
+      <a class="mr-2" href="{{ url_for('contacts.friend_view_site', friend_id=friend.rel_receiver.userid)}}">{{ friend.rel_receiver.username }}</a>
+      <small class="text-muted">{{ friend.rel_receiver.username }}</small>
+    </div>
+    <h4><a class="article-title" href="{{ url_for('main.home') }}">{{ friend.rel_receiver.username }}</a></h4>
+    <p class="article-content">{{ friend.rel_receiver.username }}</p>
+    <a class="mr-2 btn btn-sm btn-primary" href="{{ url_for('contacts.accept_friendrequest_site', friend_id=friend.rel_receiver.userid)}}">Acceptera!</a>
+    <a class="mr-2 btn btn-sm btn-warning" href="{{ url_for('contacts.reject_friendrequest_site', friend_id=friend.rel_receiver.userid)}}">Avböj!</a>
+  </div>
+</article>
 {% endif %}
 {% endfor %}
 <br>
@@ -66,38 +66,38 @@
 {% for friend in friends %}
 {% if friend.statusid == 1 %}
 
-        <article class="media content-section">
-          <img class="rounded article-img" src="{{ url_for('static', filename='person.png') }}">
-          <div class="media-body">
-            <div class="article-metadata">
-              <a class="mr-2" href="{{ url_for('contacts.friend_view_site', friend_id=friend.rel_receiver.userid)}}">{{ friend.rel_receiver.username }}</a>
-              <a class="mr-2" href="{{ url_for('main.home')}}">{{ friend.rel_receiver.username }}</a>
-              <small class="text-muted">{{ friend.rel_receiver.username }}</small>
-            </div>
-            <h4><a class="article-title" href="{{ url_for('main.home') }}">{{ friend.rel_receiver.username }}</a></h4>
-            <p class="article-content">{{ friend.rel_receiver.username }}</p>
-            <a class="mr-2 btn btn-sm btn-danger" href="{{ url_for('contacts.withdraw_friendrequest_site', friend_id=friend.rel_receiver.userid)}}">Dra tillbaka</a>
-          </div>
-        </article>
+<article class="media content-section">
+  <img class="rounded article-img" src="{{ url_for('static', filename='person.png') }}">
+  <div class="media-body">
+    <div class="article-metadata">
+      <a class="mr-2" href="{{ url_for('contacts.friend_view_site', friend_id=friend.rel_receiver.userid)}}">{{ friend.rel_receiver.username }}</a>
+      <a class="mr-2" href="{{ url_for('main.home')}}">{{ friend.rel_receiver.username }}</a>
+      <small class="text-muted">{{ friend.rel_receiver.username }}</small>
+    </div>
+    <h4><a class="article-title" href="{{ url_for('main.home') }}">{{ friend.rel_receiver.username }}</a></h4>
+    <p class="article-content">{{ friend.rel_receiver.username }}</p>
+    <a class="mr-2 btn btn-sm btn-danger" href="{{ url_for('contacts.withdraw_friendrequest_site', friend_id=friend.rel_receiver.userid)}}">Dra tillbaka</a>
+  </div>
+</article>
 {% endif %}
 {% endfor %}
 
 <h3>Vänner</h3>
 {% for friend in friends %}
 {% if friend.statusid == 3 %}
-        <article class="media content-section">
-          <img class="rounded article-img" src="{{ url_for('static', filename='person.png') }}">
-          <div class="media-body">
-            <div class="article-metadata">
-              <a class="mr-2" href="{{ url_for('contacts.friend_view_site', friend_id=friend.rel_receiver.userid)}}">{{ friend.rel_receiver.username }}</a>
-              <a class="mr-2" href="{{ url_for('main.home')}}">{{ friend.rel_receiver.username }}</a>
-              <small class="text-muted">{{ friend.rel_receiver.username }}</small>
-            </div>
-            <h4><a class="article-title" href="{{ url_for('main.home') }}">{{ friend.rel_receiver.username }}</a></h4>
-            <p class="article-content">{{ friend.rel_receiver.username }}</p>
-            <a class="mr-2 btn btn-sm btn-danger" href="{{ url_for('contacts.unfriend_site', friend_id=friend.rel_receiver.userid)}}">Ta bort</a>
-          </div>
-        </article>
+<article class="media content-section">
+  <img class="rounded article-img" src="{{ url_for('static', filename='person.png') }}">
+  <div class="media-body">
+    <div class="article-metadata">
+      <a class="mr-2" href="{{ url_for('contacts.friend_view_site', friend_id=friend.rel_receiver.userid)}}">{{ friend.rel_receiver.username }}</a>
+      <a class="mr-2" href="{{ url_for('main.home')}}">{{ friend.rel_receiver.username }}</a>
+      <small class="text-muted">{{ friend.rel_receiver.username }}</small>
+    </div>
+    <h4><a class="article-title" href="{{ url_for('main.home') }}">{{ friend.rel_receiver.username }}</a></h4>
+    <p class="article-content">{{ friend.rel_receiver.username }}</p>
+    <a class="mr-2 btn btn-sm btn-danger" href="{{ url_for('contacts.unfriend_site', friend_id=friend.rel_receiver.userid)}}">Ta bort</a>
+  </div>
+</article>
 {% endif %}
 {% endfor %}
 {% endblock content %}

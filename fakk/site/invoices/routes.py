@@ -201,27 +201,25 @@ def changeInvoice_site(invoice_id):
 	return render_template('invoice.html', form=form, embedded=emb, change=True, invoice=invoice_to_change)
 
 
-@invoices.route('/renderpdf/<inv>')
+@invoices.route('/pdf/<inv>')
 @login_required
 def renderpdf(inv):
 	username=current_user.username
-	invoice = getInvoice(inv).get_json()
-	payee = User.query.filter_by(userid=invoice['invoice']['receiverid']).first()
-	sender = User.query.filter_by(userid=invoice['invoice']['senderid']).first()
+	invoice = Invoice.query.filter_by(invoiceid=inv).first()
+	payee = User.query.filter_by(userid=invoice.userid).first()
+	sender = User.query.filter_by(userid=invoice.frienduserid).first()
 	#print('invoice_json: ', invoice)
 	#print('payee: ', payee)
 	#print('sender: ', sender)
-	if(invoice['success']):
+	
 		
 
-		swish_qr_base64=swishQRbase64(sender.phone, invoice['invoice']['amount'], invoice['invoice']['description'])
-		print_html = render_template('invoice_pdf_template.html', username=sender.username, invoice=invoice['invoice'], qrCode_base64=swish_qr_base64, css1=url_for('static', filename='invoice_pdf/boilerplate.css'), css2=url_for('static', filename='invoice_pdf/main.css'), css3=url_for('static', filename='invoice_pdf/normalize.css'))
+	swish_qr_base64=swishQRbase64(sender.phone, invoice.amount, invoice.description)
+	print_html = render_template('invoice_pdf_template.html', username=sender.username, invoice=invoice, qrCode_base64=swish_qr_base64, css1=url_for('static', filename='invoice_pdf/boilerplate.css'), css2=url_for('static', filename='invoice_pdf/main.css'), css3=url_for('static', filename='invoice_pdf/normalize.css'))
 		
 		
-		return render_pdf(HTML(string=print_html), download_filename='invoice'+str(invoice['invoice']['invoiceid'])+'.pdf')
-	else:
-
-		return {'message' : invoice['message']}
+	return render_pdf(HTML(string=print_html), download_filename='invoice'+str(invoice.invoiceid)+'.pdf')
+	
 	
 @invoices.route('/email/<inv>')
 @login_required

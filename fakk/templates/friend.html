@@ -6,17 +6,17 @@
 <h3>{{friend.username}}</h3>
 
 
-        <article class="media content-section">
-          <img class="rounded article-img" src="{{ url_for('static', filename='person.png') }}">
-          <div class="media-body">
-            <div class="article-metadata">
-              
-              <a class="mr-2" href="{{ url_for('main.home')}}">{{ friend.username }}</a>
-              <small class="text-muted">status: {{ status }}</small>
-            </div>
-            <h4><a class="article-title" href="{{ url_for('main.home') }}">{{ friend.username }}</a></h4>
-            <p class="article-content">{{ friend.username }}</p>
-            <a class="mr-2 btn btn-sm btn-primary" href="{{ url_for('contacts.friendrequest_site', friend_id=friend.userid)}}">Skicka vänförfrågan</a>
-          </div>
-        </article>
+<article class="media content-section">
+  <img class="rounded article-img" src="{{ url_for('static', filename='person.png') }}">
+  <div class="media-body">
+    <div class="article-metadata">
+      
+      <a class="mr-2" href="{{ url_for('main.home')}}">{{ friend.username }}</a>
+      <small class="text-muted">status: {{ status }}</small>
+    </div>
+    <h4><a class="article-title" href="{{ url_for('main.home') }}">{{ friend.username }}</a></h4>
+    <p class="article-content">{{ friend.username }}</p>
+    <a class="mr-2 btn btn-sm btn-primary" href="{{ url_for('contacts.friendrequest_site', friend_id=friend.userid)}}">Skicka vänförfrågan</a>
+  </div>
+</article>
 {% endblock content %}

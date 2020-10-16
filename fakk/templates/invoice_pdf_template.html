@@ -1,32 +1,32 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <title>{{invoice_number}}</title>
-        <meta name="description" content="">
-        <link rel="stylesheet" href={{css1}}>
-        <link rel="stylesheet" href={{css2}}>
-        <link rel="stylesheet" href={{css3}}>
-    </head>
-    <body>        
-        <h1>Faktura</h1>
-        <td style=" width:20px; height:20px">
-              <img src="data:image/svg+xml;base64,{{qrCode_base64}}" width="100" height="100" id="logo"><td>  
-                
-         
+<head>
+    <meta charset="utf-8">
+    <title>{{invoice_number}}</title>
+    <meta name="description" content="">
+    <link rel="stylesheet" href={{css1}}>
+    <link rel="stylesheet" href={{css2}}>
+    <link rel="stylesheet" href={{css3}}>
+</head>
+<body>        
+    <h1>Faktura</h1>
+    <td style=" width:20px; height:20px">
+      <img src="data:image/svg+xml;base64,{{qrCode_base64}}" width="100" height="100" id="logo"><td>  
+        
+       
 
         <div id="terms">
             <p>
                 Fakturanummer: <strong>{{invoice.invoiceid}}</strong><br />
-                Fakturaversion: <strong>{{invoice.version}}</strong><br />
-                Fakturadatum: <strong>{{invoice.createddate}}</strong><br />
+                Fakturaversion: <strong>{{invoice.invoice_version}}</strong><br />
+                Fakturadatum: <strong>{{invoice.date_created.strftime('%Y-%m-%d')}}</strong><br />
                 Betalningsvillkor: <strong>{{days}}7 dagar</strong><br />
-                Förfallodatum: <strong>{{invoice.duedate}}</strong><br />
+                Förfallodatum: <strong>{{invoice.date_due.strftime('%Y-%m-%d')}}</strong><br />
             </p>
         </div>
         <div id="receiver">
             <p>
-                {{invoice.receiver}}<br />
+                Mottagare: <strong>{{invoice.receiver.username}}</strong><br />
                 {{receiver_adress}}<br />
                 {{receiver_adress_zip}}
             </p>
@@ -42,14 +42,14 @@
                 </tr>
             </thead>
             <tbody>
-            
+                
                 <tr>
                     <td>{{invoice.description}}</td>
                     <td class="number">{{description}}</td>
                     <td class="number">{{invoice.amount}}</td>
                     <td class="number">{{invoice.amount}}</td>
                 </tr>
-            
+                
             </tbody>
         </table>
         
@@ -81,28 +81,28 @@
         </table>
 
         <footer>
-        <p>
-            Efter förfallodatum debiteras en årsränta om 11%.
-        </p>
-        
-        <table><tr><td>
-            <div>
-                Kerbus Finans AB<br />
-                Väg 26<br />
-                123 45 Bahamas<br />
-                tjena@fakk.tech
-            </div></td><td>
-            <div>
-                Organisationsnr: XXXXXX-XXXX<br />
-                Godkänd för F-skatt<br />
-                Momsregnr/VAT-nr: SE556920990001
-            </div></td><td>
-            <div>
-                Bankgiro: XXXX-XXXX<br />
-                BIC: SWEDSESS<br />
-                IBAN: XXXX XXXX XXXX XXXX XXXX XXXX<br />
-            </div>
-          </td></tr></table>
-        </footer>
-    </body>
-</html>
+            <p>
+                Efter förfallodatum debiteras en årsränta om 11%.
+            </p>
+            
+            <table><tr><td>
+                <div>
+                    Kerbus Finans AB<br />
+                    Väg 26<br />
+                    123 45 Bahamas<br />
+                    tjena@fakk.tech
+                </div></td><td>
+                    <div>
+                        Organisationsnr: XXXXXX-XXXX<br />
+                        Godkänd för F-skatt<br />
+                        Momsregnr/VAT-nr: SE556920990001
+                    </div></td><td>
+                        <div>
+                            Bankgiro: XXXX-XXXX<br />
+                            BIC: SWEDSESS<br />
+                            IBAN: XXXX XXXX XXXX XXXX XXXX XXXX<br />
+                        </div>
+                    </td></tr></table>
+                </footer>
+            </body>
+            </html>

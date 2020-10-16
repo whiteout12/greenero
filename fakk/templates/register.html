@@ -22,67 +22,67 @@
     
     <span class="error">
       {% if form.username.errors %}
-        {% for error in form.username.errors %}
-          {{ error }}
-        {% endfor %}
+      {% for error in form.username.errors %}
+      {{ error }}
+      {% endfor %}
       {% endif %}
     </span>
   </p>
   <p>
     {% if change %} 
     {% if email %} 
-     {{ form.email(value=email) }}
-     {% else %}
+    {{ form.email(value=email) }}
+    {% else %}
     {{ form.email(placeholder="Email") }}
     {% endif %}
     
 
     <span class="error">
       {% if form.email.errors %}
-        {% for error in form.email.errors %}
-          {{ error }}
-        {% endfor %}
+      {% for error in form.email.errors %}
+      {{ error }}
+      {% endfor %}
       {% endif %}
     </span>
   </p>
   {% endif %}
 
- {% if change %} 
-    {% if phone %} 
-     {{ form.phone(value=phone, pattern="[0-9]*") }}
-     {% else %}
-    {{ form.phone(placeholder="Telefonnummer", pattern="[0-9]*") }}
+  {% if change %} 
+  {% if phone %} 
+  {{ form.phone(value=phone, pattern="[0-9]*") }}
+  {% else %}
+  {{ form.phone(placeholder="Telefonnummer", pattern="[0-9]*") }}
+  {% endif %}
+  <span class="error">
+    {% if form.phone.errors %}
+    {% for error in form.phone.errors %}
+    {{ error }}
+    {% endfor %}
     {% endif %}
-    <span class="error">
-      {% if form.phone.errors %}
-        {% for error in form.phone.errors %}
-          {{ error }}
-        {% endfor %}
-      {% endif %}
-    </span>
-  </p>
+  </span>
+</p>
 {% endif %}
 
-  <p>
+<p>
   {{ form.password(placeholder="Lösenord") }}
-    <span class="error">
-      {% if form.password.errors %}
-        {% for error in form.password.errors %}
-          {{ error }}
-        {% endfor %}
-      {% endif %}
-    </span>
-  </p>
-  <p>
+  <span class="error">
+    {% if form.password.errors %}
+    {% for error in form.password.errors %}
+    {{ error }}
+    {% endfor %}
+    {% endif %}
+  </span>
+</p>
+<p>
   {{ form.confirm(placeholder="Bekräfta lösenord") }}
-    <span class="error">
-      {% if form.confirm.errors %}
-        {% for error in form.confirm.errors %}
-          {{ error }}
-        {% endfor %}
-      {% endif %}
-    </span>
-  </p>
+  <span class="error">
+    {% if form.confirm.errors %}
+    {% for error in form.confirm.errors %}
+    {{ error }}
+    {% endfor %}
+    {% endif %}
+  </span>
+</p>
 {% if change %} 
 <button class="btn btn-sm btn-success" type="submit">Uppdatera!</button>
 </form>
@@ -93,7 +93,7 @@
 </form>
 <br>
 {% else %}
-  <button class="btn btn-sm btn-success" type="submit">Registrera!</button>
+<button class="btn btn-sm btn-success" type="submit">Registrera!</button>
 </form>
 {% endif %}
 

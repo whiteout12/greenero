@@ -7,12 +7,12 @@
 
 {% if embedded %}
 <script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
-    <script>
-      $("#close").on("click", function(){
-        $("#sub-menu").load("/claim");
-      });
+<script>
+  $("#close").on("click", function(){
+    $("#sub-menu").load("/claim");
+  });
 
-    </script>
+</script>
 
 {% endif %}
 <h5>{% if change %}Change{% else %}Create{% endif %} invoice {% if embedded %}<a href="#" id="close" class="btn btn-sm btn-danger"><b>&times</b></a> {% endif %}</h5>
@@ -29,43 +29,43 @@
     
     <span class="error">
       {% if form.receiver.errors %}
-        {% for error in form.receiver.errors %}
-          {{ error }}
-        {% endfor %}
+      {% for error in form.receiver.errors %}
+      {{ error }}
+      {% endfor %}
       {% endif %}
     </span>
   </p>
   {% endif %}
   <p>
     {% if change %} 
-     {{ form.description(placeholder=invoice.description) }}
-     {% else %}
+    {{ form.description(placeholder=invoice.description) }}
+    {% else %}
     {{ form.description(placeholder="description") }}
     {% endif %}
     
 
     <span class="error">
       {% if form.description.errors %}
-        {% for error in form.description.errors %}
-          {{ error }}
-        {% endfor %}
+      {% for error in form.description.errors %}
+      {{ error }}
+      {% endfor %}
       {% endif %}
     </span>
   </p>
 
- {% if change %} 
-     {{ form.amount(placeholder=invoice.amount) }}
-     {% else %}
-    {{ form.amount(placeholder="amount") }}
+  {% if change %} 
+  {{ form.amount(placeholder=invoice.amount) }}
+  {% else %}
+  {{ form.amount(placeholder="amount") }}
+  {% endif %}
+  <span class="error">
+    {% if form.amount.errors %}
+    {% for error in form.amount.errors %}
+    {{ error }}
+    {% endfor %}
     {% endif %}
-    <span class="error">
-      {% if form.amount.errors %}
-        {% for error in form.amount.errors %}
-          {{ error }}
-        {% endfor %}
-      {% endif %}
-    </span>
-  </p>
+  </span>
+</p>
 
 
 
@@ -89,41 +89,41 @@
 {% if change %}
 <script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
 
-    <script>
-      $("#form_inv").submit(function(e) {
-      e.preventDefault();
-      url= "/invoice/change"+"{{invoice.invoiceid|safe}}"
-      $.post(url,
-            $("#form_inv").serialize(),
-            function( data ) {
-                  $('#invoice_quick').html( data );
+<script>
+  $("#form_inv").submit(function(e) {
+    e.preventDefault();
+    url= "/invoice/change"+"{{invoice.invoiceid|safe}}"
+    $.post(url,
+      $("#form_inv").serialize(),
+      function( data ) {
+        $('#invoice_quick').html( data );
 
-            }
+      }
 
       );
   });
 
-    </script>
+</script>
 
 {% else %}
 
 <script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
 
-    <script>
-      $("#form_inv").submit(function(e) {
-      e.preventDefault();
-      $.post("/invoice/create-emb=True",
-            $("#form_inv").serialize(),
-            function( data ) {
-                  $('#invoice_quick').html( data );
+<script>
+  $("#form_inv").submit(function(e) {
+    e.preventDefault();
+    $.post("/invoice/create-emb=True",
+      $("#form_inv").serialize(),
+      function( data ) {
+        $('#invoice_quick').html( data );
 
-            }
+      }
 
       );
   });
 
-    </script>
-    {% endif %}
+</script>
+{% endif %}
 {% endif %}
 </form>
 {% endif %}

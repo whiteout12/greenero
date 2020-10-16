@@ -3,7 +3,7 @@
 
 <h2>{{title}}</h2>
 <br>
- <a class="mr-2 btn btn-sm btn-primary" href="{{ url_for('invoices.createInvoice', embedded=false)}}">Skapa faktura</a>
+<a class="mr-2 btn btn-sm btn-primary" href="{{ url_for('invoices.createInvoice', embedded=false)}}">Skapa faktura</a>
 <br></br>
 
 {% if received.inv_open|length > 0 or sent.inv_open|length > 0 or sent.inv_rejected|length > 0%}
@@ -12,108 +12,109 @@
 {% if received.inv_open|length > 0 %}
 <h4>Mottagna ({{received.inv_open|length}})</h4>
 
-    {% for invoice in received.inv_open %}
-        <article class="media content-section">
-          <table>
-            <tr>
-              <td>
-                <img class="rounded article-img" src="{{ url_for('static', filename='inv_ico.png') }}">
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <a href="{{ url_for('invoices.view_invoice_site', invoice_id=invoice.invoiceid)}}">faktura{{ invoice.invoiceid }}</a>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <small>{{ invoice.date_created.strftime('%Y-%m-%d') }}</small>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <small>v.{{ invoice.invoice_version }}</small>
-              </td>
-            </tr>
-          </table>        
-            <div class="media-body">
-            <div class="article-metadata">
-             <a href="{{ url_for('contacts.friend_view_site', friend_id=invoice.sender.userid)}}">{{ invoice.sender.username }}</a>&#8594<a class="mr-2" href="{{ url_for('contacts.friend_view_site', friend_id=invoice.receiver.userid)}}">{{ invoice.receiver.username }}</a>
-              {%if invoice.sender.confirmed_phone %}
-              <button type="button" class="btn btn-outline-secondary btn-sm m-1" data-toggle="modal" data-target="#swishModal{{invoice.invoiceid}}"><img src="{{ url_for('static', filename='swish-logotype.svg') }}" width="59"></button>
-              {%endif%}
-              <a class="btn btn-sm btn-primary article-btn m-1" href="{{ url_for('invoices.payInvoice_site', invoice_id=invoice.invoiceid) }}">Markera som betald</a>
-              
-              <button type="button" class="btn btn-warning btn-sm m-1" data-toggle="modal" data-target="#rejectModal{{invoice.invoiceid}}">Bestrid</button>
-            </div>
-            <h4><a class="article-title" href="{{ url_for('main.home') }}">{{ invoice.description }}</a></h4>
-            Belopp: {{ invoice.amount }}kr
-            <br>
-            Skapad: {{ invoice.date_created.strftime('%Y-%m-%d') }}
-            <br>
-            Betalas: {{ invoice.date_due.strftime('%Y-%m-%d') }}
-            <br>
-            Version: {{ invoice.invoice_version }}
-            
-          </div>
-          </article>
-     <div class="modal fade" id="rejectModal{{invoice.invoiceid}}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="deleteModalLabel">Bestrid faktura{{invoice.invoiceid}}?</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <form action="{{ url_for('invoices.rejectInvoice_site', invoice_id=invoice.invoiceid) }}" method="POST">
+{% for invoice in received.inv_open %}
+<article class="media content-section">
+  <table>
+    <tr>
+      <td>
+        <img class="rounded article-img" src="{{ url_for('static', filename='inv_ico.png') }}">
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a href="{{ url_for('invoices.view_invoice_site', invoice_id=invoice.invoiceid)}}">faktura{{ invoice.invoiceid }}</a>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <small>{{ invoice.date_created.strftime('%Y-%m-%d') }}</small>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <small>v.{{ invoice.invoice_version }}</small>
+      </td>
+    </tr>
+  </table>        
+  <div class="media-body">
+    <div class="article-metadata">
+     <a href="{{ url_for('contacts.friend_view_site', friend_id=invoice.sender.userid)}}">{{ invoice.sender.username }}</a>&#8594<a class="mr-2" href="{{ url_for('contacts.friend_view_site', friend_id=invoice.receiver.userid)}}">{{ invoice.receiver.username }}</a>
+     {%if invoice.sender.confirmed_phone %}
+     <button type="button" class="btn btn-success btn-sm m-1" data-toggle="modal" data-target="#swishModal{{invoice.invoiceid}}"><img src="{{ url_for('static', filename='swish-logotype.svg') }}" width="59"></button>
+     {%endif%}
+     <a class="btn btn-sm btn-primary article-btn m-1" href="{{ url_for('invoices.payInvoice_site', invoice_id=invoice.invoiceid) }}">Markera som betald</a>
+     
+     <button type="button" class="btn btn-warning btn-sm m-1" data-toggle="modal" data-target="#rejectModal{{invoice.invoiceid}}">Bestrid</button>
+     <a class="btn btn-sm btn-primary article-btn m-1" href="{{ url_for('invoices.renderpdf', inv=invoice.invoiceid) }}">&#8595;PDF</a>
+   </div>
+   <h4><a class="article-title" href="{{ url_for('main.home') }}">{{ invoice.description }}</a></h4>
+   Belopp: {{ invoice.amount }}kr
+   <br>
+   Skapad: {{ invoice.date_created.strftime('%Y-%m-%d') }}
+   <br>
+   Betalas: {{ invoice.date_due.strftime('%Y-%m-%d') }}
+   <br>
+   Version: {{ invoice.invoice_version }}
+   
+ </div>
+</article>
+<div class="modal fade" id="rejectModal{{invoice.invoiceid}}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel">Bestrid faktura{{invoice.invoiceid}}?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form action="{{ url_for('invoices.rejectInvoice_site', invoice_id=invoice.invoiceid) }}" method="POST">
           <input class="form-control" type="text" placeholder="Anledning" id="reason" name="reason" required oninvalid="this.setCustomValidity('Måste ange en anledning')" oninput="this.setCustomValidity('')">  
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Stäng</button>
           
-            
-            
-            <input class="btn btn-danger" type="submit" value="Skicka">
-          </form>
-        </div>
+          
+          
+          <input class="btn btn-danger" type="submit" value="Skicka">
+        </form>
       </div>
     </div>
   </div>
+</div>
 
-      <div class="modal fade" id="swishModal{{invoice.invoiceid}}" tabindex="-1" role="dialog" aria-labelledby="swishModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="swishModalLabel">Betala faktura{{invoice.invoiceid}} med Swish?</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body text-center">
+<div class="modal fade" id="swishModal{{invoice.invoiceid}}" tabindex="-1" role="dialog" aria-labelledby="swishModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="swishModalLabel">Betala faktura{{invoice.invoiceid}} med Swish?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body text-center">
 
         
-         <a class="btn btn-success" href="swish://payment?data=%7B%22version%22%3A%201%2C%20%22payee%22%3A%20%7B%22value%22%3A%20%22{{invoice.sender.phone}}%22%7D%2C%20%22message%22%3A%20%7B%22value%22%3A%20%22faktura{{invoice.invoiceid}}%2C%20{{invoice.description}}%22%2C%20%22editable%22%3A%20false%7D%2C%20%22amount%22%3A%20%7B%22value%22%3A%20{{invoice.amount}}%2C%20%22editable%22%3A%20false%7D%7D&callbackurl={{url_for('invoices.test_callback', invoice_token=invoice.invoiceid, callback=rest, _external=True)}}&callbackresultparameter=res"><img src="{{ url_for('static', filename='swish-logotype.svg') }}" width="100"></a><p></p><p></p>
-         
-         <a>
+       <a class="btn btn-success" href="swish://payment?data=%7B%22version%22%3A%201%2C%20%22payee%22%3A%20%7B%22value%22%3A%20%22{{invoice.sender.phone}}%22%7D%2C%20%22message%22%3A%20%7B%22value%22%3A%20%22faktura{{invoice.invoiceid}}%2C%20{{invoice.description}}%22%2C%20%22editable%22%3A%20false%7D%2C%20%22amount%22%3A%20%7B%22value%22%3A%20{{invoice.amount}}%2C%20%22editable%22%3A%20false%7D%7D&callbackurl={{url_for('invoices.test_callback', invoice_token=invoice.invoiceid, callback=rest, _external=True)}}&callbackresultparameter=res"><img src="{{ url_for('static', filename='swish-logotype.svg') }}" width="100"></a><p></p><p></p>
+       
+       <a>
          <img src="data:image/svg+xml;base64,{{ (invoice.sender.phone)|qrbase64(invoice.amount, invoice.description) }}" width="150"></img></a>
-        </div>
-        <div class="modal-footer">
+       </div>
+       <div class="modal-footer">
         
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-          
-            
-            
-            
-          
-        </div>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        
+        
+        
+        
+        
       </div>
     </div>
   </div>
+</div>
 <script>
  $(document).ready(function(){
- 
+   
   $("#swishModal{{invoice.invoiceid}}").on('hidden.bs.modal', function(){
     /*alert('The modal is now hidden.');*/
     console.log("reload")
@@ -122,127 +123,128 @@
 });
 </script>
 
-    {% endfor %}
+{% endfor %}
 {%endif%}
 {% if sent.inv_open|length > 0 or sent.inv_rejected|length > 0 %}
 <h4>Skickade ({{sent.inv_open|length + sent.inv_rejected|length}})</h4>
-    {% for invoice in sent.inv_open %}
-        <article class="media content-section">
-          <table>
-            <tr>
-              <td>
-                <img class="rounded article-img" src="{{ url_for('static', filename='inv_ico.png') }}">
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <a href="{{ url_for('invoices.view_invoice_site', invoice_id=invoice.invoiceid)}}">faktura{{ invoice.invoiceid }}</a>
-              </td>
-            </tr>
-          </table>        
-            <div class="media-body">
-            <div class="article-metadata">
-             <a href="{{ url_for('contacts.friend_view_site', friend_id=invoice.sender.userid)}}">{{ invoice.sender.username }}</a>&#8594<a class="mr-2" href="{{ url_for('contacts.friend_view_site', friend_id=invoice.receiver.userid)}}">{{ invoice.receiver.username }}</a>
-             <a class="btn btn-sm btn-warning article-btn" href="{{ url_for('invoices.changeInvoice_site', invoice_id=invoice.invoiceid) }}">Ändra</a>
-              <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#deleteModal{{invoice.invoiceid}}">Radera</button>
-            </div>
-            <h4><a class="article-title" href="{{ url_for('main.home') }}">{{ invoice.description }}</a></h4>
-            Belopp: {{ invoice.amount }}kr
-            <br>
-            Status: {{ invoice.statusid }}
-            <br>
-            Skapad: {{ invoice.date_created.strftime('%Y-%m-%d') }}
-            <br>
-            Betalas: {{ invoice.date_due.strftime('%Y-%m-%d') }}
-            <br>
-            Version: {{ invoice.invoice_version }}
-            
-            
-          </div>
-          </article>
-    <div class="modal fade" id="deleteModal{{invoice.invoiceid}}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="deleteModalLabel">Radera faktura{{invoice.invoiceid}}?</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          
-          Är du helt säker på att du vill radera fakturan?
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Stäng</button>
-            <form action="{{ url_for('invoices.removeInvoice_site', invoice_id=invoice.invoiceid) }}" method="POST">
-            <input class="btn btn-danger" type="submit" value="Skicka">
-          </form>
-        </div>
+{% for invoice in sent.inv_open %}
+<article class="media content-section">
+  <table>
+    <tr>
+      <td>
+        <img class="rounded article-img" src="{{ url_for('static', filename='inv_ico.png') }}">
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a href="{{ url_for('invoices.view_invoice_site', invoice_id=invoice.invoiceid)}}">faktura{{ invoice.invoiceid }}</a>
+      </td>
+    </tr>
+  </table>        
+  <div class="media-body">
+    <div class="article-metadata">
+     <a href="{{ url_for('contacts.friend_view_site', friend_id=invoice.sender.userid)}}">{{ invoice.sender.username }}</a>&#8594<a class="mr-2" href="{{ url_for('contacts.friend_view_site', friend_id=invoice.receiver.userid)}}">{{ invoice.receiver.username }}</a>
+     <a class="btn btn-sm btn-warning article-btn" href="{{ url_for('invoices.changeInvoice_site', invoice_id=invoice.invoiceid) }}">Ändra</a>
+     <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#deleteModal{{invoice.invoiceid}}">Radera</button>
+     <a class="btn btn-sm btn-primary article-btn m-1" href="{{ url_for('invoices.renderpdf', inv=invoice.invoiceid) }}">&#8595;PDF</a>
+   </div>
+   <h4><a class="article-title" href="{{ url_for('main.home') }}">{{ invoice.description }}</a></h4>
+   Belopp: {{ invoice.amount }}kr
+   <br>
+   Status: {{ invoice.statusid }}
+   <br>
+   Skapad: {{ invoice.date_created.strftime('%Y-%m-%d') }}
+   <br>
+   Betalas: {{ invoice.date_due.strftime('%Y-%m-%d') }}
+   <br>
+   Version: {{ invoice.invoice_version }}
+   
+   
+ </div>
+</article>
+<div class="modal fade" id="deleteModal{{invoice.invoiceid}}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel">Radera faktura{{invoice.invoiceid}}?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        
+        Är du helt säker på att du vill radera fakturan?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Stäng</button>
+        <form action="{{ url_for('invoices.removeInvoice_site', invoice_id=invoice.invoiceid) }}" method="POST">
+          <input class="btn btn-danger" type="submit" value="Skicka">
+        </form>
       </div>
     </div>
   </div>
-    {% endfor %}
+</div>
+{% endfor %}
 {%endif%}
 {% if sent.inv_rejected|length > 0 %}
 <h5>Bestridda ({{sent.inv_rejected|length}})</h5>
-    {% for invoice in sent.inv_rejected %}
-        <article class="media content-section">
-          <table>
-            <tr>
-              <td>
-                <img class="rounded article-img" src="{{ url_for('static', filename='inv_ico.png') }}">
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <a href="{{ url_for('invoices.view_invoice_site', invoice_id=invoice.invoiceid)}}">faktura{{ invoice.invoiceid }}</a>
-              </td>
-            </tr>
-          </table>        
-            <div class="media-body">
-            <div class="article-metadata">
-             <a href="{{ url_for('contacts.friend_view_site', friend_id=invoice.sender.userid)}}">{{ invoice.sender.username }}</a>&#8594<a class="mr-2" href="{{ url_for('contacts.friend_view_site', friend_id=invoice.receiver.userid)}}">{{ invoice.receiver.username }}</a>
-             <a class="btn btn-sm btn-warning article-btn" href="{{ url_for('invoices.changeInvoice_site', invoice_id=invoice.invoiceid) }}">Ändra</a>
-              <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#deleteModal{{invoice.invoiceid}}">Radera</button>
-            </div>
-            <h4><a class="article-title" href="{{ url_for('main.home') }}">{{ invoice.description }}</a></h4>
-            Belopp: {{ invoice.amount }}kr
-            <br>
-            Status: {{ invoice.statusid }}
-            <br>
-            Skapad: {{ invoice.date_created.strftime('%Y-%m-%d') }}
-            <br>
-            Betalas: {{ invoice.date_due.strftime('%Y-%m-%d') }}
-            <br>
-            Version: {{ invoice.invoice_version }}
-            <br>
-            Anledning: {{ invoice.message }}
-          </div>
-          </article>
-      <div class="modal fade" id="deleteModal{{invoice.invoiceid}}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="deleteModalLabel">Radera faktura{{invoice.invoiceid}}?</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          
-          Är du helt säker på att du vill radera fakturan?
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Stäng</button>
-            <form action="{{ url_for('invoices.removeInvoice_site', invoice_id=invoice.invoiceid) }}" method="POST">
-            <input class="btn btn-danger" type="submit" value="Skicka">
-          </form>
-        </div>
+{% for invoice in sent.inv_rejected %}
+<article class="media content-section">
+  <table>
+    <tr>
+      <td>
+        <img class="rounded article-img" src="{{ url_for('static', filename='inv_ico.png') }}">
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a href="{{ url_for('invoices.view_invoice_site', invoice_id=invoice.invoiceid)}}">faktura{{ invoice.invoiceid }}</a>
+      </td>
+    </tr>
+  </table>        
+  <div class="media-body">
+    <div class="article-metadata">
+     <a href="{{ url_for('contacts.friend_view_site', friend_id=invoice.sender.userid)}}">{{ invoice.sender.username }}</a>&#8594<a class="mr-2" href="{{ url_for('contacts.friend_view_site', friend_id=invoice.receiver.userid)}}">{{ invoice.receiver.username }}</a>
+     <a class="btn btn-sm btn-warning article-btn" href="{{ url_for('invoices.changeInvoice_site', invoice_id=invoice.invoiceid) }}">Ändra</a>
+     <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#deleteModal{{invoice.invoiceid}}">Radera</button>
+   </div>
+   <h4><a class="article-title" href="{{ url_for('main.home') }}">{{ invoice.description }}</a></h4>
+   Belopp: {{ invoice.amount }}kr
+   <br>
+   Status: {{ invoice.statusid }}
+   <br>
+   Skapad: {{ invoice.date_created.strftime('%Y-%m-%d') }}
+   <br>
+   Betalas: {{ invoice.date_due.strftime('%Y-%m-%d') }}
+   <br>
+   Version: {{ invoice.invoice_version }}
+   <br>
+   Anledning: {{ invoice.message }}
+ </div>
+</article>
+<div class="modal fade" id="deleteModal{{invoice.invoiceid}}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel">Radera faktura{{invoice.invoiceid}}?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        
+        Är du helt säker på att du vill radera fakturan?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Stäng</button>
+        <form action="{{ url_for('invoices.removeInvoice_site', invoice_id=invoice.invoiceid) }}" method="POST">
+          <input class="btn btn-danger" type="submit" value="Skicka">
+        </form>
       </div>
     </div>
   </div>
-    {% endfor %}
+</div>
+{% endfor %}
 {%endif%}
 
 {% if received.inv_closed|length > 0 or sent.inv_closed|length > 0 %}
@@ -251,99 +253,99 @@
 
 <div id="history" style="display:none">
 
-<h3>Stängda ({{received.inv_closed|length + sent.inv_closed|length}})</h3>
-{% endif %}
-{% if received.inv_closed|length > 0 %}
-<h4>Mottagna ({{received.inv_closed|length}})</h4>
-    {% for invoice in received.inv_closed %}
-        <article class="media content-section">
-          <table>
-            <tr>
-              <td>
-                <img class="rounded article-img" src="{{ url_for('static', filename='inv_ico.png') }}">
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <a href="{{ url_for('invoices.view_invoice_site', invoice_id=invoice.invoiceid)}}">faktura{{ invoice.invoiceid }}</a>
-              </td>
-            </tr>
-          </table>        
-            <div class="media-body">
-            <div class="article-metadata">
-             <a href="{{ url_for('contacts.friend_view_site', friend_id=invoice.sender.userid)}}">{{ invoice.sender.username }}</a>&#8594<a class="mr-2" href="{{ url_for('contacts.friend_view_site', friend_id=invoice.receiver.userid)}}">{{ invoice.receiver.username }}</a>
-              Betald
-            </div>
-            <h4><a class="article-title" href="{{ url_for('main.home') }}">{{ invoice.description }}</a></h4>
-            Belopp: {{ invoice.amount }}kr
-            <br>
-            Status: {{ invoice.statusid }}
-            <br>
-            Skapad: {{ invoice.date_created.strftime('%Y-%m-%d') }}
-            <br>
-            Betalas: {{ invoice.date_due.strftime('%Y-%m-%d') }}
-            <br>
-            Version: {{ invoice.invoice_version }}
-            
-          </div>
-          </article>
-    {% endfor %}
-{% endif %}
-{% if sent.inv_closed|length > 0 %}
-<h4>Skickade ({{sent.inv_closed|length}})</h4>
-    {% for invoice in sent.inv_closed %}
-        <article class="media content-section">
-          <table>
-            <tr>
-              <td>
-                <img class="rounded article-img" src="{{ url_for('static', filename='inv_ico.png') }}">
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <a href="{{ url_for('invoices.view_invoice_site', invoice_id=invoice.invoiceid)}}">faktura{{ invoice.invoiceid }}</a>
-              </td>
-            </tr>
-          </table>        
-            <div class="media-body">
-            <div class="article-metadata">
-             <a href="{{ url_for('contacts.friend_view_site', friend_id=invoice.sender.userid)}}">{{ invoice.sender.username }}</a>&#8594<a class="mr-2" href="{{ url_for('contacts.friend_view_site', friend_id=invoice.receiver.userid)}}">{{ invoice.receiver.username }}</a>
-              Betald
-            </div>
-            <h4><a class="article-title" href="{{ url_for('main.home') }}">{{ invoice.description }}</a></h4>
-            Belopp: {{ invoice.amount }}kr
-            <br>
-            Status: {{ invoice.statusid }}
-            <br>
-            Skapad: {{ invoice.date_created.strftime('%Y-%m-%d') }}
-            <br>
-            Betalas: {{ invoice.date_due.strftime('%Y-%m-%d') }}
-            <br>
-            Version: {{ invoice.invoice_version }}
-            
-          </div>
-          </article>
-    {% endfor %}
+  <h3>Stängda ({{received.inv_closed|length + sent.inv_closed|length}})</h3>
+  {% endif %}
+  {% if received.inv_closed|length > 0 %}
+  <h4>Mottagna ({{received.inv_closed|length}})</h4>
+  {% for invoice in received.inv_closed %}
+  <article class="media content-section">
+    <table>
+      <tr>
+        <td>
+          <img class="rounded article-img" src="{{ url_for('static', filename='inv_ico.png') }}">
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <a href="{{ url_for('invoices.view_invoice_site', invoice_id=invoice.invoiceid)}}">faktura{{ invoice.invoiceid }}</a>
+        </td>
+      </tr>
+    </table>        
+    <div class="media-body">
+      <div class="article-metadata">
+       <a href="{{ url_for('contacts.friend_view_site', friend_id=invoice.sender.userid)}}">{{ invoice.sender.username }}</a>&#8594<a class="mr-2" href="{{ url_for('contacts.friend_view_site', friend_id=invoice.receiver.userid)}}">{{ invoice.receiver.username }}</a>
+       Betald
+     </div>
+     <h4><a class="article-title" href="{{ url_for('main.home') }}">{{ invoice.description }}</a></h4>
+     Belopp: {{ invoice.amount }}kr
+     <br>
+     Status: {{ invoice.statusid }}
+     <br>
+     Skapad: {{ invoice.date_created.strftime('%Y-%m-%d') }}
+     <br>
+     Betalas: {{ invoice.date_due.strftime('%Y-%m-%d') }}
+     <br>
+     Version: {{ invoice.invoice_version }}
+     
+   </div>
+ </article>
+ {% endfor %}
+ {% endif %}
+ {% if sent.inv_closed|length > 0 %}
+ <h4>Skickade ({{sent.inv_closed|length}})</h4>
+ {% for invoice in sent.inv_closed %}
+ <article class="media content-section">
+  <table>
+    <tr>
+      <td>
+        <img class="rounded article-img" src="{{ url_for('static', filename='inv_ico.png') }}">
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a href="{{ url_for('invoices.view_invoice_site', invoice_id=invoice.invoiceid)}}">faktura{{ invoice.invoiceid }}</a>
+      </td>
+    </tr>
+  </table>        
+  <div class="media-body">
+    <div class="article-metadata">
+     <a href="{{ url_for('contacts.friend_view_site', friend_id=invoice.sender.userid)}}">{{ invoice.sender.username }}</a>&#8594<a class="mr-2" href="{{ url_for('contacts.friend_view_site', friend_id=invoice.receiver.userid)}}">{{ invoice.receiver.username }}</a>
+     Betald
+   </div>
+   <h4><a class="article-title" href="{{ url_for('main.home') }}">{{ invoice.description }}</a></h4>
+   Belopp: {{ invoice.amount }}kr
+   <br>
+   Status: {{ invoice.statusid }}
+   <br>
+   Skapad: {{ invoice.date_created.strftime('%Y-%m-%d') }}
+   <br>
+   Betalas: {{ invoice.date_due.strftime('%Y-%m-%d') }}
+   <br>
+   Version: {{ invoice.invoice_version }}
+   
+ </div>
+</article>
+{% endfor %}
 {% endif %}
 </div>
 <script>
-function toggleHistory() {
-  var x = document.getElementById("history");
-  if (x.style.display === "none") {
-    x.style.display = "block";
-  } else {
-    x.style.display = "none";
+  function toggleHistory() {
+    var x = document.getElementById("history");
+    if (x.style.display === "none") {
+      x.style.display = "block";
+    } else {
+      x.style.display = "none";
+    }
   }
-}
- 
- function myFunction2() {
-  var x = document.getElementById("debts-history");
-  if (x.style.display === "none") {
-    x.style.display = "block";
-  } else {
-    x.style.display = "none";
+  
+  function myFunction2() {
+    var x = document.getElementById("debts-history");
+    if (x.style.display === "none") {
+      x.style.display = "block";
+    } else {
+      x.style.display = "none";
+    }
   }
-}
 
 </script>
 <!-- Button trigger modal -->
