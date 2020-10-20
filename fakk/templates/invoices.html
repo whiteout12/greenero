@@ -62,10 +62,10 @@
 <div class="invoice-content">
   
    &#128176; {{ invoice.amount }}kr
-    <small> <br> <a data-toggle="collapse" href="#collapseExample1" role="button" aria-expanded="false" aria-controls="collapseExample">
+    <small> <br> <a data-toggle="collapse" href="#collapseExample1{{invoice.invoiceid}}" role="button" aria-expanded="false" aria-controls="collapseExample">
     visa mer
   </a></small>
-  <div class="collapse" id="collapseExample1">
+  <div class="collapse" id="collapseExample1{{invoice.invoiceid}}">
   
    
    Skapad: {{ invoice.date_created.strftime('%Y-%m-%d') }}
