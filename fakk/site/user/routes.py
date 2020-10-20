@@ -46,8 +46,11 @@ def login():
 			user = User.query.filter_by(username=request.form['username']).first()
 			if user is not None and bcrypt.check_password_hash(user.password, request.form['password']):
 				login_user(user)
+				next = request.args.get('next')
+				
+				
 				flash('Inloggad! Välkommen in i värmen', category="success")
-				return redirect(url_for('main.home'))
+				return redirect(next or url_for('main.home'))
 			else:
 				error = 'Invalid credentials. Please try again!'
 				print(error)

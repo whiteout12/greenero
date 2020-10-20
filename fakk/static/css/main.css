@@ -50,8 +50,8 @@ a.article-title:hover {
 }
 
 .article-img {
-  height: 65px;
-  width: 65px;
+  height: 50px;
+  width: 50px;
   margin-right: 16px;
 
 }
@@ -89,11 +89,41 @@ a.article-title:hover {
 .account-heading {
   font-size: 2.5rem;
 }
+.invoice-buttons {
+  float: right;
+  vertical-align:top;
+  padding-bottom: 1px;
+  margin-left: 4px;
+  border-left: 1px solid #e3e3e3
+}
+
+.invoice-content {
+  float: left;
+  vertical-align:top;
+  padding-bottom: 1px;
+  margin-left: 8px;
+  /*border-left: 1px solid #e3e3e3*/
+}
+
+.invoice-section-primary {
+  background: #ffffff;
+  padding: 10px 20px;
+  border: 2px solid #337ab7;
+  border-radius: 3px;
+  margin-bottom: 20px;
+}
+.invoice-section-warning {
+  background: #ffffff;
+  padding: 10px 20px;
+  border: 2px solid #f0ad4e;
+  border-radius: 3px;
+  margin-bottom: 20px;
+}
 
 .invoice-section-success {
   background: #ffffff;
   padding: 10px 20px;
-  border: 1px solid #dddddd;
+  border: 2px solid #5cb85c;
   border-radius: 3px;
   margin-bottom: 20px;
   border-color: #8FBC8F;
@@ -101,7 +131,7 @@ a.article-title:hover {
 .invoice-section-danger {
   background: #ffffff;
   padding: 10px 20px;
-  border: 1px solid #dddddd;
+  border: 2px solid #d9534f;
   border-radius: 3px;
   margin-bottom: 20px;
 }
