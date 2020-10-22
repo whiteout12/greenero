@@ -4,8 +4,10 @@
 <p><big>&#129297</big> <b>{{current_user.username}}</b></p>
 <p><big>&#128231</big> {% if current_user.email %} <b>{{current_user.email}}</b><br>{%if current_user.confirmed_email%} <small>bekräftad {{current_user.confirmed_email_on.strftime('%Y-%m-%d %H:%M') }} </small>{% else %}<small> ej bekräftad </small><a class="btn btn-sm btn-primary" href="{{ url_for('user.send_email_confirmation_link') }}">Skicka ny länk</a>{% endif %}{% else %}<small>ej angivet</small> {% endif %}</p>
 
-<p><big>&#128241</big> {% if current_user.phone %} <b>{{current_user.phone}}<br></b>{%if current_user.confirmed_phone%} <small>bekräftad {{current_user.confirmed_phone_on.strftime('%Y-%m-%d %H:%M')}} </small>{% else %}<small> ej bekräftad </small><a class="btn btn-sm btn-primary" href="{{ url_for('user.send_sms_confirmation_code') }}">Skicka ny kod</a><form class="form-inline" action="{{ url_for('user.confirm_phone')}}" method="POST"><input class="form-control mr-sm-2 form-control-sm form-inline col-md-2" type="text" name="sms_code" id="sms_code" pattern="[0-9]*" placeholder="kod" maxlength="4" aria-label="Search"required oninvalid="this.setCustomValidity('Ange SMS-kod')" oninput="this.setCustomValidity('')">
-	<button class="mr-2 btn btn-sm btn-primary my-2 my-sm-0 col-xs-2" type="submit">Bekräfta &#128241</button></form></small>{% endif %}{% else %}<small>ej angivet</small> {% endif %}</p>
-
+<p><big>&#128241</big> {% if current_user.phone %} <b>{{current_user.phone}}<br></b>{%if current_user.confirmed_phone%} <small>bekräftad {{current_user.confirmed_phone_on.strftime('%Y-%m-%d %H:%M')}} </small>{% else %}<small> ej bekräftad </small><a class="btn btn-sm btn-primary" href="{{ url_for('user.send_sms_confirmation_code') }}">Skicka ny kod</a><form class="form-inline" action="{{ url_for('user.confirm_phone')}}" method="POST">
+	<div class="fsr-only">
+	<input class="form-control mb-2" type="text" name="sms_code" id="sms_code" pattern="[0-9]*" placeholder="kod" maxlength="4" aria-label="Search"required oninvalid="this.setCustomValidity('Ange SMS-kod')" oninput="this.setCustomValidity('')"></div>
+	<button class="btn btn-sm btn-primary ml-2 my-sm-1 mb-2" type="submit">Bekräfta &#128241</button></form></small>{% endif %}{% else %}<small>ej angivet</small> {% endif %}</p>
+	
 	<a class="nav-item nav-link" href="{{ url_for('user.changeuser') }}">Uppdatera användaruppgifter</a>
 	{% endblock content %}

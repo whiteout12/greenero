@@ -15,36 +15,94 @@
 </script>
 
 {% endif %}
-<h5>{% if change %}Change{% else %}Create{% endif %} invoice {% if embedded %}<a href="#" id="close" class="btn btn-sm btn-danger"><b>&times</b></a> {% endif %}</h5>
+<h1>{% if change %}Ändra{% else %}Skapa{% endif %} faktura {% if embedded %}<a href="#" id="close" class="btn btn-sm btn-danger"><b>&times</b></a> {% endif %}</h1>
 <p></p>
 <br>
-<form class="form-signin" role="form" method="post" action="" id="form_inv">
+<form role="form" method="post" action="" id="form_inv">
+  <div class="form-group">
+
   {{ form.csrf_token }}
-  <p>
+  
     {% if change %}
-    changing invoice {{invoice.invoiceid}} to user {{ invoice.receiver.username }}
+    <p>Ändra i faktura{{invoice.invoiceid}} till {{ invoice.receiver.username }}</p>
     {% else %}
-    {{ form.receiver(placeholder="receiver") }}
+
+    {% for subfield in form.inv_type %}
     
+      {% if loop.index == 1 %}
+      <p>
+      {{ subfield }}
+      {{ subfield.label }}
+
+        {{form.receiver(class_="form-control", placeholder="mottagare")}}
+         <span class="error col-sm-2 col-form-label text-danger">
+          {% if form.receiver.errors %}
+          {% for error in form.receiver.errors %}
+          {{ error }}<br>
+          {% endfor %}
+          {% endif %}
+         </span>
+      
+      </p>
+      {%endif%}
+
+      {% if loop.index == 2 %}
+       <p>
+      {%if current_user.confirmed_email%}
+      
+     
+      {{ subfield }}
+
+      {{ subfield.label }}
+      {{form.email(class_="form-control", placeholder="E-mail")}}
+      
+        <span class="error col-sm-2 col-form-label text-danger">
+          {% if form.email.errors %}
+          {% for error in form.email.errors %}
+          {{ error }}<br>
+          {% endfor %}
+          {% endif %}
+         </span>
+      {%endif%}
+      </p>
+      {%endif%}
+
+      {% if loop.index == 3 %}
+      <p>
+      {%if current_user.confirmed_phone%}
+      
+      {{ subfield }}
+      {{ subfield.label }}
+      {{form.phone(class_="form-control", placeholder="Telefonummer", pattern="[0-9]*")}}
+      <small id="emailHelp" class="form-text text-muted">07XXXXXXXX</small>
+         <span class="error col-sm-2 col-form-label text-danger">
+          {% if form.phone.errors %}
+          {% for error in form.phone.errors %}
+          {{ error }}<br>
+          {% endfor %}
+          {% endif %}
+         </span>
+      
+      {%endif%}
+    </p>
+      {%endif%}
+        
+       
+    {% endfor %}
+ 
     
-    <span class="error">
-      {% if form.receiver.errors %}
-      {% for error in form.receiver.errors %}
-      {{ error }}
-      {% endfor %}
-      {% endif %}
-    </span>
-  </p>
   {% endif %}
-  <p>
-    {% if change %} 
-    {{ form.description(placeholder=invoice.description) }}
+  <br>
+   <label for="exampleInputEmail1">Beskrivning</label>
+
+    {% if change %}
+    {{ form.description(class_="form-control", placeholder="Avser betalning för...") }}
     {% else %}
-    {{ form.description(placeholder="description") }}
+    {{ form.description(class_="form-control", placeholder="Avser betalning för...") }}
     {% endif %}
     
 
-    <span class="error">
+    <span class="error col-sm-2 col-form-label text-danger">
       {% if form.description.errors %}
       {% for error in form.description.errors %}
       {{ error }}
@@ -52,13 +110,13 @@
       {% endif %}
     </span>
   </p>
-
+ <label for="exampleInputEmail1">Belopp</label>
   {% if change %} 
-  {{ form.amount(placeholder=invoice.amount) }}
+  {{ form.amount(class_="form-control", placeholder=invoice.amount, value=invoice.amount) }}
   {% else %}
-  {{ form.amount(placeholder="amount") }}
+  {{ form.amount(class_="form-control", placeholder="Belopp") }}
   {% endif %}
-  <span class="error">
+  <span class="error col-sm-2 col-form-label text-danger">
     {% if form.amount.errors %}
     {% for error in form.amount.errors %}
     {{ error }}
@@ -83,7 +141,7 @@
 {% if change %}
 <button class="btn btn-sm btn-primary" type="submit" id="submit">Update invoice!</button>
 {% else %}
-<button class="btn btn-sm btn-primary" type="submit" id="submit">Claim!</button>
+<button class="btn btn-sm btn-primary" type="submit" id="submit">Fakka!</button>
 {% endif %}
 {% if embedded %}
 {% if change %}
@@ -125,6 +183,7 @@
 </script>
 {% endif %}
 {% endif %}
+</div>
 </form>
 {% endif %}
 

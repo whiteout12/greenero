@@ -76,6 +76,8 @@ def changeuser():
 			if len(form.email.data)==0:
 				if current_user.email:
 					current_user.email = None
+					current_user.confirmed_email = None
+					current_user.confirmed_email_on = None
 					flash('Emailadress borttagen', category='success')
 					update = True
 			else:
@@ -90,6 +92,8 @@ def changeuser():
 			if len(form.phone.data)==0:
 				if current_user.phone:
 					current_user.phone = None
+					current_user.confirmed_phone = None
+					current_user.confirmed_phone_on = None
 					flash('Telefonnumret borttaget', category='success')
 					update = True
 			else:

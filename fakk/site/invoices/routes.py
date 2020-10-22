@@ -20,45 +20,50 @@ invoices = Blueprint('invoices', __name__, url_prefix='/site/invoice')
 @invoices.route('/create-emb=<embedded>', methods=['GET', 'POST'])
 @login_required
 def createInvoice(embedded):
-	print("invoice")
-	print(embedded)
-	#from fakk import db
+	
 	form = CreateInvoice()
-	#form.receiver.choices = [(g.frienduserid, User.query.filter_by(userid=g.frienduserid).first().username) for g in Relationship.query.filter_by(userid=current_user.userid, statusid=3).all()]
-	#form.receiver.choices = [(g.frienduserid, g.rel_receiver.username) for g in current_user.get_friends()]
-	choices = [(-1, 'Select receiver')]
-	print(choices)
+
+	choices = [(-1, 'Välj mottagare')]
+	
 	for i in current_user.get_friends():
 		choices.append((i.frienduserid, i.rel_receiver.username))
-	#choices.append((g.frienduserid, g.rel_receiver.username) for g in current_user.get_friends())
-	print(choices)
+	
 	form.receiver.choices = choices
-	#form.receiver.choices = ([(g.frienduserid, g.rel_receiver.username) for g in current_user.get_friends()])
+	print(choices)
 	if embedded=="False":
 		emb=False
 	else:
 		emb=True
 	#print("username: ", form.username.data)
 	if form.validate_on_submit():
-		invoice = Invoice(
-			amount=form.amount.data,
-			description=form.description.data,
-			userid=current_user.userid,
-			receiving_user=form.receiver.data
+		
+		if form.inv_type.data == 1:
+			invoice = Invoice(
+				amount=form.amount.data,
+				description=form.description.data,
+				userid=current_user.userid,
+				receiving_user=form.receiver.data
+				
+				)
+			print(invoice)
+
+			db.session.add(invoice)
+			db.session.commit()
 			
-			)
-		print(invoice)
-		db.session.add(invoice)
-		db.session.commit()
-		print(form.receiver.data, form.description.data, form.amount.data)
-		print({'message' : "Invoice sent"})
-		print(emb)
+			flash('Faktura skickad!', category='success')
+		elif form.inv_type.data == 2:
+			flash('denna funktion är inte igång än', category="danger")
+			#flash('Faktura skickad till '+ form.email.data, category='success')
+		elif form.inv_type.data == 3:
+			flash('denna funktion är inte igång än', category="danger")
+			#flash('Faktura skickad till '+ form.phone.data, category='success')
 		if emb:
 			return {'message' : "Invoice sent"}
 		else:
 			return redirect(url_for('invoices.getAll'))
+
+	#print(emb)
 	
-	print(emb)
 	return render_template('invoice.html', form=form, embedded=emb)
 
 
@@ -181,22 +186,28 @@ def removeInvoice_site(invoice_id):
 def changeInvoice_site(invoice_id):
 
 	form = ChangeInvoice()
+
 	
 	emb=False
 	invoice_to_change=Invoice.query.filter_by(invoiceid=invoice_id).first()
 	from_rejected=invoice_to_change.statusid
 	print(invoice_to_change)
 	#print("username: ", form.username.data)
+	if request.method == 'GET':
+		form.description.data=invoice_to_change.description
 	if form.validate_on_submit():
-		invoice_to_change.update(form.description.data, form.amount.data)
-		print(invoice_to_change)
-		#db.session.add(invoice)
-		#db.session.commit()
-		#print(form.receiver.data, form.description.data, form.amount.data)
-		if from_rejected == 3:
-			flash('Fakturan uppdaterad och skickad!', category='success')
-		else:	
-			flash('Fakturan uppdaterad!', category='success')
+		if invoice_to_change.description == form.description.data and invoice_to_change.amount == form.amount.data:
+			flash('Ingen ändring gjord', category='warning')
+		else:
+			invoice_to_change.update(form.description.data, form.amount.data)
+			print(invoice_to_change)
+			#db.session.add(invoice)
+			#db.session.commit()
+			#print(form.receiver.data, form.description.data, form.amount.data)
+			if from_rejected == 3:
+				flash('Fakturan uppdaterad och skickad!', category='success')
+			else:	
+				flash('Fakturan uppdaterad!', category='success')
 		return redirect(url_for('invoices.getAll'))
 	return render_template('invoice.html', form=form, embedded=emb, change=True, invoice=invoice_to_change)
 

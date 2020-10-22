@@ -8,19 +8,19 @@
 <form class="form-signin" role="form" method="post" action="">
   {{ form.csrf_token }}
   <p>
-    {{ form.username(placeholder="användarnamn") }}
-    <span class="error">{% if error %}{{error}}{%endif%}
+    <label for="exampleInputEmail1">Användarnamn</label>
+    {{ form.username(class_="form-control", placeholder="användarnamn") }}
+    <span class="error col-sm-2 col-form-label text-danger">{% if error %}{{error}}{%endif%}
       {% if form.username.errors %}
       {% for error in form.username.errors %}
       {{ error }}
       {% endfor %}
       {% endif %}
     </span>
-  </p>
-  
-  <p>
-    {{ form.password(placeholder="lösenord") }}
-    <span class="error">{% if error %}{{error}}{%endif%}
+ <br>
+    <label for="exampleInputEmail1">Lösenord</label>
+    {{ form.password(class_="form-control", placeholder="lösenord") }}
+    <span class="error col-sm-2 col-form-label text-danger">{% if error %}{{error}}{%endif%}
       {% if form.password.errors %}
       {% for error in form.password.errors %}
       {{ error }}
