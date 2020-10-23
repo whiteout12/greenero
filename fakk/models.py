@@ -11,6 +11,8 @@ class User(db.Model):
     __tablename__ = "users"
 
     userid = db.Column(db.Integer, primary_key=True)
+    usertype = db.Column(db.Integer)
+    credits = db.Column(db.Integer)
     phone = db.Column(db.String)
     firstname = db.Column(db.String)
     lastname = db.Column(db.String)
