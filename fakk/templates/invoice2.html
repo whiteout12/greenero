@@ -14,7 +14,7 @@
     <a class="mr-2" href="{{ url_for('main.home')}}">faktura{{ invoice.invoiceid }}</a>
     <a class="mr-2" href="{{ url_for('contacts.friend_view_site', friend_id=invoice.sender.userid)}}">{{ invoice.sender.username }}</a>
     <small class="text-muted">{{ invoice.date_created.strftime('%Y-%m-%d') }}</small>
-    <img width="15" height="15" src="{{ url_for('static', filename='due.png') }}">
+    
     <small class="text-muted">{{ invoice.date_due.strftime('%Y-%m-%d') }}</small>
   </div>
   <h4><a class="article-title" href="{{ url_for('main.home') }}">{{ invoice.description }}</a></h4>

@@ -6,11 +6,14 @@ from fakk.utils.swish_qr_gen import swishQR, swishQRbase64
 from flask_weasyprint import HTML, render_pdf
 from fakk import mail
 import io
-from fakk import db
+from fakk import db, mail
 from fakk.models import User, Invoice
 import urllib.parse
 import json
 from fakk.utils.send_sms import sendSMS
+from fakk.utils.tokens import load_invoice_token, generate_invoice_token
+from flask_mail import Message
+
 
 invoices = Blueprint('invoices', __name__, url_prefix='/site/invoice')
 
@@ -29,7 +32,7 @@ def createInvoice(embedded):
 		choices.append((i.frienduserid, i.rel_receiver.username))
 	
 	form.receiver.choices = choices
-	print(choices)
+	#print(choices)
 	if embedded=="False":
 		emb=False
 	else:
@@ -45,17 +48,177 @@ def createInvoice(embedded):
 				receiving_user=form.receiver.data
 				
 				)
-			print(invoice)
+			#print(invoice)
 
 			db.session.add(invoice)
 			db.session.commit()
+			#print(invoice.invoiceid)
 			
-			flash('Faktura skickad!', category='success')
+			flash('Faktura skickad till '+invoice.receiver.username+'!', category='success')
 		elif form.inv_type.data == 2:
-			flash('denna funktion är inte igång än', category="danger")
+
+			is_user_with_email = User.query.filter_by(email=form.email.data, confirmed_email=True).first()
+			print(is_user_with_email)
+			if(is_user_with_email):
+				print('hittade riktig användare')
+				invoice = Invoice(
+				amount=form.amount.data,
+				description=form.description.data,
+				userid=current_user.userid,
+				receiving_user=is_user_with_email.userid
+				)
+				print(invoice)
+
+				db.session.add(invoice)
+				db.session.commit()
+				#print(invoice.invoiceid)
+				print(current_user.credits)
+				current_user.credits -= 2
+				db.session.commit()
+				print(current_user.credits)
+				package_locked = generate_invoice_token(form.receiver.data, invoice.invoiceid)
+				flash('Faktura skickad till '+form.email.data+'!', category='success')
+
+			elif User.query.filter_by(usertype=1, email=form.email.data).first():
+				#print('hittade dummy användare')
+				dummyuser = User.query.filter_by(usertype=1, email=form.email.data).first()
+				invoice = Invoice(
+				amount=form.amount.data,
+				description=form.description.data,
+				userid=current_user.userid,
+				receiving_user=dummyuser.userid
+				
+				)
+				#print(invoice)
+
+				db.session.add(invoice)
+				db.session.commit()
+				#print(invoice.invoiceid)
+				print(current_user.credits)
+				current_user.credits -= 2
+				db.session.commit()
+				print(current_user.credits)
+				package_locked = generate_invoice_token(form.receiver.data, invoice.invoiceid)
+				flash('Faktura skickad till '+form.email.data+'!', category='success')
+
+			else:
+				print('skapar ny dummy användare')
+				newdummyuser = User(
+				username=None,
+				#email=form.email.data,
+				password='dummy',
+				usertype=1,
+				credits=None 
+				)
+				db.session.add(newdummyuser)
+				db.session.commit()
+				newdummyuser.email = form.email.data
+				db.session.commit()
+
+				invoice = Invoice(
+				amount=form.amount.data,
+				description=form.description.data,
+				userid=current_user.userid,
+				receiving_user=newdummyuser.userid
+				
+				)
+				#print(invoice)
+
+				db.session.add(invoice)
+				db.session.commit()
+				#print(invoice.invoiceid)
+				print(current_user.credits)
+				current_user.credits -= 2
+				db.session.commit()
+				print(current_user.credits)
+				package_locked = generate_invoice_token(form.receiver.data, invoice.invoiceid)
+				flash('Faktura skickad till '+form.email.data+'!', category='success')
+			#send email
+			username=current_user.username
+			#swish_qr_base64=swishQRbase64(sender.phone, invoice['invoice']['amount'], invoice['invoice']['description'])
+			#html = HTML(string=render_template('invoice_pdf_template.html', username=sender.username, invoice=invoice['invoice'], qrCode_base64=swish_qr_base64, css1=url_for('static', filename='invoice_pdf/boilerplate.css'), css2=url_for('static', filename='invoice_pdf/main.css'), css3=url_for('static', filename='invoice_pdf/normalize.css')))
+			confirm_url = url_for('main.invoice_site', invoice_token=package_locked, _external=True)
+			#pdf = io.BytesIO(html.write_pdf())
+			msg = Message("Du har blivit fakkad :)",
+		                  sender="bjorncarlsson87@gmail.com",
+		                  recipients=[form.email.data])
+			msg.body = "Du har blivit fakkad, se bifogat" + confirm_url
+			#msg.attach('invoice.pdf', 'application/pdf', data=pdf.read())
+			mail.send(msg)	
 			#flash('Faktura skickad till '+ form.email.data, category='success')
 		elif form.inv_type.data == 3:
-			flash('denna funktion är inte igång än', category="danger")
+
+			is_user_with_phone = User.query.filter_by(phone=form.phone.data, confirmed_phone=True).first()
+			#print(is_user_with_phone)
+			if(is_user_with_phone):
+				invoice = Invoice(
+				amount=form.amount.data,
+				description=form.description.data,
+				userid=current_user.userid,
+				receiving_user=is_user_with_phone.userid
+				
+				)
+				#print(invoice)
+
+				db.session.add(invoice)
+				db.session.commit()
+				#print(invoice.invoiceid)
+				#Skicka SMS
+				package_locked = generate_invoice_token(form.receiver.data, invoice.invoiceid)
+				
+
+			elif User.query.filter_by(usertype=1, phone=form.phone.data).first():
+				dummyuser = User.query.filter_by(usertype=1, phone=form.phone.data).first()
+				invoice = Invoice(
+				amount=form.amount.data,
+				description=form.description.data,
+				userid=current_user.userid,
+				receiving_user=dummyuser.userid
+				
+				)
+				#print(invoice)
+
+				db.session.add(invoice)
+				db.session.commit()
+				#print(invoice.invoiceid)
+				package_locked = generate_invoice_token(form.receiver.data, invoice.invoiceid)
+
+			else:
+
+				newdummyuser = User(
+				username=None,
+				#email=form.email.data,
+				password='dummy',
+				usertype=1,
+				credits=None 
+				)
+				db.session.add(newdummyuser)
+				db.session.commit()
+				newdummyuser.phone = form.phone.data
+				db.session.commit()
+
+				invoice = Invoice(
+				amount=form.amount.data,
+				description=form.description.data,
+				userid=current_user.userid,
+				receiving_user=newdummyuser.userid
+				
+				)
+				#print(invoice)
+
+				db.session.add(invoice)
+				db.session.commit()
+				#print(invoice.invoiceid)
+				package_locked = generate_invoice_token(form.receiver.data, invoice.invoiceid)
+
+			confirm_url = url_for('main.invoice_site', invoice_token=package_locked, _external=True)
+			message = 'Du har fått en faktura av ' + current_user.phone + ' ' + confirm_url
+			#flash('Faktura skickad!', category='success')
+			sms_status = sendSMS(form.phone.data, message)
+			#print('sms_status', sms_status)
+			current_user.credits -= 5
+			db.session.commit()
+			flash('Faktura skickad till ' +str(form.phone.data), category='success')
 			#flash('Faktura skickad till '+ form.phone.data, category='success')
 		if emb:
 			return {'message' : "Invoice sent"}
@@ -147,6 +310,20 @@ def view_invoice_site(invoice_id):
 	print(swish_qr_base64)
 
 	return render_template('invoice2.html', title='Fakturor',invoice=invoice, qr_code=swish_qr_base64)
+
+@invoices.route('/<invoice_token>/')
+
+def view_open_invoice_site(invoice_token):
+	
+	package = load_invoice_token(invoice_token)
+	print(package)
+	print(package[0])
+	invoice = Invoice.query.filter_by(invoiceid=package[1]).first()
+	swish_qr_base64=swishQRbase64(invoice.sender.phone, invoice.amount, invoice.description)
+	#print(swish_qr_base64)
+
+	#return render_template('invoice2.html', title='Fakturor',invoice=invoice, qr_code=swish_qr_base64)
+	return render_template('view_invoice.html', title='Faktura',invoice=invoice, qr_code=swish_qr_base64)
 
 @invoices.route('/<invoice_id>/pay', methods=['GET', 'POST'])
 @login_required

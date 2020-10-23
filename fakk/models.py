@@ -33,12 +33,16 @@ class User(db.Model):
     #db.UniqueConstraint(userid)
     #__table_args__ = (db.UniqueConstraint('userid'), )
 
-    def __init__(self, username, password):
+    def __init__(self, username, password, usertype, credits):
         self.username = username
         #self.email = email
         self.password = bcrypt.generate_password_hash(password).decode('utf-8')
-        self.confirmed = False
-        self.confirmed_on = None
+        #self.confirmed_email = False
+        #self.confirmed_email_on = None
+        #self.confirmed_phone = False
+        #self.confirmed_phone_on = None
+        self.usertype = usertype
+        self.credits=credits
         #self.password = password
 
     def is_authenticated(self):

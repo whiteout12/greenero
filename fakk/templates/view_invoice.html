@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% block content %}
+
+<article class="media content-section">
+  <table>
+    <tr>
+      <td>
+        <img class="article-img" src="{{ url_for('static', filename='inv_ico.png') }}">
+      </td>
+    </tr>
+    <tr>
+      <td>
+
+        faktura{{ invoice.invoiceid }}
+      </td>
+    </tr>
+    
+    
+  </table>        
+
+  <div class="media-body">
+    <div class="article-metadata">
+     
+    {%if invoice.receiver.username %}
+      <a href="{{ url_for('contacts.friend_view_site', friend_id=invoice.sender.userid)}}">{{ invoice.sender.username }}</a>&#8594{{ invoice.receiver.username }}
+    {%elif invoice.receiver.phone %}
+      {{ invoice.sender.username }}<small>({{ invoice.sender.phone }})</small></a> &#8594 {{ invoice.receiver.phone }}
+    {%else%}
+    {{ invoice.sender.username }}<small>({{ invoice.sender.email }})</small></a> &#8594 {{ invoice.receiver.email }}
+     {%endif%}
+
+     
+     
+     
+     
+   </div>
+   <h4><a class="article-title" href="{{ url_for('main.home') }}">{{ invoice.description }}</a></h4>
+ 
+<div class="invoice-content">
+  
+   &#128176; {{ invoice.amount }}kr
+    <br>
+  
+  
+   
+   Skapad: {{ invoice.date_created.strftime('%Y-%m-%d') }}
+   <br>
+   Betalas: {{ invoice.date_due.strftime('%Y-%m-%d') }}
+   <br>
+   Version: {{ invoice.invoice_version }}
+   <br>
+   {%if invoice.statusid==1%}
+    Status: Ej Betald
+ <br>
+ {%if invoice.sender.confirmed_phone %}
+ <br>
+
+         Betala med<button type="button" class="btn btn-success article-btn m-1" data-toggle="modal" data-target="#swishModal{{invoice.invoiceid}}"><img src="{{ url_for('static', filename='swish-logotype.svg') }}" width="70"></button>
+     {%endif%}
+     <br>
+     <br>
+<a class="btn btn-sm btn-success article-btn m-1" href="{{ url_for('invoices.payInvoice_site', invoice_id=invoice.invoiceid) }}">&#10004; Betald</a>
+    <button type="button" class="btn btn-warning btn-sm m-1" data-toggle="modal" data-target="#rejectModal{{invoice.invoiceid}}">Bestrid</button>
+    <a class="btn btn-sm btn-primary article-btn m-1" href="{{ url_for('invoices.renderpdf', inv=invoice.invoiceid) }}">&#8595;PDF</a>
+{%endif%}
+{%if invoice.statusid==2%}
+ Status: Betald!
+{%endif%}
+</div>
+ 
+
+
+</article>
+<div class="modal fade" id="rejectModal{{invoice.invoiceid}}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel">Bestrid faktura{{invoice.invoiceid}}?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form action="{{ url_for('invoices.rejectInvoice_site', invoice_id=invoice.invoiceid) }}" method="POST">
+          <input class="form-control" type="text" placeholder="Anledning" id="reason" name="reason" required oninvalid="this.setCustomValidity('Måste ange en anledning')" oninput="this.setCustomValidity('')">  
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Stäng</button>
+          
+          
+          
+          <input class="btn btn-danger" type="submit" value="Skicka">
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="swishModal{{invoice.invoiceid}}" tabindex="-1" role="dialog" aria-labelledby="swishModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="swishModalLabel">Betala faktura{{invoice.invoiceid}} med Swish?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body text-center">
+
+        
+       <a class="btn btn-success" href="swish://payment?data=%7B%22version%22%3A%201%2C%20%22payee%22%3A%20%7B%22value%22%3A%20%22{{invoice.sender.phone}}%22%7D%2C%20%22message%22%3A%20%7B%22value%22%3A%20%22faktura{{invoice.invoiceid}}%2C%20{{invoice.description}}%22%2C%20%22editable%22%3A%20false%7D%2C%20%22amount%22%3A%20%7B%22value%22%3A%20{{invoice.amount}}%2C%20%22editable%22%3A%20false%7D%7D&callbackurl={{url_for('invoices.test_callback', invoice_token=invoice.invoiceid, callback=rest, _external=True)}}&callbackresultparameter=res"><img src="{{ url_for('static', filename='swish-logotype.svg') }}" width="100"></a><p></p><p></p>
+       
+       <a>
+         <img src="data:image/svg+xml;base64,{{ (invoice.sender.phone)|qrbase64(invoice.amount, invoice.description) }}" width="150"></img></a>
+       </div>
+       <div class="modal-footer">
+        
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        
+        
+        
+        
+        
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+ $(document).ready(function(){
+   
+  $("#swishModal{{invoice.invoiceid}}").on('hidden.bs.modal', function(){
+    /*alert('The modal is now hidden.');*/
+    console.log("reload")
+    location.reload();
+  });
+});
+</script>
+
+{% endblock %}

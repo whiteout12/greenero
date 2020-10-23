@@ -99,7 +99,7 @@
 </form>
 <br>
 <br> 
-<form method="post" action="/deleteaccount">
+<form method="post" action="{{ url_for('user.deleteaccount')}}">
   <input class="btn btn-sm btn-danger" type="submit" value="Ta bort mitt konto!" onclick="return confirm('OK att ta bort konto? Detta är permanent och alla dina uppgifter kommer att raderas!')">
 </form>
 <br>

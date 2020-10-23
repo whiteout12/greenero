@@ -53,8 +53,9 @@
      
       {{ subfield }}
 
-      {{ subfield.label }}
+      {{ subfield.label }} <small>(Avgift: 2 &#129373-krediter)</small>
       {{form.email(class_="form-control", placeholder="E-mail")}}
+      <small id="emailHelp" class="form-text text-muted">Din E-mailadress kommer att vara synlig för mottagaren</small>
       
         <span class="error col-sm-2 col-form-label text-danger">
           {% if form.email.errors %}
@@ -72,9 +73,10 @@
       {%if current_user.confirmed_phone%}
       
       {{ subfield }}
-      {{ subfield.label }}
+      {{ subfield.label }} <small>(Avgift: 5 &#129373-krediter)</small>
       {{form.phone(class_="form-control", placeholder="Telefonummer", pattern="[0-9]*")}}
       <small id="emailHelp" class="form-text text-muted">07XXXXXXXX</small>
+      <small id="emailHelp" class="form-text text-muted">Ditt telefonnummer kommer att vara synligt för mottagaren</small>
          <span class="error col-sm-2 col-form-label text-danger">
           {% if form.phone.errors %}
           {% for error in form.phone.errors %}

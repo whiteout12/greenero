@@ -2,7 +2,7 @@ from flask import render_template, Blueprint, flash, url_for, redirect, request
 from flask_login import login_required, current_user, login_user, logout_user
 from fakk.forms import ChangeUserForm, RegisterForm, LoginForm, ResetPasswordForm
 from fakk import bcrypt, db
-from fakk.models import User, Relationship
+from fakk.models import User, Relationship, Invoice
 from fakk.utils.token_email import generate_confirmation_token, confirm_token, send_confirmation_link_email, send_confirmation_link_email2, send_password_link_email
 from datetime import datetime
 import random
@@ -25,7 +25,9 @@ def register():
 		user = User(
 			username=form.username.data,
 			#email=form.email.data,
-			password=form.password.data
+			password=form.password.data,
+			usertype=2,
+			credits=100 
 			)
 		db.session.add(user)
 		db.session.commit()
@@ -170,6 +172,20 @@ def confirm_email(token):
 		db.session.add(user)
 		db.session.commit()
 		flash('Din emailadress har bekräftats!', category='success')
+		print('letar fakturor')
+		if User.query.filter_by(usertype=1, email=email).first_or_404():
+			print('hittade anv')
+			print(user)
+			print(user.userid)
+			dummyuser = User.query.filter_by(usertype=1, email=email).first_or_404()
+			invoices = Invoice.query.filter_by(frienduserid=dummyuser.userid).all()
+			for invoice in invoices:
+				print(invoice)
+				invoice.frienduserid = user.userid
+				db.session.commit()
+			dummyuser.delete()
+			db.session.commit()
+			flash('Hittade lite fakturor som tidigare varit kopplad till din E-mailadress. De är nu kopplade till ditt konto.', category='success')
 	return redirect(url_for('user.profile'))
 
 @user.route('/reset/<token>', methods=['GET', 'POST'])
@@ -209,6 +225,17 @@ def confirm_email2():
 		db.session.add(user)
 		db.session.commit()
 		flash('Din emailadress har bekräftats!', category='success')
+		print('letar fakturor')
+		if User.query.filter_by(usertype=1, email=email).first_or_404():
+			print('hittade anv')
+			dummyuser = User.query.filter_by(usertype=1, email=email).first_or_404()
+			invoices = Invoice.query.filter_by(frienduserid=dummyuser.userid).all()
+			for invoice in invoices:
+				print(invoice)
+				invoice.frienduserid = user.userid
+			dummyuser.delete()
+			db.session.commit()
+			flash('Hittade en eller flera fakturor som tidigare varit kopplad till din E-mailadress. De är nu kopplade till ditt konto.', category='success')
 	return redirect(url_for('user.profile'))
 
 @user.route('/confirm/phone', methods=['GET', 'POST'])
@@ -226,13 +253,28 @@ def confirm_phone():
 				current_user.confirmed_phone_on = datetime.now()
 				current_user.confirmed_phone_otp = None
 				db.session.commit()
-				users = User.query.filter(User.phone==current_user.phone, User.confirmed_phone==None).all()
+				users = User.query.filter(User.usertype==2, User.phone==current_user.phone, User.confirmed_phone==None).all()
 				print(users)
 				if users:
 					for user in users:
 						user.phone = None
 					db.session.commit()
 				flash('Telefonummer bekräftat', category='success')
+				print('letar fakturor')
+				if User.query.filter_by(usertype=1, phone=current_user.phone).first_or_404():
+					print('hittade anv')
+					#print(user)
+					#print(user.userid)
+					dummyuser = User.query.filter_by(usertype=1, phone=current_user.phone).first_or_404()
+					print(dummyuser)
+					invoices = Invoice.query.filter_by(frienduserid=dummyuser.userid).all()
+					for invoice in invoices:
+						print(invoice)
+						invoice.frienduserid = current_user.userid
+						db.session.commit()
+					dummyuser.delete()
+					db.session.commit()
+					flash('Hittade en eller flera fakturor som tidigare varit kopplade till ditt telefonnummer. De är nu kopplade till ditt konto.', category='success')
 			else:
 				flash('Kod ej gilitg. Du kan skicka efter en ny', category='warning')
 		except ValueError:
