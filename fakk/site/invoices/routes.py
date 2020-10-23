@@ -319,6 +319,9 @@ def view_open_invoice_site(invoice_token):
 	print(package)
 	print(package[0])
 	invoice = Invoice.query.filter_by(invoiceid=package[1]).first()
+	if not invoice:
+		return "ingen faktura hittad."
+	
 	swish_qr_base64=swishQRbase64(invoice.sender.phone, invoice.amount, invoice.description)
 	#print(swish_qr_base64)
 
