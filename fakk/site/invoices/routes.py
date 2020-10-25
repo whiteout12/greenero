@@ -317,7 +317,7 @@ def view_open_invoice_site(invoice_token):
 	
 	package = load_invoice_token(invoice_token)
 	print(package)
-	print(package[0])
+	
 	invoice = Invoice.query.filter_by(invoiceid=package[1]).first()
 	if not invoice:
 		return "ingen faktura hittad."

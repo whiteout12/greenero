@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import TextField, PasswordField, SelectField, TextAreaField, IntegerField, RadioField
+from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, NoneOf, ValidationError, Optional, NumberRange, StopValidation, Regexp
 #from fakk import db
 from fakk.models import User
@@ -142,7 +143,7 @@ class CreateInvoice(FlaskForm):
         validators=[is_user_chosen, validate_receiver]
     )
 
-    email = TextField(
+    email = EmailField(
         'E-mail',
         validators= [is_email_chosen, Email(message='Fel format för E-mail'), Length(min=6, max=40, message='Fel längd')]
     )

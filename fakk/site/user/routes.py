@@ -54,11 +54,12 @@ def login():
 				flash('Inloggad! Välkommen in i värmen', category="success")
 				return redirect(next or url_for('main.home'))
 			else:
-				error = 'Invalid credentials. Please try again!'
+				error = 'Felaktiga inloggningsuppgifter. Försök igen!'
 				print(error)
 	return render_template("login.html", form=form, error=error)
 
 @user.route('/profile', methods=['GET', 'POST'])
+@login_required
 def profile():
 	return render_template("user_profile.html")
 
@@ -100,7 +101,7 @@ def changeuser():
 					update = True
 			else:
 				current_user.phone = form.phone.data
-				n = random.randint(1000,10000)
+				n = random.randint(1000,9999)
 				print(n)
 				message = 'ange koden för att bekräfta telefonnummer. Kod: ' + str(n)
 				sms_status = sendSMS(form.phone.data, message)
@@ -156,36 +157,43 @@ def logout():
 	flash('Utloggad, välkommen åter', category='success')
 	return redirect(url_for('main.welcome'))
 
-@user.route('/confirm/<token>')
+@user.route('/confirm/email/<token>')
 #@login_required
 def confirm_email(token):
-	try:
-		email = confirm_token(token)
-	except:
+
+	email = confirm_token(token)
+	print('confirm token', email)
+	if email==False:
+		print('email', email)
 		flash('Länken har utgått eller är ej gilitg.', category='danger')
-	user = User.query.filter_by(email=email).first_or_404()
-	if user.confirmed_email:
-		flash('Emailadressen redan bekräftad.', category='success')
 	else:
-		user.confirmed_email = True
-		user.confirmed_email_on = datetime.now()
-		db.session.add(user)
-		db.session.commit()
-		flash('Din emailadress har bekräftats!', category='success')
-		print('letar fakturor')
-		if User.query.filter_by(usertype=1, email=email).first_or_404():
-			print('hittade anv')
-			print(user)
-			print(user.userid)
-			dummyuser = User.query.filter_by(usertype=1, email=email).first_or_404()
-			invoices = Invoice.query.filter_by(frienduserid=dummyuser.userid).all()
-			for invoice in invoices:
-				print(invoice)
-				invoice.frienduserid = user.userid
-				db.session.commit()
-			dummyuser.delete()
+		user = User.query.filter_by(usertype=2, email=email).first()
+		if user.confirmed_email:
+			flash('Emailadressen redan bekräftad.', category='success')
+		else:
+			user.confirmed_email = True
+			user.confirmed_email_on = datetime.now()
+			db.session.add(user)
 			db.session.commit()
-			flash('Hittade lite fakturor som tidigare varit kopplad till din E-mailadress. De är nu kopplade till ditt konto.', category='success')
+			flash('Din E-mailadress har bekräftats!', category='success')
+			print('letar fakturor')
+			print(email)
+			if User.query.filter_by(usertype=1, email=email).first():
+				print('hittade anv')
+				print(user)
+				print(user.userid)
+				dummyuser = User.query.filter_by(usertype=1, email=email).first()
+				print('dummyuser', dummyuser)
+				if dummyuser:
+					invoices = Invoice.query.filter_by(frienduserid=dummyuser.userid).all()
+					for invoice in invoices:
+						print(invoice)
+						invoice.frienduserid = user.userid
+						db.session.commit()
+					dummyuser.delete()
+					db.session.commit()
+					flash('Hittade lite fakturor som tidigare varit kopplad till din E-mailadress. De är nu kopplade till ditt konto.', category='success')
+			#print('går mot main.home')
 	return redirect(url_for('user.profile'))
 
 @user.route('/reset/<token>', methods=['GET', 'POST'])
@@ -236,7 +244,7 @@ def confirm_email2():
 			dummyuser.delete()
 			db.session.commit()
 			flash('Hittade en eller flera fakturor som tidigare varit kopplad till din E-mailadress. De är nu kopplade till ditt konto.', category='success')
-	return redirect(url_for('user.profile'))
+	return redirect(url_for('main.home'))
 
 @user.route('/confirm/phone', methods=['GET', 'POST'])
 @login_required
@@ -292,12 +300,12 @@ def send_email_confirmation_link():
 @login_required
 def send_sms_confirmation_code():
 
-	n = random.randint(1000,10000)
+	n = random.randint(1000,9999)
 	current_user.confirmed_phone_otp = n
 	current_user.confirmed_phone_on = None
 	current_user.confirmed_phone = None
 	db.session.commit()
-	message = 'ange koden för att bekräfta telefonnummer. Kod: ' + str(n)
+	message = 'Ange koden för att bekräfta telefonnummer. Kod: ' + str(n)
 	sms_status = sendSMS(current_user.phone, message)
 	print('sms_status', sms_status)
 	flash('Ett SMS har skickats till ' +str(current_user.phone), category='success')

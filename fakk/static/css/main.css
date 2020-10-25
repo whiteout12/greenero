@@ -146,3 +146,31 @@ a.article-title:hover {
   color: white;
   text-align: center;
 }
+
+#user2
+{
+    display:none;
+}
+#email2
+{
+    display:none;
+}
+
+#phone2
+{
+    display:none;
+}
+#inv_type-0:checked ~ #user2
+{
+  display: block;
+}
+#inv_type-1:checked ~ #email2
+{
+  display: block;
+}
+
+#inv_type-2:checked ~ #phone2
+{
+  display: block;
+}
+

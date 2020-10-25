@@ -33,6 +33,7 @@
       <p>
       {{ subfield }}
       {{ subfield.label }}
+      <span id="user2">
 
         {{form.receiver(class_="form-control", placeholder="mottagare")}}
          <span class="error col-sm-2 col-form-label text-danger">
@@ -42,7 +43,7 @@
           {% endfor %}
           {% endif %}
          </span>
-      
+      </span>
       </p>
       {%endif%}
 
@@ -52,9 +53,11 @@
       
      
       {{ subfield }}
-
       {{ subfield.label }} <small>(Avgift: 2 &#129373-krediter)</small>
+      <span id="email2">
+      
       {{form.email(class_="form-control", placeholder="E-mail")}}
+      <small id="emailHelp" class="form-text text-muted">Du kan hämta adresser från din telefon med "autofill"</small>
       <small id="emailHelp" class="form-text text-muted">Din E-mailadress kommer att vara synlig för mottagaren</small>
       
         <span class="error col-sm-2 col-form-label text-danger">
@@ -65,6 +68,7 @@
           {% endif %}
          </span>
       {%endif%}
+      </span>
       </p>
       {%endif%}
 
@@ -74,8 +78,10 @@
       
       {{ subfield }}
       {{ subfield.label }} <small>(Avgift: 5 &#129373-krediter)</small>
+      <span id="phone2">
       {{form.phone(class_="form-control", placeholder="Telefonummer", pattern="[0-9]*")}}
       <small id="emailHelp" class="form-text text-muted">07XXXXXXXX</small>
+      <small id="emailHelp" class="form-text text-muted">Du kan hämta nummer från din telefonbok med "autofill"</small>
       <small id="emailHelp" class="form-text text-muted">Ditt telefonnummer kommer att vara synligt för mottagaren</small>
          <span class="error col-sm-2 col-form-label text-danger">
           {% if form.phone.errors %}
@@ -86,6 +92,7 @@
          </span>
       
       {%endif%}
+      <span id="phone2">
     </p>
       {%endif%}
         
@@ -114,9 +121,9 @@
   </p>
  <label for="exampleInputEmail1">Belopp</label>
   {% if change %} 
-  {{ form.amount(class_="form-control", placeholder=invoice.amount, value=invoice.amount) }}
+  {{ form.amount(class_="form-control", placeholder=invoice.amount, value=invoice.amount, pattern="[0-9]*") }}
   {% else %}
-  {{ form.amount(class_="form-control", placeholder="Belopp") }}
+  {{ form.amount(class_="form-control", placeholder="Belopp", pattern="[0-9]*") }}
   {% endif %}
   <span class="error col-sm-2 col-form-label text-danger">
     {% if form.amount.errors %}
