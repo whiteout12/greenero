@@ -33,6 +33,11 @@ def validate_phone_self(self,field):
     if current_user.phone == field.data:
         raise ValidationError('Du kan inte välja ditt eget nummer, väj ett annat!')
 
+def validate_email_self(self,field):
+    #if User.query.filter_by(phone=field.data, id=).first():
+    if current_user.email == field.data:
+        raise ValidationError('Du kan inte välja din egen adress, väj en annan!')
+
 def val_phone_format(self, field):
     if not field.data.startswith('07'):
         raise ValidationError('Fel format! Ska vara 07XXXXXXXX :)')
@@ -114,7 +119,7 @@ class ChangeUserForm(FlaskForm):
         'username',
         validators=[DataRequired(), validate_username, Length(min=3, max=25)]
     )
-    email = TextField(
+    email = EmailField(
         'email',
         validators=[Optional(), validate_email, Email(message=None), Length(min=6, max=40)]
     )
@@ -145,7 +150,7 @@ class CreateInvoice(FlaskForm):
 
     email = EmailField(
         'E-mail',
-        validators= [is_email_chosen, Email(message='Fel format för E-mail'), Length(min=6, max=40, message='Fel längd')]
+        validators= [is_email_chosen, validate_email_self, Email(message='Fel format för E-mail'), Length(min=6, max=40, message='Fel längd')]
     )
 
     phone = TextField(

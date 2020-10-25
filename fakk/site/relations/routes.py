@@ -36,7 +36,7 @@ def friend_search():
 		#	flash('Inget sökord angivet', category="warning")
 		#	return redirect(url_for('contacts.friends'))
 
-		result = User.query.filter(User.username.ilike(query), current_user.username!=User.username).all()
+		result = User.query.filter(User.usertype == 2, User.username.ilike(query), current_user.username!=User.username).all()
 		#print('result: ', result)
 		if result:
 			for user in result:

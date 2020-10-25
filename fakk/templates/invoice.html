@@ -18,7 +18,8 @@
 <h1>{% if change %}Ändra{% else %}Skapa{% endif %} faktura {% if embedded %}<a href="#" id="close" class="btn btn-sm btn-danger"><b>&times</b></a> {% endif %}</h1>
 <p></p>
 <br>
-<form role="form" method="post" action="" id="form_inv">
+ <label for="exampleInputEmail1">Till</label>
+<form role="form" method="post" action="" id="form_inv" novalidate>
   <div class="form-group">
 
   {{ form.csrf_token }}
