@@ -136,7 +136,7 @@ class ChangeUserForm(FlaskForm):
 class CreateInvoice(FlaskForm):
     
     
-    inv_type = RadioField('Alternativ',  coerce=int, choices=[(1,'Till någon av dina kontakter på fakk.'),(2,'Till någons E-mail'),(3,'Till någons telefon')], default=1)
+    inv_type = RadioField('Alternativ',  coerce=int, choices=[(1,'Kontakt på fakk.'),(2,'E-mail'),(3,'SMS')], default=1)
 
     receiver = SelectField('Receiver', coerce=int,
         
