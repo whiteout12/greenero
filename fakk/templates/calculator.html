@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+
+      <form name="calculator" class="form-group">
+         <table>
+            <tr>
+               <td colspan="4">
+                  <input type="text" class="form-control input-lg" name="display" id="display" disabled>
+               </td>
+            </tr>
+            <tr>
+               <td><input type="button" class="btn btn-primary btn-circle btn-md" name="one" value="1" onclick="calculator.display.value += '1'"></td>
+               <td><input type="button" class="btn btn-primary btn-circle btn-md"name="two" value="2" onclick="calculator.display.value += '2'"></td>
+               <td><input type="button" class="btn btn-primary btn-circle btn-md"name="three" value="3" onclick="calculator.display.value += '3'"></td>
+               <td><input type="button" class="operator btn btn-warning btn-circle btn-md" name="plus" value="&#43;" onclick="calculator.display.value += '+'"></td>
+            </tr>
+            <tr>
+               <td><input type="button" class="btn btn-primary btn-circle btn-md"name="four" value="4" onclick="calculator.display.value += '4'"></td>
+               <td><input type="button" class="btn btn-primary btn-circle btn-md"name="five" value="5" onclick="calculator.display.value += '5'"></td>
+               <td><input type="button" class="btn btn-primary btn-circle btn-md"name="six" value="6" onclick="calculator.display.value += '6'"></td>
+               <td><input type="button" class="operator btn btn-warning btn-circle btn-md" name="minus" value="&#8722;" onclick="calculator.display.value += '-'"></td>
+            </tr>
+            <tr>
+               <td><input type="button" class="btn btn-primary btn-circle btn-md"name="seven" value="7" onclick="calculator.display.value += '7'"></td>
+               <td><input type="button" class="btn btn-primary btn-circle btn-md"name="eight" value="8" onclick="calculator.display.value += '8'"></td>
+               <td><input type="button" class="btn btn-primary btn-circle btn-md"name="nine" value="9" onclick="calculator.display.value += '9'"></td>
+               <td><input type="button" class="operator btn btn-warning btn-circle btn-md" name="times" value="&#215;" onclick="calculator.display.value += '*'"></td>
+            </tr>
+            <tr>
+               <td><input type="button" class="btn btn-danger btn-circle btn-md" id="clear" name="clear" value="C" onclick="calculator.display.value = ''"></td>
+               <td><input type="button" class="btn btn-primary btn-circle btn-md" name="zero" value="0" onclick="calculator.display.value += '0'"></td>
+               <td><input type="button" class="btn btn-success btn-circle btn-md" name="doit" value="&#61;" onclick="calculator.display.value = eval(calculator.display.value)"></td>
+               <td><input type="button" class="operator btn btn-warning btn-circle btn-md" name="div" value="&#247;" onclick="calculator.display.value += '/'"></td>
+            </tr>
+         </table>
+      </form>
+   </body>
+   </head>
+</html>
+{% endblock %}

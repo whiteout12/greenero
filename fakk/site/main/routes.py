@@ -32,3 +32,12 @@ def welcome():
 def invoice_site(invoice_token):
 	
 	return redirect(url_for('invoices.view_open_invoice_site', invoice_token=invoice_token))
+
+@main.route('/calculator')
+@login_required
+def calculator():
+	#print(current_user)
+	
+
+	return render_template("calculator.html")
+

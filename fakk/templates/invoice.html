@@ -18,7 +18,7 @@
 <h1>{% if change %}Ändra{% else %}Skapa{% endif %} faktura {% if embedded %}<a href="#" id="close" class="btn btn-sm btn-danger"><b>&times</b></a> {% endif %}</h1>
 <p></p>
 <br>
- <label for="exampleInputEmail1">Till</label>
+ 
 <form role="form" method="post" action="" id="form_inv" novalidate>
   <div class="form-group">
 
@@ -27,7 +27,7 @@
     {% if change %}
     <p>Ändra i faktura{{invoice.invoiceid}} till {{ invoice.receiver.username }}</p>
     {% else %}
-
+<label for="exampleInputEmail1">Till</label>
     {% for subfield in form.inv_type %}
     
       {% if loop.index == 1 %}
@@ -149,7 +149,7 @@
 <p><a href="/">Back</a></p>
 {% else %}
 {% if change %}
-<button class="btn btn-sm btn-primary" type="submit" id="submit">Update invoice!</button>
+<button class="btn btn-sm btn-primary" type="submit" id="submit">Uppdatera!</button>
 {% else %}
 <button class="btn btn-sm btn-primary" type="submit" id="submit">Fakka!</button>
 {% endif %}

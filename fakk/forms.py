@@ -161,16 +161,16 @@ class CreateInvoice(FlaskForm):
 
     description = TextAreaField(
         'description',
-        validators=[DataRequired(), Length(min=5, max=160, message="Lite längre är nog bra för tydlighetens skull :)")]
+        validators=[DataRequired(message="Obligtoriskt fält"), Length(min=5, max=160, message="Lite längre är nog bra för tydlighetens skull :)")]
     )
-    amount = IntegerField('amount', validators=[DataRequired(), NumberRange(min=1, message='')]
+    amount = IntegerField('amount', validators=[DataRequired(message="Obligtoriskt fält"), NumberRange(min=1, message='Inte en siffra')]
     )
 
 class ChangeInvoice(FlaskForm):
     
     description = TextAreaField(
         'description',
-        validators=[DataRequired(), Length(min=5, max=160, message="Lite längre är nog bra för tydlighetens skull :)")]
+        validators=[DataRequired(message="Obligtoriskt fält"), Length(min=5, max=160, message="Lite längre är nog bra för tydlighetens skull :)")]
     )
-    amount = IntegerField('amount', validators=[DataRequired(), NumberRange(min=1, message='')]
+    amount = IntegerField('amount', validators=[DataRequired(message="Obligtoriskt fält"), NumberRange(min=1, message='')]
     )
