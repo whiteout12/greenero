@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>{{title}}</h2>
+<br>
+<a class="mr-2 btn btn-sm btn-primary" href="{{ url_for('bills.createBill')}}">Skapa Nota</a>
+
+<h2>Skickade notor</h2>
+{%for bill in current_user.bills%}
+
+{{loop.index}}<br>
+<p>{{bill.title}}</p>
+Skapare: {{bill.payee.username}}<br>
+Skapad: {{ bill.date_created.strftime('%Y-%m-%d') }}<br>
+Mappnamn: {{bill.filefolder}}<br>
+Summa nota: {{bill.amount_bill}}<br>
+Summa total: {{bill.amount_total}}<br>
+Summa taget totalt: {{ bill.claims |sum(attribute='amount_owed') }}<br>
+<a class="mr-2" href="{{ url_for('bills.oneBill', billid=bill.billid)}}">Nota</a><br>
+kvitto:
+
+<img class="img-fluid" src="{{ url_for('bills.uploaded_file', folder=bill.filefolder, filename=bill.receipts[0].filename) }}">
+
+<br>
+Deltagare<br>
+{% for participant in bill.claims%}<br>
+{{loop.index}}<br>
+Notaskuld ID: {{participant.billdebtid}}<br>
+Skapad: {{participant.date_created.strftime('%Y-%m-%d')}}<br>
+Användare {{participant.payer.username}}<br>
+Summa taget: {{participant.amount_owed}}<br>
+Faktura{{participant.invoice[0].invoiceid}}<br>
+Utställare: {{participant.invoice[0].sender.username}}<br>
+Mottagare: {{participant.invoice[0].receiver.username}}<br>
+
+
+
+{%endfor%}
+{%endfor%}
+
+{% endblock %}

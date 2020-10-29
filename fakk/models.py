@@ -3,6 +3,7 @@ from fakk import db, bcrypt
 from sqlalchemy import ForeignKey, func, DateTime
 from datetime import datetime, timedelta
 from sqlalchemy.orm import relationship, backref
+import secrets
 
 # create user 
 #class User(db.Model, UserMixin):
@@ -235,7 +236,7 @@ class Bill(db.Model):
     title = db.Column(db.String)
     amount_bill = db.Column(db.Numeric)
     amount_total = db.Column(db.Numeric)
-    filefolder = db.Column(db.String, default = 'bill')
+    filefolder = db.Column(db.String, default=secrets.token_hex(8))
     #amount_claimed = db.Column(db.Numeric)
 
     claims = relationship('BillDebt', backref='bill', cascade='all, delete')
@@ -258,11 +259,11 @@ class BillDebt(db.Model):
 
     billdebtid = db.Column(db.Integer, primary_key=True)
     date_created = db.Column(DateTime(timezone=True), server_default=func.now())
-    statusid = db.Column(db.Integer)
+    statusid = db.Column(db.Integer, default=0)
     
     payerid = db.Column(db.Integer, db.ForeignKey('users.userid'), nullable=False)
     
-    amount_owed = db.Column(db.Numeric)
+    amount_owed = db.Column(db.Numeric, default=0)
     #invoice = relationship('Invoice', foreign_keys='Relationship.userid')
     
     billid = db.Column(db.Integer, ForeignKey('bills.billid'))
@@ -296,12 +297,6 @@ class Receipt(db.Model):
     ownerid = db.Column(db.Integer, db.ForeignKey("users.userid"), nullable=False)
     
 
-    def __init__(self, userid, ownerid, filename, billid):
-        self.userid = userid
-        self.statusid = 1
-        self.ownerid = ownerid
-        self.filename = filename
-        self.billid = billid
 
     def delete(self):
         db.session.delete(self)

@@ -29,9 +29,9 @@ def overviewBill():
 	#print('bill', bill)
 	#db.session.add(bill)
 	#db.session.commit()
-	for bill in current_user.bills:
-		bill.delete()
-		db.session.commit()
+	#for bill in current_user.bills:
+	#	bill.delete()
+	#	db.session.commit()
 	##self, userid, receiving_user, amount, description
 	#billdebt = BillDebt(payer=current_user, bill=bill)
 	#db.session.add(billdebt)
@@ -45,15 +45,24 @@ def overviewBill():
 	print(bills)
 	print(billdebts)
 	print(invoices)
-	return render_template('BillOverview.html', title='Notor')
+	return render_template('Bill_Overview_all.html')
 
-def save_receipt(form_receipt):
+@bills.route('/<billid>/view', methods=['GET', 'POST'])
+@login_required
+def oneBill(billid):
+	bill=Bill.query.filter_by(billid=billid).first()
+	if bill.payee == current_user:
+		return render_template('BillOverview.html', bill=bill)
+	else:
+		return 'Not authorized'
+
+def save_receipt(form_receipt, folder):
 	random_filename = secrets.token_hex(8)
 	random_foldername = secrets.token_hex(8)
 	#f_name
 	_, f_ext = os.path.splitext(form_receipt.filename)
 	receipt_fn = random_filename + f_ext
-	receipt_path = os.path.join(app.config['RECEIPT_UPLOAD_FOLDER'], random_foldername)
+	receipt_path = os.path.join(app.config['RECEIPT_UPLOAD_FOLDER'], folder)
 	#path = '/Users/bjorncarlsson/Python/fakk-images'
 	if not os.path.isdir(receipt_path):
 		print('skapar dir: ', receipt_path)
@@ -69,7 +78,7 @@ def save_receipt(form_receipt):
 	#form_receipt.save(filepath)
 	i.save(filepath)
 	#return 'Receipt sparat som '+receipt_fn+' i '+receipt_path
-	return random_foldername, receipt_fn
+	return receipt_fn
 
 
 @bills.route('/create', methods=['GET', 'POST'])
@@ -85,18 +94,29 @@ def createBill():
 	form.participants.choices = choices
 	
 	if form.validate_on_submit():
-		if form.receipt.data:
+		#if form.receipt.data:
 
-			shex = save_receipt(form.receipt.data)
-		flash('allt ifyllt korrektn!', category="success")
-		flash('Skickar nota till:', category="success")
-		if form.sms_bool.data:
-			flash(form.phones.data, category="success")
-		if form.contact_bool.data:
-			flash(form.participants.data, category="success")
-		flash('Summa: ' + str(form.amount.data), category="success")
-		flash('Totalsumma: ' + str(form.totalamount.data), category="success")
+		#	shex = save_receipt(form.receipt.data)
 		
+		
+		bill = Bill(payee=current_user, amount_bill=form.amount.data, amount_total=form.totalamount.data, title=form.description.data)
+		db.session.add(bill)
+		db.session.commit()
+		if form.receipt.data:
+			shex = save_receipt(form.receipt.data, bill.filefolder)
+			receipt = Receipt(owner=current_user, bill=bill, filename=shex, statusid=1)
+			db.session.add(receipt)
+			db.session.commit()
+		for contact in form.participants.data:
+			billdebt = BillDebt(payer=User.query.filter_by(userid=contact).first(), bill=bill)
+			db.session.add(billdebt)
+			db.session.commit()
+			invoice =Invoice(userid=current_user.userid, frienduserid=contact, amount=0, description=form.description.data, billdebtid=billdebt.billdebtid)
+			db.session.add(invoice)
+			db.session.commit()
+		
+		flash('Nota sparad!', category="success")
+		return render_template('BillOverview.html', bill=bill)
 	
 	return render_template('createBill.html', form=form, img_url=shex, title='Skapa nota')
 

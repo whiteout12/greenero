@@ -65,7 +65,7 @@ def createInvoice(embedded):
 				amount=form.amount.data,
 				description=form.description.data,
 				userid=current_user.userid,
-				receiving_user=is_user_with_email.userid
+				frienduserid=is_user_with_email.userid
 				)
 				print(invoice)
 
@@ -86,7 +86,7 @@ def createInvoice(embedded):
 				amount=form.amount.data,
 				description=form.description.data,
 				userid=current_user.userid,
-				receiving_user=dummyuser.userid
+				frienduserid=dummyuser.userid
 				
 				)
 				#print(invoice)
@@ -119,7 +119,7 @@ def createInvoice(embedded):
 				amount=form.amount.data,
 				description=form.description.data,
 				userid=current_user.userid,
-				receiving_user=newdummyuser.userid
+				frienduserid=newdummyuser.userid
 				
 				)
 				#print(invoice)
@@ -155,7 +155,7 @@ def createInvoice(embedded):
 				amount=form.amount.data,
 				description=form.description.data,
 				userid=current_user.userid,
-				receiving_user=is_user_with_phone.userid
+				frienduserid=is_user_with_phone.userid
 				
 				)
 				#print(invoice)
@@ -173,7 +173,7 @@ def createInvoice(embedded):
 				amount=form.amount.data,
 				description=form.description.data,
 				userid=current_user.userid,
-				receiving_user=dummyuser.userid
+				frienduserid=dummyuser.userid
 				
 				)
 				#print(invoice)
@@ -201,7 +201,7 @@ def createInvoice(embedded):
 				amount=form.amount.data,
 				description=form.description.data,
 				userid=current_user.userid,
-				receiving_user=newdummyuser.userid
+				frienduserid=newdummyuser.userid
 				
 				)
 				#print(invoice)
