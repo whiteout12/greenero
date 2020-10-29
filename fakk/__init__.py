@@ -23,6 +23,7 @@ from fakk.site.user.routes import user
 
 from fakk.site.relations.routes import contacts
 from fakk.site.invoices.routes import invoices
+from fakk.site.bills.routes import bills
 
 from fakk.api.relations.routes import relations_api
 from fakk.api.invoices.routes import invoices_api
@@ -33,6 +34,7 @@ app.register_blueprint(user)
 
 app.register_blueprint(contacts)
 app.register_blueprint(invoices)
+app.register_blueprint(bills)
 
 app.register_blueprint(relations_api)
 app.register_blueprint(invoices_api)

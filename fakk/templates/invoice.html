@@ -35,12 +35,12 @@
       {{ subfield }}
       {{ subfield.label }}
       <span id="user2">
-
-        {{form.receiver(class_="form-control", placeholder="mottagare")}}
+        {{form.receiver(class="selectpicker", placeholder="mottagare")}}
+        {% if form.receiver.errors %}
          <span class="error col-sm-2 col-form-label text-danger">
-          {% if form.receiver.errors %}
+          
           {% for error in form.receiver.errors %}
-          {{ error }}<br>
+          <br>{{ error }}
           {% endfor %}
           {% endif %}
          </span>
@@ -49,32 +49,32 @@
       {%endif%}
 
       {% if loop.index == 2 %}
-       <p>
+      
       {%if current_user.confirmed_email%}
       
      
       {{ subfield }}
       {{ subfield.label }} <small>(Avgift: 2 &#129373-krediter)</small>
-      <span id="email2">
+      <div id="email2">
       
       {{form.email(class_="form-control", placeholder="E-mail")}}
       <small id="emailHelp" class="form-text text-muted">Du kan hämta adresser från din telefon med "autofill"</small>
       <small id="emailHelp" class="form-text text-muted">Din E-mailadress kommer att vara synlig för mottagaren</small>
-      
+      {% if form.email.errors %}
         <span class="error col-sm-2 col-form-label text-danger">
-          {% if form.email.errors %}
+          
           {% for error in form.email.errors %}
-          {{ error }}<br>
+          <br>{{ error }}
           {% endfor %}
           {% endif %}
          </span>
       {%endif%}
-      </span>
-      </p>
+      </div>
+      
       {%endif%}
 
       {% if loop.index == 3 %}
-      <p>
+      
       {%if current_user.confirmed_phone%}
       
       {{ subfield }}
@@ -84,17 +84,18 @@
       <small id="emailHelp" class="form-text text-muted">07XXXXXXXX</small>
       <small id="emailHelp" class="form-text text-muted">Du kan hämta nummer från din telefonbok med "autofill"</small>
       <small id="emailHelp" class="form-text text-muted">Ditt telefonnummer kommer att vara synligt för mottagaren</small>
+         {% if form.phone.errors %}
          <span class="error col-sm-2 col-form-label text-danger">
-          {% if form.phone.errors %}
+          
           {% for error in form.phone.errors %}
-          {{ error }}<br>
+          <br>{{ error }}
           {% endfor %}
           {% endif %}
          </span>
       
       {%endif%}
       <span id="phone2">
-    </p>
+    
       {%endif%}
         
        
@@ -111,9 +112,9 @@
     {{ form.description(class_="form-control", placeholder="Avser betalning för...") }}
     {% endif %}
     
-
+ {% if form.description.errors %}
     <span class="error col-sm-2 col-form-label text-danger">
-      {% if form.description.errors %}
+     
       {% for error in form.description.errors %}
       {{ error }}
       {% endfor %}
@@ -175,7 +176,10 @@
 
 {% else %}
 
-<script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
+<script>
+  $(document).ready(
+$('select').selectpicker());
+</script>
 
 <script>
   $("#form_inv").submit(function(e) {

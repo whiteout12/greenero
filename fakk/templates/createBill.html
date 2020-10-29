@@ -1,0 +1,309 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+  .is-hidden_phone {
+    display: none;
+  }
+
+  #contact
+  {
+    display:none;
+  }
+  #sms
+  {
+    display:none;
+  }
+
+  #contact_bool:checked ~ #contact
+  {
+    display: block;
+  }
+  #sms_bool:checked ~ #sms
+  {
+    display: block;
+  }
+
+
+</style>
+
+<h1>Skapa nota</h1>
+<form class="form-group" id="bill-form" role="form" method="post" action="" enctype="multipart/form-data" novalidate>
+  {{ form.csrf_token }}
+  <fieldset class="form-group">
+
+
+
+    <div class="form-group">
+      {{ form.description.label() }}
+      {{ form.description(class="form-control", placeholder="vad gäller saken") }}  
+      {% if form.description.errors %}
+      <span class="error col-sm-2 col-form-label text-danger">
+
+        {% for error in form.description.errors %}
+        {{ error }}
+        {% endfor %}
+        {% endif %}
+      </span>
+    </div>
+    <div>
+      <label>Deltagare</label>
+
+      {% if form.contact_bool.errors %}
+      <span class="error col-sm-2 col-form-label text-danger">
+        {% for error in form.contact_bool.errors %}
+        <br>{{ error }}
+        {% endfor %}
+      </span>
+      {% endif %}
+
+
+      <div class="form-check">
+        {{ form.contact_bool(class="form-check-input") }}{{ form.contact_bool.label }}
+
+
+        <div id="contact">
+         {{ form.participants(class="selectpicker") }}	
+         <span class="error col-sm-2 col-form-label text-danger">
+          {% if form.participants.errors %}
+          {% for error in form.participants.errors %}
+          <br>{{ error }}
+          {% endfor %}
+          {% endif %}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-check">
+    {{ form.sms_bool(class="form-check-input") }}{{ form.sms_bool.label }}
+
+    <div id="sms">
+      <a id="add" href="#">Lägg till fler</a>
+      <div id="subforms-container" class="form-group">
+
+
+
+        {% for subform in form.phones %}
+        <div id="phone-{{ loop.index0 }}-form" class="subform" data-index="{{ loop.index0 }}">
+
+          <div class="form-row">
+
+            
+            <div class="col-6">
+              {{ subform(class="form-control", placeholder="telefonnummer") }}
+            </div>
+
+            <div class="col-1">
+              <a class="remove text-danger close" href="#">&times</a>
+            </div>
+
+          </div>
+          {% if subform.errors %}
+          <div class="form-group">
+
+            <small class="error text-danger">
+
+              {% for error in subform.errors %}
+              {{ error }}<br>
+              {% endfor %}
+              
+            </small>
+          </div>
+          {% endif %}
+          
+        </div>
+        {% endfor %}
+        
+      </div>
+      <small id="emailHelp" class="form-text text-muted">07########</small>
+      <small id="emailHelp" class="form-text text-muted">Du kan hämta nummer från din telefonbok med "autofill"</small>    
+    </div>
+  </div>
+
+  <div class="form-group">
+    {{ form.amount.label() }}
+    {{ form.amount(class="form-control", placeholder="belopp på nota") }}  
+    {% if form.amount.errors %}
+
+    <span class="error col-sm-2 col-form-label text-danger">
+      {% for error in form.amount.errors %}
+      
+      {{ error }}<br>
+      {% endfor %}
+      {% endif %}
+    </span>
+  </div>
+
+  <div class="form-group">
+    {{ form.totalamount.label() }}
+    {{ form.totalamount(class="form-control", placeholder="totalt belopp", inputmode="decimal") }}  
+    {% if form.totalamount.errors %}
+    <span class="error col-sm-2 col-form-label text-danger">
+
+      {% for error in form.totalamount.errors %}
+      {{ error }}<br>
+      {% endfor %}
+      {% endif %}
+    </span>
+  </div>
+  <div class="form-group">
+    <label>Kvitto</label>
+    <div class="custom-file">
+
+      {{ form.receipt(class="custom-file-input", id="customFile") }}
+      {{ form.receipt.label(class="custom-file-label", for="customFile") }}
+      <small class="filename_added text-success"></small>
+    </div>
+    
+    <span class="error col-sm-2 col-form-label text-danger">
+      {% if form.receipt.errors %}
+      {% for error in form.receipt.errors %}
+      {{ error }}<br>
+      {% endfor %}
+      {% endif %}
+    </span>
+  </div>
+
+
+  <div class="form-group">
+    {{ form.submit(class="btn btn-primary") }}
+  </div>
+
+</fieldset>
+
+</form>
+
+{# Form template #}
+<div id="phone-_-form" class="is-hidden_phone" data-index="_">
+
+  <div class="form-row">
+    
+    <div class="col-6">
+      <input class="form-control" id="phones-_" name="phones-_" type="text" value="" placeholder="telefonnummer">
+    </div>
+    <div class="col-1">
+      <a class="remove close text-danger" href="#">&times</a>
+    </div>
+    <div class="form-group">
+    
+    </div>
+  </div>
+  
+</div>
+
+<img class="img-fluid" src="{{ url_for('bills.uploaded_file', folder=img_url[0], filename=img_url[1]) }}">
+<script>
+  $(document).ready(
+$('select').selectpicker());
+</script>
+
+<script>
+// Add the following code if you want the name of the file appear on select
+$(".custom-file-input").on("change", function() {
+  var fileName = $(this).val().split("\\").pop();
+  $(this).siblings(".custom-file-label").addClass("selected").html("Fil tillagd!");
+  $(this).siblings(".filename_added").addClass("selected").html(fileName);
+});
+
+
+</script>
+<script>
+            /**
+             * Adjust the indices of form fields when removing items.
+             */
+             function adjustIndices(removedIndex) {
+              var $forms = $('.subform');
+
+              $forms.each(function(i) {
+                var $form = $(this);
+                var index = parseInt($form.data('index'));
+                var newIndex = index - 1;
+
+                if (index < removedIndex) {
+                        // Skip
+                        return true;
+                      }
+
+                    // Change ID in form itself
+                    $form.attr('id', $form.attr('id').replace(index, newIndex));
+                    $form.data('index', newIndex);
+
+                    // Change IDs in form inputs
+                    $form.find('input').each(function(j) {
+                      var $item = $(this);
+                      $item.attr('id', $item.attr('id').replace(index, newIndex));
+                      $item.attr('name', $item.attr('name').replace(index, newIndex));
+                    });
+                  });
+            }
+
+            /**
+             * Remove a form.
+             */
+             function removeForm() {
+              var $removedForm = $(this).closest('.subform');
+              var removedIndex = parseInt($removedForm.data('index'));
+
+              $removedForm.remove();
+
+                // Update indices
+                adjustIndices(removedIndex);
+              }
+
+            /**
+             * Add a new form.
+             */
+             function addForm() {
+              var $templateForm = $('#phone-_-form');
+
+              if (!$templateForm) {
+                console.log('[ERROR] Cannot find template');
+                return;
+              }
+
+                // Get Last index
+                var $lastForm = $('.subform').last();
+
+                var newIndex = 0;
+
+                if ($lastForm.length > 0) {
+                  newIndex = parseInt($lastForm.data('index')) + 1;
+                }
+
+                // Maximum of 20 subforms
+                if (newIndex > 20) {
+                  console.log('[WARNING] Reached maximum number of elements');
+                  return;
+                }
+
+                // Add elements
+                var $newForm = $templateForm.clone();
+
+                $newForm.attr('id', $newForm.attr('id').replace('_', newIndex));
+                $newForm.data('index', newIndex);
+
+                $newForm.find('input').each(function(idx) {
+                  var $item = $(this);
+
+                  $item.attr('id', $item.attr('id').replace('_', newIndex));
+                  $item.attr('name', $item.attr('name').replace('_', newIndex));
+                });
+
+                // Append
+                $('#subforms-container').append($newForm);
+                $newForm.addClass('subform');
+                $newForm.removeClass('is-hidden_phone');
+
+                $newForm.find('.remove').click(removeForm);
+              }
+
+
+              $(document).ready(function() {
+                $('#add').click(addForm);
+                $('.remove').click(removeForm);
+              });
+
+            </script>
+
+            {% endblock %}
