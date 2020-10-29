@@ -31,9 +31,9 @@ class User(db.Model):
     invoice_sender = db.relationship('Invoice', foreign_keys='Invoice.userid')
     invoice_receiver = db.relationship('Invoice', foreign_keys='Invoice.frienduserid')
 
-    #bills = relationship('Bill', backref='payee' cascade="all, delete")
-    #billdebts = relationship('BillDebt', backref='payer')
-    #billreceipts = relationship('Receipts', backref='owner')
+    bills = relationship('Bill', backref='payee')
+    billdebts = relationship('BillDebt', backref='payer')
+    billreceipts = relationship('Receipt', backref='owner')
 
 
     
@@ -161,30 +161,31 @@ class Invoice(db.Model):
     description = db.Column(db.String)
     userid = db.Column(db.Integer, db.ForeignKey("users.userid"), nullable=False)
     frienduserid = db.Column(db.Integer, db.ForeignKey("users.userid"), nullable=False)
-    statusid = db.Column(db.Integer)
+    statusid = db.Column(db.Integer, default=1)
     #invoice_date = db.Column(DateTime(timezone=True), server_default=func.now())
     date_created = db.Column(DateTime(timezone=True), server_default=func.now())
     date_updated = db.Column(DateTime(timezone=True))
-    date_due = db.Column(DateTime(timezone=True))
+    date_due = db.Column(DateTime(timezone=True), default=func.now() + timedelta(days=7))
     #duedate = db.Column(db.Date)
-    message = db.Column(db.String)
-    invoice_version = db.Column(db.Integer)
+    message = db.Column(db.String, default=None)
+    invoice_version = db.Column(db.Integer, default=1)
     sender = relationship('User', foreign_keys='Invoice.userid')
     receiver = relationship('User', foreign_keys='Invoice.frienduserid')
-
-    billdebt = relationship('BillDebt', backref='billdebt')
+    billdebtid = db.Column(db.Integer, ForeignKey('billdebts.billdebtid'))
+    
     #billdebt = relationship('BillDebt', backref=backref("BillDebt", cascade="all, delete"))
     
     #__table_args__ = (db.UniqueConstraint('frienduserid', 'userid', name='_frienduserid_uc'), )
     #__table_args__ = (db.UniqueConstraint('receiving_user', 'requesting_user', name='_receiving_user_uc'), )
-    def __init__(self, userid, receiving_user, amount, description):
-        self.userid = userid
-        self.frienduserid = receiving_user
-        self.statusid = 1
-        self.amount = amount
-        self.invoice_version = 1
-        self.description = description
-        self.date_due = func.now() + timedelta(days=7)
+    #def __init__(self, userid, receiving_user, amount, description, billdebtid):
+     #   self.userid = userid
+      #  self.frienduserid = receiving_user
+       # self.statusid = 1
+        #self.amount = amount
+        #self.invoice_version = 1
+        #self.description = description
+        #self.date_due = func.now() + timedelta(days=7)
+        #self.billdebtid = billdebtid
 
     def update(self, description, amount):
         if(amount):
@@ -227,29 +228,21 @@ class Bill(db.Model):
 
     billid = db.Column(db.Integer, primary_key=True)
     date_created = db.Column(DateTime(timezone=True), server_default=func.now())
-    statusid = db.Column(db.Integer)
+    
     
     payeeid = db.Column(db.Integer, db.ForeignKey("users.userid"), nullable=False)
-    
+    statusid = db.Column(db.Integer, default=1)
     title = db.Column(db.String)
     amount_bill = db.Column(db.Numeric)
     amount_total = db.Column(db.Numeric)
-    filefolder = db.Column(db.String)
+    filefolder = db.Column(db.String, default = 'bill')
     #amount_claimed = db.Column(db.Numeric)
 
     claims = relationship('BillDebt', backref='bill', cascade='all, delete')
     receipts = relationship('Receipt', backref='bill', cascade='all, delete')
 
 
-    def __init__(self, payee, title, amount_bill, amount_total):
-        self.statusid = 1
-        self.payee = payee
-        self.title = title
-        self.amount_bill = amount_bill
-        self.amount_total = amount_total
-        self.amount_claimed = 0
-
-        self.file_folder = 'bill'+str(self.billid)
+    
         
 
     def delete(self):
@@ -257,7 +250,7 @@ class Bill(db.Model):
         db.session.commit()
 
     def __repr__(self):
-        return 'Bill(Id: %s, Payee: %s, Title: %s, Statusid: %s)' % (self.billid, self.payeeid, self.title, self.statusid)
+        return 'Bill(Id: %s, Payee: %s, Payeeid: %s, Title: %s, Statusid: %s, Filefolder: %s)' % (self.billid, self.payee, self.payeeid, self.title, self.statusid, self.filefolder)
 
 class BillDebt(db.Model):
 
@@ -273,18 +266,13 @@ class BillDebt(db.Model):
     #invoice = relationship('Invoice', foreign_keys='Relationship.userid')
     
     billid = db.Column(db.Integer, ForeignKey('bills.billid'))
-    invoiceid = db.Column(db.Integer, ForeignKey('invoices.invoiceid'))
-    
+    #invoiceid = db.Column(db.Integer, ForeignKey('invoices.invoiceid'))
+    invoice = relationship('Invoice', backref='billdebt', cascade='all, delete')
     #invoice = relationship("Invoice", back_populates="invoices")
     #payer = relationship("User", back_populates="users")
 
 
-    def __init__(self, payerid, billid, invoiceid):
-        self.payerid = payerid
-        self.amount_owed = 0
-        self.billid = billid
-        self.status = 1
-        self.invoiceid = invoiceid
+
 
 
     def delete(self):

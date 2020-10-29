@@ -45,7 +45,7 @@ def createInvoice(embedded):
 				amount=form.amount.data,
 				description=form.description.data,
 				userid=current_user.userid,
-				receiving_user=form.receiver.data
+				frienduserid=form.receiver.data
 				
 				)
 			#print(invoice)

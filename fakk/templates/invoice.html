@@ -45,17 +45,17 @@
           {% endif %}
          </span>
       </span>
-      </p>
+      
       {%endif%}
 
       {% if loop.index == 2 %}
-      
+     <p>
       {%if current_user.confirmed_email%}
       
      
       {{ subfield }}
       {{ subfield.label }} <small>(Avgift: 2 &#129373-krediter)</small>
-      <div id="email2">
+      <span id="email2">
       
       {{form.email(class_="form-control", placeholder="E-mail")}}
       <small id="emailHelp" class="form-text text-muted">Du kan hämta adresser från din telefon med "autofill"</small>
@@ -69,12 +69,12 @@
           {% endif %}
          </span>
       {%endif%}
-      </div>
+      </span>
       
       {%endif%}
 
       {% if loop.index == 3 %}
-      
+      <p>
       {%if current_user.confirmed_phone%}
       
       {{ subfield }}
@@ -94,7 +94,7 @@
          </span>
       
       {%endif%}
-      <span id="phone2">
+      </span>
     
       {%endif%}
         

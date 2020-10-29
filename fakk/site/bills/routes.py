@@ -7,7 +7,7 @@ from flask_weasyprint import HTML, render_pdf
 from fakk import mail
 import io, os
 from fakk import db, mail, app
-from fakk.models import User, Invoice
+from fakk.models import User, Invoice, Bill, Receipt, BillDebt
 import urllib.parse
 import json
 from fakk.utils.send_sms import sendSMS
@@ -25,6 +25,26 @@ bills = Blueprint('bills', __name__, url_prefix='/site/bill')
 @login_required
 def overviewBill():
 	
+	#bill = Bill(payee=current_user, amount_bill=23.45, amount_total=25.23, title='testbill')
+	#print('bill', bill)
+	#db.session.add(bill)
+	#db.session.commit()
+	for bill in current_user.bills:
+		bill.delete()
+		db.session.commit()
+	##self, userid, receiving_user, amount, description
+	#billdebt = BillDebt(payer=current_user, bill=bill)
+	#db.session.add(billdebt)
+	#db.session.commit()
+	#invoice =Invoice(userid=current_user.userid, receiving_user=current_user.userid, amount=0, description=bill.title, billdebtid=billdebt.billdebtid)
+	#db.session.add(invoice)
+	#db.session.commit()
+	bills = current_user.bills	
+	billdebts = current_user.billdebts
+	invoices = current_user.invoice_receiver
+	print(bills)
+	print(billdebts)
+	print(invoices)
 	return render_template('BillOverview.html', title='Notor')
 
 def save_receipt(form_receipt):
