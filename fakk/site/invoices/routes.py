@@ -140,7 +140,7 @@ def createInvoice(embedded):
 			confirm_url = url_for('main.invoice_site', invoice_token=package_locked, _external=True)
 			#pdf = io.BytesIO(html.write_pdf())
 			msg = Message("Du har blivit fakkad :)",
-		                  sender="bjorncarlsson87@gmail.com",
+		                  sender="noreply@fakk.tech",
 		                  recipients=[form.email.data])
 			msg.body = "Du har blivit fakkad, se bifogat" + confirm_url
 			#msg.attach('invoice.pdf', 'application/pdf', data=pdf.read())
@@ -431,7 +431,7 @@ def email_invoice(inv):
 				html = HTML(string=render_template('invoice_pdf_template.html', username=sender.username, invoice=invoice['invoice'], qrCode_base64=swish_qr_base64, css1=url_for('static', filename='invoice_pdf/boilerplate.css'), css2=url_for('static', filename='invoice_pdf/main.css'), css3=url_for('static', filename='invoice_pdf/normalize.css')))
 				pdf = io.BytesIO(html.write_pdf())
 				msg = Message("Du har blivit fakkad :)",
-			                  sender="bjorncarlsson87@gmail.com",
+			                  sender="norpely@fakk.tech",
 			                  recipients=[payee.email])
 				msg.body = "Du har blivit fakkad, se bifogat" 
 				msg.attach('invoice.pdf', 'application/pdf', data=pdf.read())

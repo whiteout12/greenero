@@ -27,18 +27,19 @@ def send_confirmation_link_email(user_email):
     token = generate_confirmation_token(user_email)
     confirm_url = url_for('user.confirm_email', token=token, _external=True)
     html = render_template('confirm_email.html', confirm_url=confirm_url)
-    msg = Message("fakk. - Bekräfta emailadress - länk", sender="fakk.", recipients=[str(user_email)])
+    msg = Message("Bekräfta emailadress - länk", sender="noreply@fakk.tech", recipients=[str(user_email)])
     msg.html = html
     msg.body = "Följ länken nedan för att bekräfta din emailadress på fakk. " + str(confirm_url)
     mail.send(msg)
-    flash('En länk har skickats till ' +str(user_email), category='success')
+    print('email skickat')
+    flash('En länk har skickats till ' +str(user_email)+' Glöm inte kolla skräppostkorgen om det inte skulle dyka upp i din vanliga inkorg', category='success')
     return
 
 def send_password_link_email(user_email):
     token = generate_confirmation_token(user_email)
     password_url = url_for('user.reset_password_token', token=token, _external=True)
     html = render_template('reset_password_email.html', reset_url=password_url)
-    msg = Message("fakk. - Återställ lösenord - länk", sender="fakk.", recipients=[str(user_email)])
+    msg = Message("fakk. - Återställ lösenord - länk", sender="tjena@fakk.tech", recipients=[str(user_email)])
     msg.html = html
     msg.body = "Följ länken nedan för att återställa ditt lösenord. " + str(password_url)
     mail.send(msg)
@@ -51,7 +52,7 @@ def send_confirmation_link_email2(user_email, code):
     print('email: ', user_email)
     print('code: ', code)
     #html = render_template('confirm_email.html', confirm_url=confirm_url)
-    msg = Message("fakk. - Bekräfta ditt telefonnummer - kod", sender="fakk.", recipients=[str(user_email)])
+    msg = Message("fakk. - Bekräfta ditt telefonnummer - kod", sender="tjena@fakk.tech", recipients=[str(user_email)])
     #msg.html = html
     msg.body = "Bekräfta med denna kod " + str(code)
     mail.send(msg)
