@@ -20,11 +20,11 @@
   <div class="media-body">
     <div class="article-metadata">
 
-      <a class="mr-2" href="{{ url_for('contacts.friend_view_site', friend_id=friend.user.userid)}}">{{ friend.user.username }}</a>
+     
       <small class="text-muted">{%if friend.status == 0 %}Ej vänner än{% elif friend.status == 1 %}Väntar på svar{% elif friend.status == 2 %}Du har en förfrågan{% elif friend.status == 3 %}Vänner{% endif %}</small>
     </div>
     <h4><a class="article-title" href="{{ url_for('main.home') }}">{{ friend.user.username }}</a></h4>
-    <p class="article-content">{{ friend.user.username }}</p>
+    
     {%if friend.status == 0 %}
     <a class="mr-2 btn btn-sm btn-primary" href="{{ url_for('contacts.friendrequest_site', friend_id=friend.user.userid)}}">Skicka vänförfrågan</a>
     {% elif friend.status == 1 %}
@@ -33,6 +33,7 @@
     <a class="mr-2 btn btn-sm btn-primary" href="{{ url_for('contacts.accept_friendrequest_site', friend_id=friend.user.userid)}}">Acceptera!</a>
     <a class="mr-2 btn btn-sm btn-warning" href="{{ url_for('contacts.reject_friendrequest_site', friend_id=friend.user.userid)}}">Avböj!</a>
     {% elif friend.status == 3 %}
+    <a class="mr-2 btn btn-sm btn-danger" href="{{ url_for('contacts.unfriend_site', friend_id=friend.user.userid)}}">Ta bort</a>
     {% endif %}
   </div>
 </article>
@@ -40,6 +41,7 @@
 {% endif %}
 
 
+{%if friends|selectattr('statusid', 'equalto', 2)|list|length > 0%}
 <h3>Förfrågningar till dig</h3>
 {% for friend in friends %}
 
@@ -49,19 +51,19 @@
   <img class="rounded article-img" src="{{ url_for('static', filename='person.png') }}">
   <div class="media-body">
     <div class="article-metadata">
-
-      <a class="mr-2" href="{{ url_for('contacts.friend_view_site', friend_id=friend.rel_receiver.userid)}}">{{ friend.rel_receiver.username }}</a>
-      <small class="text-muted">{{ friend.rel_receiver.username }}</small>
+<h4><a class="article-title" href="{{ url_for('main.home') }}">{{ friend.rel_receiver.username }}</a></h4>
     </div>
-    <h4><a class="article-title" href="{{ url_for('main.home') }}">{{ friend.rel_receiver.username }}</a></h4>
-    <p class="article-content">{{ friend.rel_receiver.username }}</p>
+    
+    
     <a class="mr-2 btn btn-sm btn-primary" href="{{ url_for('contacts.accept_friendrequest_site', friend_id=friend.rel_receiver.userid)}}">Acceptera!</a>
     <a class="mr-2 btn btn-sm btn-warning" href="{{ url_for('contacts.reject_friendrequest_site', friend_id=friend.rel_receiver.userid)}}">Avböj!</a>
   </div>
 </article>
 {% endif %}
 {% endfor %}
+{% endif %}
 <br>
+{%if friends|selectattr('statusid', 'equalto', 1)|list|length > 0%}
 <h3>Förfrågningar från dig</h3>
 {% for friend in friends %}
 {% if friend.statusid == 1 %}
@@ -70,18 +72,18 @@
   <img class="rounded article-img" src="{{ url_for('static', filename='person.png') }}">
   <div class="media-body">
     <div class="article-metadata">
-      <a class="mr-2" href="{{ url_for('contacts.friend_view_site', friend_id=friend.rel_receiver.userid)}}">{{ friend.rel_receiver.username }}</a>
-      <a class="mr-2" href="{{ url_for('main.home')}}">{{ friend.rel_receiver.username }}</a>
-      <small class="text-muted">{{ friend.rel_receiver.username }}</small>
+      
+    <h4><a class="article-title" href="{{ url_for('main.home') }}">{{ friend.rel_receiver.username }}</a></h4> 
     </div>
-    <h4><a class="article-title" href="{{ url_for('main.home') }}">{{ friend.rel_receiver.username }}</a></h4>
-    <p class="article-content">{{ friend.rel_receiver.username }}</p>
+    
+   
     <a class="mr-2 btn btn-sm btn-danger" href="{{ url_for('contacts.withdraw_friendrequest_site', friend_id=friend.rel_receiver.userid)}}">Dra tillbaka</a>
   </div>
 </article>
 {% endif %}
 {% endfor %}
-
+{% endif %}
+{%if friends|selectattr('statusid', 'equalto', 3)|list|length > 0%}
 <h3>Vänner</h3>
 {% for friend in friends %}
 {% if friend.statusid == 3 %}
@@ -89,15 +91,18 @@
   <img class="rounded article-img" src="{{ url_for('static', filename='person.png') }}">
   <div class="media-body">
     <div class="article-metadata">
-      <a class="mr-2" href="{{ url_for('contacts.friend_view_site', friend_id=friend.rel_receiver.userid)}}">{{ friend.rel_receiver.username }}</a>
-      <a class="mr-2" href="{{ url_for('main.home')}}">{{ friend.rel_receiver.username }}</a>
-      <small class="text-muted">{{ friend.rel_receiver.username }}</small>
+      
+    <h4><a class="article-title" href="{{ url_for('main.home') }}">{{ friend.rel_receiver.username }}</a></h4>  
     </div>
-    <h4><a class="article-title" href="{{ url_for('main.home') }}">{{ friend.rel_receiver.username }}</a></h4>
-    <p class="article-content">{{ friend.rel_receiver.username }}</p>
+    
+    
     <a class="mr-2 btn btn-sm btn-danger" href="{{ url_for('contacts.unfriend_site', friend_id=friend.rel_receiver.userid)}}">Ta bort</a>
   </div>
 </article>
 {% endif %}
 {% endfor %}
+{%else%}
+<h3>Inga vänner än</h3>
+{% endif %}
+
 {% endblock content %}

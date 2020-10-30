@@ -27,12 +27,12 @@ def send_confirmation_link_email(user_email):
     token = generate_confirmation_token(user_email)
     confirm_url = url_for('user.confirm_email', token=token, _external=True)
     html = render_template('confirm_email.html', confirm_url=confirm_url)
-    msg = Message("Bekräfta emailadress - länk", sender="noreply@fakk.tech", recipients=[str(user_email)])
+    msg = Message("Bekräfta emailadress - länk", sender=('fakk.', 'noreply@fakk.tech'), recipients=[str(user_email)])
     msg.html = html
     msg.body = "Följ länken nedan för att bekräfta din emailadress på fakk. " + str(confirm_url)
     mail.send(msg)
-    print('email skickat')
-    flash('En länk har skickats till ' +str(user_email)+' Glöm inte kolla skräppostkorgen om det inte skulle dyka upp i din vanliga inkorg', category='success')
+    #print('email skickat')
+    flash('En länk har skickats till ' +str(user_email), category='success')
     return
 
 def send_password_link_email(user_email):

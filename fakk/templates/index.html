@@ -11,6 +11,7 @@
 
 
 <br>
+{% if current_user.username == 'bjorn' %}
 <b>Old version links</b><br>
 <small>
 	<a href="{{ url_for('main.calculator') }}">Miniräknare</a><br>
@@ -28,7 +29,7 @@
 			$("#sub-menu").load("{{ url_for('invoices_api.claim') }}");
 		});
 	</script>
-
+{%endif%}
 	<div id="sub-menu">
 
 		

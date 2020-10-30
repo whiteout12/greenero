@@ -20,9 +20,9 @@
     {% else %}
     {{ form.username(class_="form-control", placeholder="Användarnamn") }}
     {% endif %}
-    
+    {% if form.username.errors %}
     <span class="error col-sm-2 col-form-label text-danger">
-      {% if form.username.errors %}
+      
       {% for error in form.username.errors %}
       {{ error }}
       {% endfor %}
@@ -39,9 +39,9 @@
     {{ form.email(class_="form-control", placeholder="E-mail") }}
     {% endif %}
     
-
+ {% if form.email.errors %}
     <span class="error col-sm-2 col-form-label text-danger">
-      {% if form.email.errors %}
+     
       {% for error in form.email.errors %}
       {{ error }}
       {% endfor %}
@@ -59,8 +59,9 @@
   {{ form.phone(class_="form-control", placeholder="Telefonnummer", pattern="[0-9]*") }}
   {% endif %}
   <small id="emailHelp" class="form-text text-muted">07XXXXXXXX</small>
+  {% if form.phone.errors %}
   <span class="error col-sm-2 col-form-label text-danger">
-    {% if form.phone.errors %}
+    
     {% for error in form.phone.errors %}
     {{ error }}
     {% endfor %}
@@ -73,8 +74,9 @@
   <label for="exampleInputEmail1">Lösenord</label>
   
   {{ form.password(class_="form-control", placeholder="Lösenord") }}
+   {% if form.password.errors %}
   <span class="error col-sm-2 col-form-label text-danger">
-    {% if form.password.errors %}
+   
     {% for error in form.password.errors %}
     {{ error }}
     {% endfor %}
@@ -86,8 +88,9 @@
   {%if change%}
   <small id="emailHelp" class="form-text text-muted">Du behöver bara ange lösenord om du vill ändra det</small>
   {%endif%}
+  {% if form.confirm.errors %}
   <span class="error col-sm-2 col-form-label text-danger">
-    {% if form.confirm.errors %}
+    
     {% for error in form.confirm.errors %}
     {{ error }}
     {% endfor %}

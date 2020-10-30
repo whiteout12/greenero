@@ -39,7 +39,7 @@
   <header class="site-header">
     <nav class="navbar navbar-expand-md navbar-dark bg-fakk fixed-top">
       <div class="container">
-        <a class="navbar-brand mr-2" href="{{url_for('main.home')}}">fakk.</a>
+        <a class="navbar-brand mr-2" href="{{url_for('main.home')}}"><img width="58.295" height="20" src="{{ url_for('static', filename='logo_text.png') }}" alt="fakk."></a>
         <div class="navbar-nav" style="margin-left: 1px; ">
           {% if current_user.is_authenticated %}
           <a class="nav-item nav-link" href="{{ url_for('contacts.friends') }}">Kontakter</a>

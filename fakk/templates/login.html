@@ -10,8 +10,9 @@
   <p>
     <label for="exampleInputEmail1">Användarnamn</label>
     {{ form.username(class_="form-control", placeholder="användarnamn") }}
+     {% if form.username.errors %}
     <span class="error col-sm-2 col-form-label text-danger">{% if error %}{{error}}{%endif%}
-      {% if form.username.errors %}
+     
       {% for error in form.username.errors %}
       {{ error }}
       {% endfor %}
@@ -20,8 +21,9 @@
  <br>
     <label for="exampleInputEmail1">Lösenord</label>
     {{ form.password(class_="form-control", placeholder="lösenord") }}
+     {% if form.password.errors %}
     <span class="error col-sm-2 col-form-label text-danger">{% if error %}{{error}}{%endif%}
-      {% if form.password.errors %}
+     
       {% for error in form.password.errors %}
       {{ error }}
       {% endfor %}

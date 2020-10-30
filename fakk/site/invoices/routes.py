@@ -136,13 +136,16 @@ def createInvoice(embedded):
 			#send email
 			username=current_user.username
 			#swish_qr_base64=swishQRbase64(sender.phone, invoice['invoice']['amount'], invoice['invoice']['description'])
-			#html = HTML(string=render_template('invoice_pdf_template.html', username=sender.username, invoice=invoice['invoice'], qrCode_base64=swish_qr_base64, css1=url_for('static', filename='invoice_pdf/boilerplate.css'), css2=url_for('static', filename='invoice_pdf/main.css'), css3=url_for('static', filename='invoice_pdf/normalize.css')))
+			#htmlpdf = HTML(string=render_template('invoice_pdf_template.html', username=sender.username, invoice=invoice['invoice'], qrCode_base64=swish_qr_base64, css1=url_for('static', filename='invoice_pdf/boilerplate.css'), css2=url_for('static', filename='invoice_pdf/main.css'), css3=url_for('static', filename='invoice_pdf/normalize.css')))
 			confirm_url = url_for('main.invoice_site', invoice_token=package_locked, _external=True)
-			#pdf = io.BytesIO(html.write_pdf())
+			#pdf = io.BytesIO(htmlpdf.write_pdf())
+			html = render_template('email_invoice.html', invoice_url=confirm_url, payee=current_user.email)
+			
 			msg = Message("Du har blivit fakkad :)",
-		                  sender="noreply@fakk.tech",
+		                  sender=('fakk.', 'faktura@fakk.tech'),
 		                  recipients=[form.email.data])
-			msg.body = "Du har blivit fakkad, se bifogat" + confirm_url
+			msg.body = "Du har blivit fakkad, se bifogat " + confirm_url
+			msg.html = html
 			#msg.attach('invoice.pdf', 'application/pdf', data=pdf.read())
 			mail.send(msg)	
 			#flash('Faktura skickad till '+ form.email.data, category='success')
@@ -431,7 +434,7 @@ def email_invoice(inv):
 				html = HTML(string=render_template('invoice_pdf_template.html', username=sender.username, invoice=invoice['invoice'], qrCode_base64=swish_qr_base64, css1=url_for('static', filename='invoice_pdf/boilerplate.css'), css2=url_for('static', filename='invoice_pdf/main.css'), css3=url_for('static', filename='invoice_pdf/normalize.css')))
 				pdf = io.BytesIO(html.write_pdf())
 				msg = Message("Du har blivit fakkad :)",
-			                  sender="norpely@fakk.tech",
+			                  sender=('fakk.', 'faktura@fakk.tech'),
 			                  recipients=[payee.email])
 				msg.body = "Du har blivit fakkad, se bifogat" 
 				msg.attach('invoice.pdf', 'application/pdf', data=pdf.read())
