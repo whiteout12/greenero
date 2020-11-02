@@ -91,7 +91,7 @@
 
             
             <div class="col-6">
-              {{ subform(class="form-control", placeholder="telefonnummer", oninput="setTimeout(phoneFormat.bind(null,this.id), 0);")}}
+              {{ subform(class="form-control", placeholder="telefonnummer", oninput="setTimeout(phoneFormat.bind(null,this.id), 0);", pattern="[0-9]*")}}
             </div>
 
             <div class="col-1">
@@ -180,7 +180,7 @@
   <div class="form-row">
     
     <div class="col-6">
-      <input class="form-control phoneNumber" id="phones-_" name="phones-_" type="text" value="" oninput="setTimeout(phoneFormat.bind(null,this.id), 0);" placeholder="telefonnummer">
+      <input class="form-control" id="phones-_" name="phones-_" type="text" value="" oninput="setTimeout(phoneFormat.bind(null,this.id), 0);" placeholder="telefonnummer" pattern="[0-9]*">
     </div>
     <div class="col-1">
       <a class="remove close text-danger" href="#">&times</a>
