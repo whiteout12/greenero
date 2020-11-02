@@ -222,7 +222,7 @@ class CreateBill(FlaskForm):
         validators=[is_contact_false, validate_participants], render_kw={'data-live-search': 'true', 'title':'Välj kontakter', 'noneResultsText' : 'inga resultat för {0}'}
     )
 
-    phones = FieldList(TextField('Telefonnummer', validators=[is_sms_false, val_phone_format, validate_phone_self,  Length(min=10, max=10, message='Måste vara 10 siffror'),Regexp('^[0-9]*$', message='Får bara innehålla sifror')]
+    phones = FieldList(TextField('Telefonnummer', validators=[is_sms_false, val_phone_format, validate_phone_self,  Length(min=10, max=10, message='Måste vara 10 siffror'),Regexp('^[0-9]*$', message='Får bara innehålla sifror')],
     ), min_entries=1, validators=[])
 
     amount = DecimalField('Belopp på nota', validators=[DataRequired(message="Obligtoriskt fält"), NumberRange(min=1, message='Inte en siffra')]

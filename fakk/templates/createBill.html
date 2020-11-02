@@ -91,7 +91,7 @@
 
             
             <div class="col-6">
-              {{ subform(class="form-control", placeholder="telefonnummer") }}
+              {{ subform(class="form-control", placeholder="telefonnummer", oninput="setTimeout(phoneFormat.bind(null,this.id), 0);")}}
             </div>
 
             <div class="col-1">
@@ -169,7 +169,11 @@
   <div class="form-group">
     {{ form.submit(class="btn btn-primary") }}
   </div>
-
+Enter a phone number here: <input type="text" id="phoneNumber3" onPaste="setTimeout(phoneFormat2.bind(null,this.id), 0);"><br>
+Enter a phone number here: <input type="text" id="phoneNumber4" onPaste="phoneFormat2(this.id){setTimeout(phoneFormat2(this.id), 2000)};"/><br>
+Enter a phone number here: <input type="text" class="phonennumber" id="phoneNumber2" onpaste="return phoneFormat2;"/><br>
+    Enter a phone number here: <input type="text" id="phoneNumber"
+    onkeypress="return numberPressed(event);"/>
 </fieldset>
 
 </form>
@@ -180,7 +184,7 @@
   <div class="form-row">
     
     <div class="col-6">
-      <input class="form-control" id="phones-_" name="phones-_" type="text" value="" placeholder="telefonnummer">
+      <input class="form-control phoneNumber" id="phones-_" name="phones-_" type="text" value="" oninput="setTimeout(phoneFormat.bind(null,this.id), 0);" placeholder="telefonnummer">
     </div>
     <div class="col-1">
       <a class="remove close text-danger" href="#">&times</a>
@@ -251,6 +255,8 @@ $(".custom-file-input").on("change", function() {
                 adjustIndices(removedIndex);
               }
 
+
+
             /**
              * Add a new form.
              */
@@ -305,5 +311,50 @@ $(".custom-file-input").on("change", function() {
               });
 
             </script>
+
+<script>
+//document.getElementClassName("phoneNumber").addEventListener("paste", function(){setTimeout(phoneFormat2, 3)});
+function phoneFormat(id){
+  
+  //console.log('id', id)
+  //console.log('input', input)
+        // Strip all characters from the input except digits
+        var input = document.getElementById(id);
+        console.log('input value was', input.defaultvalue)
+        //console.log(input.event.inputType)
+        /*console.log('input value', input.value)
+        console.log('input value len', input.value.length)
+        console.log('input defaultvalue', input.defaultValue)
+        console.log('input defaultvalue len', input.defaultValue.length)
+
+        console.log('diff', Math.abs(input.defaultValue.length-input.value.length))*/
+        
+        if(Math.abs(input.defaultValue.length-input.value.length)>8){
+        console.log('blir ändring')
+        if(input.value.length !== 0){
+          
+          input = input.value.replace(/\D/g,'');
+        // Trim the remaining input to ten characters, to preserve phone number format
+        input = input.substring(input.length-9,input.length);
+        input= '0'+input
+       
+         console.log('result', input)
+        
+        document.getElementById(id).value= String(input);
+        document.getElementById(id).defaultValue= String(input);
+        }
+         }else{
+
+          //document.getElementById(id).value= String(input.value);
+          document.getElementById(id).defaultValue= String(input.value);
+         }
+        
+        
+        //console.log('input new defaultvalue is', input.defaultvalue)
+
+        
+}
+</script>
+
 
             {% endblock %}
