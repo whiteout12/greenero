@@ -89,6 +89,14 @@ a.article-title:hover {
 .account-heading {
   font-size: 2.5rem;
 }
+
+.bill-img {
+  height: 70px;
+  width: 70px;
+  margin-right: 10px;
+
+}
+
 .invoice-buttons {
   float: right;
   vertical-align:top;
@@ -135,6 +143,7 @@ a.article-title:hover {
   border-radius: 3px;
   margin-bottom: 20px;
 }
+
 
 
 .footer-fakk {

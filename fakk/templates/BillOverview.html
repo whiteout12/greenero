@@ -8,47 +8,113 @@
 
 
 <div class="card">
-  
-  <div class="row">
-  <div class="col-md-4">
-  	{%if bill.receipts[0].filename%}
-  	<script src="https://unpkg.com/pinch-zoom-js">
-  		let el = document.querySelector('#element');
-let instance = new PinchZoom(el, options);
-  	</script>
-  	<div class="pinch-zoom" id="element">
-  <img class="img-fluid" src="{{ url_for('bills.uploaded_file', folder=bill.filefolder, filename=bill.receipts[0].filename) }}" alt="Card image cap">
-</div>
- 
- {%endif%}
-<ul class="list-group list-group-flush">
-  	{% for participant in bill.claims%}
-    <li class="list-group-item">{{participant.payer.username}}</li>
-    {%endfor%}
-  </ul>
-</div>
-<div class="col-md-6">
-	 <div class="card-body">
-    <h5 class="card-title">{{bill.title}}</h5>
-    <ul class="list-group list-group-flush">
-  	
-    <li class="list-group-item">Skapad: {{ bill.date_created.strftime('%Y-%m-%d') }}</li>
-    <li class="list-group-item">Summa nota: {{bill.amount_bill}}</li>
-    <li class="list-group-item">Summa total: {{bill.amount_total}}</li>
-    <li class="list-group-item">Summa taget totalt: {{ bill.claims |sum(attribute='amount_owed') }}</li>
-    
-  </ul>
-    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-  </div>
-  
-  <div class="card-body">
-    <a href="#" class="card-link">Card link</a>
-    <a href="#" class="card-link">Another link</a>
-  </div>
-</div>
-</div>
+
+	<div class="row">
+		<div class="col-md-4">
+
+			<ul class="list-group list-group-flush">
+				{% for participant in bill.claims%}
+				<li class="list-group-item">{{participant.payer_screen_name}}</li>
+				{%endfor%}
+			</ul>
+		</div>
+		<div class="col-md-6">
+			<div class="card-body">
+				<h5 class="card-title">{{bill.title}}</h5>
+				<ul class="list-group list-group-flush">
+
+					<li class="list-group-item">Skapad: {{ bill.date_created.strftime('%Y-%m-%d') }}</li>
+					<li class="list-group-item">Summa nota: {{bill.amount_bill}}</li>
+					<li class="list-group-item">Summa total: {{bill.amount_total}}</li>
+					<li class="list-group-item">Summa taget totalt: {{ bill.claims |sum(attribute='amount_owed') }}</li>
+
+				</ul>
+				<p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+			</div>
+
+			<div class="card-body">
+				<a href="#" class="card-link">Card link</a>
+				<a href="#" class="card-link">Another link</a>
+			</div>
+		</div>
+	</div>
 </div>
 
+<article class="media content-section">
+	{% for image in bill.receipts %}
+	<img class="rounded bill-img" src="{{ url_for('bills.uploaded_file', folder=bill.filefolder, filename=image.filename) }}">
+	{% endfor %}
+	<div class="media-body">
+		<div class="article-metadata">
+			<h5 class="card-title">{{bill.title}}</h5>
+
+
+
+
+		</div>
+
+
+		<ul class="list-group list-group-flush">
+			<li class="list-group-item">Skapad: {{ bill.date_created.strftime('%Y-%m-%d') }}</li>
+			<li class="list-group-item">Summa nota: {{bill.amount_bill}}</li>
+			<li class="list-group-item">Summa total: {{bill.amount_total}}</li>
+			<li class="list-group-item">Summa taget totalt: {{ bill.claims |sum(attribute='amount_owed') }}</li>
+			{% for participant in bill.claims%}
+			<li class="list-group-item">{{participant.payer_screen_name}}</li>
+			{%endfor%}
+		</ul>
+	</div>
+</article>
+
+
+<div class="card flex-row flex-wrap">
+	<div class="card-header w-100 text-muted">
+	<h4 class="card-title">{{bill.title}}</h4>
+
+</div>
+	<div class="w-20">
+		{% for image in bill.receipts %}
+		<img class="bill-img" src="{{ url_for('bills.uploaded_file', folder=bill.filefolder, filename=image.filename) }}">
+		{% endfor %}
+	</div>
+	<div class="w-80 card-body">
+		
+		
+	<div class="row">
+ <div class="col col-sm-6"><li class="list-inline-item">Skapad</li></div>
+  <div class="col col-sm-6"><li class="list-inline-item">{{ bill.date_created.strftime('%Y-%m-%d') }}</li></div>
+  </div>
+  <div class="row">
+ <div class="col col-sm-6"><li class="list-inline-item">&Sigma; nota</li></div>
+  <div class="col col-sm-6"><li class="list-inline-item">{{bill.amount_bill}}</li></div>
+  </div>
+  <div class="row">
+ <div class="col col-sm-6"><li class="list-inline-item">&Sigma; total</li></div>
+  <div class="col col-sm-6"><li class="list-inline-item">{{bill.amount_total}}</li></div>
+  </div>
+  <div class="row">
+ <div class="col col-sm-6"><li class="list-inline-item">&Sigma; Min del</li></div>
+  <div class="col col-sm-6"><li class="list-inline-item">{{ bill.claims |sum(attribute='amount_owed') }}</li></div>
+  </div>
+	</div>
+	<div class="w-100"></div>
+	<div class="card-footer w-100">
+		<h4 class="card-title">Deltagare</h4>
+		
+ 
+		{% for participant in bill.claims%}
+<div class="row">
+ <div class="col col-sm-6"><li class="list-inline-item">{{participant.payer_screen_name}}</li></div>
+  <div class="col col-sm-3"><li class="list-inline-item">{{participant.amount_owed}}kr</li></div>
+  <div class="col col-sm-3"><li class="list-inline-item">{{participant.amount_owed}}kr</li></div>
+		
+		
+</div>
+		
+		{%endfor%}
+		
+	
+</div>
 
 
 

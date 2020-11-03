@@ -236,6 +236,7 @@ class Bill(db.Model):
     title = db.Column(db.String)
     amount_bill = db.Column(db.Numeric)
     amount_total = db.Column(db.Numeric)
+    amount_payee = db.Column(db.Numeric, default=0)
     filefolder = db.Column(db.String, default=secrets.token_hex(8))
     #amount_claimed = db.Column(db.Numeric)
 

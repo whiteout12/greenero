@@ -104,7 +104,8 @@ def createBillForm():
 		
 			
 		#create bill
-		#bill = createBill(form)
+		bill = createBill(form)
+		print('bill', bill)
 		participants = []
 		for participantid in form.participants.data:
 			participant = User.query.filter_by(userid=participantid).first()
@@ -126,10 +127,11 @@ def createBillForm():
 		#check users
 			#create users
 		#create billdebt
-		
-		flash('skickad!')
-		return "done"
-		#return render_template('BillOverview.html', title='Skicka nota?')
+		for participant in participants:
+			billdebt = createBillDebt(bill, participant)
+			print(billdebt)
+		flash('Nota skapad', category='success')
+		return redirect(url_for('bills.oneBill', bill=bill))
 		
 
 	print('names',form.names.data)
@@ -139,7 +141,7 @@ def createBillForm():
 
 
 
-def createBill():
+def createBill(form):
 
 	bill = Bill(payee=current_user, amount_bill=form.amount.data, amount_total=form.totalamount.data, title=form.description.data)
 	db.session.add(bill)
@@ -166,28 +168,26 @@ def getUser(phone):
 				credits=None 
 				)
 	db.session.add(newdummyuser)
-	#db.session.commit()
+	db.session.commit()
 	return newdummyuser
 
 def createDummyUser():
 	return
 
-def createBillDebt(bill, participants):
-
-	for participant in participants:
+def createBillDebt(bill, participant):
 		billdebt = BillDebt(payer=participant[0], bill=bill, payer_screen_name=participant[1])
 		db.session.add(billdebt)
 		db.session.commit()
-		createInvoice(billdebt)
+		invoice = createInvoice(billdebt)
 
-	return billdebt
+		return billdebt, invoice
 
 def createInvoice(billdebt):
-	invoice =Invoice(userid=billdebt.bill.payee, frienduserid=billdebt.payer, amount=0, description=billdebt.bill.title, billdebtid=billdebt.billdebtid)
+	invoice =Invoice(userid=billdebt.bill.payee.userid, frienduserid=billdebt.payer.userid, amount=0, description=billdebt.bill.title, billdebtid=billdebt.billdebtid)
 	db.session.add(invoice)
 	db.session.commit()
 
-	return
+	return invoice
 
 
 @bills.route('/<billid>/send', methods=['GET', 'POST'])
