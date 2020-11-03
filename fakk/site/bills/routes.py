@@ -83,42 +83,158 @@ def save_receipt(form_receipt, folder):
 
 @bills.route('/create', methods=['GET', 'POST'])
 @login_required
-def createBill():
+def createBillForm():
+
 	shex = 1,2
 	form = CreateBill()
 	choices = []
 	
 	for i in current_user.get_friends():
-		choices.append((i.frienduserid, i.rel_receiver.username))
+		choices.append((i.rel_receiver.userid, i.rel_receiver.username))
 	
 	form.participants.choices = choices
-	
+	print(form.participants.choices)
+	if request.method == 'POST':
+		print(form.names.data)
+		print(form.phones.data)
+		print('participants post', form.participants.data)
+
 	if form.validate_on_submit():
 		#if form.receipt.data:
+		
+			
+		#create bill
+		#bill = createBill(form)
+		participants = []
+		for participantid in form.participants.data:
+			participant = User.query.filter_by(userid=participantid).first()
+			user = (participant, participant.username)
+			participants.append(user)
+		print('participants users to billdebt',participants)
+		if(form.phones.data):
+			phone_partcipants = []
+			for i in range(len(form.phones)):
+				user = (form.names[i].data, form.phones[i].data)
+				phone_partcipants.append(user)
+		print('phone_partcipants', phone_partcipants)
+		for item in phone_partcipants:
+			user = (getUser(item[1]), item[0])
+			participants.append(user)
+		print('participants users to billdebt with phonesusers',participants)
+		#store receipt
+			#shex = save_receipt(form.receipt.data)
+		#check users
+			#create users
+		#create billdebt
+		
+		flash('skickad!')
+		return "done"
+		#return render_template('BillOverview.html', title='Skicka nota?')
+		
 
-		#	shex = save_receipt(form.receipt.data)
-		
-		
-		bill = Bill(payee=current_user, amount_bill=form.amount.data, amount_total=form.totalamount.data, title=form.description.data)
-		db.session.add(bill)
-		db.session.commit()
-		if form.receipt.data:
-			shex = save_receipt(form.receipt.data, bill.filefolder)
-			receipt = Receipt(owner=current_user, bill=bill, filename=shex, statusid=1)
-			db.session.add(receipt)
-			db.session.commit()
-		for contact in form.participants.data:
-			billdebt = BillDebt(payer=User.query.filter_by(userid=contact).first(), bill=bill)
-			db.session.add(billdebt)
-			db.session.commit()
-			invoice =Invoice(userid=current_user.userid, frienduserid=contact, amount=0, description=form.description.data, billdebtid=billdebt.billdebtid)
-			db.session.add(invoice)
-			db.session.commit()
-		
-		flash('Nota sparad!', category="success")
-		return render_template('BillOverview.html', bill=bill)
-	
+	print('names',form.names.data)
+	print('names errors',form.names.errors)
+	print(form.phones.data)
 	return render_template('createBill.html', form=form, img_url=shex, title='Skapa nota')
+
+
+
+def createBill():
+
+	bill = Bill(payee=current_user, amount_bill=form.amount.data, amount_total=form.totalamount.data, title=form.description.data)
+	db.session.add(bill)
+	db.session.commit()
+	if form.receipt.data:
+		shex = save_receipt(form.receipt.data, bill.filefolder)
+		receipt = Receipt(owner=current_user, bill=bill, filename=shex, statusid=1)
+		db.session.add(receipt)
+		db.session.commit()
+	return bill
+
+def getUser(phone):
+	confirmed_user = User.query.filter_by(phone=phone, confirmed_phone=True).first()
+	if confirmed_user:
+		return confirmed_user
+	existing_dummy_user = User.query.filter_by(usertype=1, phone=phone).first()
+	if existing_dummy_user:
+		return existing_dummy_user
+	newdummyuser = User(
+				username=None,
+				#email=form.email.data,
+				password='dummy',
+				usertype=1,
+				credits=None 
+				)
+	db.session.add(newdummyuser)
+	#db.session.commit()
+	return newdummyuser
+
+def createDummyUser():
+	return
+
+def createBillDebt(bill, participants):
+
+	for participant in participants:
+		billdebt = BillDebt(payer=participant[0], bill=bill, payer_screen_name=participant[1])
+		db.session.add(billdebt)
+		db.session.commit()
+		createInvoice(billdebt)
+
+	return billdebt
+
+def createInvoice(billdebt):
+	invoice =Invoice(userid=billdebt.bill.payee, frienduserid=billdebt.payer, amount=0, description=billdebt.bill.title, billdebtid=billdebt.billdebtid)
+	db.session.add(invoice)
+	db.session.commit()
+
+	return
+
+
+@bills.route('/<billid>/send', methods=['GET', 'POST'])
+@login_required
+def saveBill(billid):
+	bill = Bill(payee=current_user, amount_bill=form.amount.data, amount_total=form.totalamount.data, title=form.description.data)
+	db.session.add(bill)
+	db.session.commit()
+	if form.receipt.data:
+		shex = save_receipt(form.receipt.data, bill.filefolder)
+		receipt = Receipt(owner=current_user, bill=bill, filename=shex, statusid=1)
+		db.session.add(receipt)
+		db.session.commit()
+	for contact in form.participants.data:
+		billdebt = BillDebt(payer=User.query.filter_by(userid=contact).first(), bill=bill)
+		db.session.add(billdebt)
+		db.session.commit()
+		invoice =Invoice(userid=current_user.userid, frienduserid=contact, amount=0, description=form.description.data, billdebtid=billdebt.billdebtid)
+		db.session.add(invoice)
+		db.session.commit()
+	return render_template('createBill.html', form=form, title='Ändra nota')
+
+@bills.route('/<billid>/change', methods=['GET', 'POST'])
+@login_required
+def changeBill(billid):
+	form = CreateBill()
+	bill = Bill.query.filter_by(billid=billid).first()
+
+	if request.method == 'GET':
+		choices = []
+		already_chosen = []
+		for claim in bill.claims:
+			already_chosen.append(claim.payer.userid)
+		if len(already_chosen) > 0:
+			form.contact_bool.data = True
+		for i in current_user.get_friends():
+			choices.append((i.frienduserid, i.rel_receiver.username))
+		print(choices)
+		form.participants.choices = choices
+		form.description.data = bill.title
+		form.totalamount.data = bill.amount_total
+		form.amount.data = bill.amount_bill
+	if form.validate_on_submit():
+		return 'hej'
+	print(form.participants.choices)
+	form.participants.data = already_chosen
+	return render_template('createBill.html', form=form, title='Ändra nota')
 
 @bills.route('/uploads/<folder>/<filename>')
 def uploaded_file(folder, filename):

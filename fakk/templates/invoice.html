@@ -80,7 +80,7 @@
       {{ subfield }}
       {{ subfield.label }} <small>(Avgift: 5 &#129373-krediter)</small>
       <span id="phone2">
-      {{form.phone(class_="form-control", placeholder="Telefonummer", oninput="setTimeout(phoneFormat.bind(null,this.id), 0);", pattern="[0-9]*")}}
+      {{form.phone(class_="form-control", placeholder="Telefonummer",oninput="setTimeout(phoneFormat.bind(null,this.id), 0);" pattern="[0-9]*")}}
       <small id="emailHelp" class="form-text text-muted">07XXXXXXXX</small>
       <small id="emailHelp" class="form-text text-muted">Du kan hämta nummer från din telefonbok med "autofill"</small>
       <small id="emailHelp" class="form-text text-muted">Ditt telefonnummer kommer att vara synligt för mottagaren</small>

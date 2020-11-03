@@ -27,7 +27,8 @@
 
 </style>
 
-<h1>Skapa nota</h1>
+<h1>{{title}}</h1>
+
 <form class="form-group" id="bill-form" role="form" method="post" action="" enctype="multipart/form-data" novalidate>
   {{ form.csrf_token }}
   <fieldset class="form-group">
@@ -88,22 +89,40 @@
         <div id="phone-{{ loop.index0 }}-form" class="subform" data-index="{{ loop.index0 }}">
 
           <div class="form-row">
-
-            
-            <div class="col-6">
-              {{ subform(class="form-control", placeholder="telefonnummer", oninput="setTimeout(phoneFormat.bind(null,this.id), 0);", pattern="[0-9]*")}}
-            </div>
-
-            <div class="col-1">
-              <a class="remove text-danger close" href="#">&times</a>
-            </div>
-
-          </div>
-          {% if subform.errors %}
+            <div class="col-4">{%if form.names[loop.index0].data %}
+      {{form.names[loop.index0](class="form-control is-valid", placeholder="namn", autocomplete="section-0 firstname", oninput="setTimeout(nameFormat.bind(null,this.id), 0);", readonly=true)}}{%elif form.names[loop.index0].errors%}
+       {{form.names[loop.index0](class="form-control is-invalid", placeholder="namn", autocomplete="section-0 firstname", oninput="setTimeout(nameFormat.bind(null,this.id), 0);")}}
+      {%else%}
+       {{form.names[loop.index0](class="form-control", placeholder="namn", autocomplete="section-0 firstname", oninput="setTimeout(nameFormat.bind(null,this.id), 0);")}}
+      {%endif%}
+      {% if subform.errors %}
           <div class="form-group">
 
             <small class="error text-danger">
+              {% for error in form.names[loop.index0].errors %}
+              {{ error }}<br>
+              {% endfor %}
+              
+              
+            </small>
+          </div>
+          {% endif %}
+      </div>
+            
+            <div class="col-6">
+              {%if subform.errors %}
+              {{ subform(class="form-control is-invalid", placeholder="telefonnummer", autocomplete="section-0 tel", pattern="[0-9]*", oninput="setTimeout(phoneFormat.bind(null,this.id), 0);")}}
+              {%elif subform.data %}
+              {{ subform(class="form-control is-valid", placeholder="telefonnummer", autocomplete="section-0 tel", pattern="[0-9]*", oninput="setTimeout(phoneFormat.bind(null,this.id), 0);", readonly=true)}}
+              
+                {%else%}
+              {{ subform(class="form-control", placeholder="telefonnummer", autocomplete="section-0 tel", pattern="[0-9]*", oninput="setTimeout(phoneFormat.bind(null,this.id), 0);")}}
+               {%endif%}
+               {% if subform.errors %}
+          <div class="form-group">
 
+            <small class="error text-danger">
+            
               {% for error in subform.errors %}
               {{ error }}<br>
               {% endfor %}
@@ -111,6 +130,14 @@
             </small>
           </div>
           {% endif %}
+            </div>
+
+            <div class="col-1">
+              <a class="remove text-danger close" href="#">&times</a>
+            </div>
+
+          </div>
+          
           
         </div>
         {% endfor %}
@@ -178,10 +205,13 @@
 <div id="phone-_-form" class="is-hidden_phone" data-index="_">
 
   <div class="form-row">
-    
-    <div class="col-6">
-      <input class="form-control" id="phones-_" name="phones-_" type="text" value="" oninput="setTimeout(phoneFormat.bind(null,this.id), 0);" placeholder="telefonnummer" pattern="[0-9]*">
+    <div class="col-4">
+      <input class="form-control" id="names-_" name="names-_" type="text" value="" oninput="setTimeout(nameFormat.bind(null,this.id), 0);" placeholder="namn" autocomplete="section-_ firstname">
     </div>
+    <div class="col-6">
+      <input class="form-control" id="phones-_" name="phones-_" type="text" value="" oninput="setTimeout(phoneFormat.bind(null,this.id), 0);" placeholder="telefonnummer" autocomplete="section-_ firstname" pattern="[0-9]*">
+    </div>
+    
     <div class="col-1">
       <a class="remove close text-danger" href="#">&times</a>
     </div>
@@ -192,7 +222,7 @@
   
 </div>
 
-<img class="img-fluid" src="{{ url_for('bills.uploaded_file', folder=img_url[0], filename=img_url[1]) }}">
+
 <script>
   $(document).ready(
 $('select').selectpicker());
@@ -290,6 +320,7 @@ $(".custom-file-input").on("change", function() {
 
                   $item.attr('id', $item.attr('id').replace('_', newIndex));
                   $item.attr('name', $item.attr('name').replace('_', newIndex));
+                  $item.attr('autocomplete', $item.attr('autocomplete').replace('_', newIndex));
                 });
 
                 // Append
@@ -302,7 +333,29 @@ $(".custom-file-input").on("change", function() {
 
 
               $(document).ready(function() {
-                $('#add').click(addForm);
+                $('#add').click(function(){
+                  counter = 0;
+                  $('#subforms-container *').filter(':input').each(function(){
+                    console.info(this.name)
+                    
+                    if ($(this).val() == '') {
+                      counter++
+                     
+                      }console.info(counter)
+                        
+                
+
+                    
+                    
+                  });
+                  if (counter === 0) {
+
+                  addForm();
+                      
+                  }
+                  
+                  
+                });
                 $('.remove').click(removeForm);
               });
 
@@ -338,6 +391,9 @@ function phoneFormat(id){
         
         document.getElementById(id).value= String(input);
         document.getElementById(id).defaultValue= String(input);
+        document.getElementById(id).readOnly= true;
+
+
         }
          }else{
 
@@ -350,6 +406,57 @@ function phoneFormat(id){
 
         
 }
+
+function nameFormat(id){
+  
+  //console.log('id', id)
+  //console.log('input', input)
+        // Strip all characters from the input except digits
+        var input = document.getElementById(id);
+        console.log('input value was', input.defaultvalue)
+        //console.log(input.event.inputType)
+        /*console.log('input value', input.value)
+        console.log('input value len', input.value.length)
+        console.log('input defaultvalue', input.defaultValue)
+        console.log('input defaultvalue len', input.defaultValue.length)
+
+        console.log('diff', Math.abs(input.defaultValue.length-input.value.length))*/
+        
+        if(Math.abs(input.defaultValue.length-input.value.length)>8){
+        console.log('blir ändring')
+        if(input.value.length !== 0){
+         
+         input = input.value.substring(0, input.value.indexOf(" ")); 
+        
+       
+         console.log('result', input)
+        
+        document.getElementById(id).value= String(input);
+        document.getElementById(id).defaultValue= String(input);
+        document.getElementById(id).readOnly= true;
+        
+        }
+         }else{
+
+          //document.getElementById(id).value= String(input.value);
+          document.getElementById(id).defaultValue= String(input.value);
+         }
+        
+        
+        //console.log('input new defaultvalue is', input.defaultvalue)
+
+        
+}
+</script>
+<script type="text/javascript">
+function saveBill(){
+  console.log('Skiacd')
+  document.getElementById("send").checked = true;
+  //submitAction()
+  document.getElementById("bill-form").submit();
+
+}  
+
 </script>
 
 

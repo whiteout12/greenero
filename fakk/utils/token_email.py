@@ -39,7 +39,7 @@ def send_password_link_email(user_email):
     token = generate_confirmation_token(user_email)
     password_url = url_for('user.reset_password_token', token=token, _external=True)
     html = render_template('reset_password_email.html', reset_url=password_url)
-    msg = Message("fakk. - Återställ lösenord - länk", sender="tjena@fakk.tech", recipients=[str(user_email)])
+    msg = Message("fakk. - Återställ lösenord - länk", sender=('fakk.', 'noreply@fakk.tech'), recipients=[str(user_email)])
     msg.html = html
     msg.body = "Följ länken nedan för att återställa ditt lösenord. " + str(password_url)
     mail.send(msg)

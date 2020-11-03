@@ -225,6 +225,8 @@ class CreateBill(FlaskForm):
     phones = FieldList(TextField('Telefonnummer', validators=[is_sms_false, val_phone_format, validate_phone_self,  Length(min=10, max=10, message='Måste vara 10 siffror'),Regexp('^[0-9]*$', message='Får bara innehålla sifror')],
     ), min_entries=1, validators=[])
 
+    names = FieldList(TextField('Namn', validators=[is_sms_false, DataRequired(message="Obligtoriskt fält")]), min_entries=1)
+
     amount = DecimalField('Belopp på nota', validators=[DataRequired(message="Obligtoriskt fält"), NumberRange(min=1, message='Inte en siffra')]
     )
 
@@ -234,6 +236,8 @@ class CreateBill(FlaskForm):
     receipt = FileField('ladda upp bild på kvitto', validators=[FileAllowed(['jpg', 'png', 'heif', 'jpeg'])])
 
     submit = SubmitField('Skapa nota')
+
+    
 
     
 

@@ -262,6 +262,7 @@ class BillDebt(db.Model):
     statusid = db.Column(db.Integer, default=0)
     
     payerid = db.Column(db.Integer, db.ForeignKey('users.userid'), nullable=False)
+    payer_screen_name = db.Column(db.String)
     
     amount_owed = db.Column(db.Numeric, default=0)
     #invoice = relationship('Invoice', foreign_keys='Relationship.userid')

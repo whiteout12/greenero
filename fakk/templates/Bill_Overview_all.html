@@ -3,7 +3,7 @@
 {% block content %}
 <h2>{{title}}</h2>
 <br>
-<a class="mr-2 btn btn-sm btn-primary" href="{{ url_for('bills.createBill')}}">Skapa Nota</a>
+<a class="mr-2 btn btn-sm btn-primary" href="{{ url_for('bills.createBillForm')}}">Skapa Nota</a>
 
 <h2>Skickade notor</h2>
 {%for bill in current_user.bills%}
@@ -16,11 +16,12 @@ Mappnamn: {{bill.filefolder}}<br>
 Summa nota: {{bill.amount_bill}}<br>
 Summa total: {{bill.amount_total}}<br>
 Summa taget totalt: {{ bill.claims |sum(attribute='amount_owed') }}<br>
+<a class="nav-item nav-link" href="{{ url_for('bills.changeBill', billid=bill.billid) }}">Ändra nota</a><br>
 <a class="mr-2" href="{{ url_for('bills.oneBill', billid=bill.billid)}}">Nota</a><br>
 kvitto:
-
+{%if bill.receipts%}
 <img class="img-fluid" src="{{ url_for('bills.uploaded_file', folder=bill.filefolder, filename=bill.receipts[0].filename) }}">
-
+{%endif%}
 <br>
 Deltagare<br>
 {% for participant in bill.claims%}<br>
@@ -32,6 +33,7 @@ Summa taget: {{participant.amount_owed}}<br>
 Faktura{{participant.invoice[0].invoiceid}}<br>
 Utställare: {{participant.invoice[0].sender.username}}<br>
 Mottagare: {{participant.invoice[0].receiver.username}}<br>
+<br>
 
 
 
