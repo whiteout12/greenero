@@ -1,83 +1,30 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>{{bill.title}}</h2>
-<br>
-<p>{{bill.title}}</p>
-
-
-
-<div class="card">
-
-	<div class="row">
-		<div class="col-md-4">
-
-			<ul class="list-group list-group-flush">
-				{% for participant in bill.claims%}
-				<li class="list-group-item">{{participant.payer_screen_name}}</li>
-				{%endfor%}
-			</ul>
-		</div>
-		<div class="col-md-6">
-			<div class="card-body">
-				<h5 class="card-title">{{bill.title}}</h5>
-				<ul class="list-group list-group-flush">
-
-					<li class="list-group-item">Skapad: {{ bill.date_created.strftime('%Y-%m-%d') }}</li>
-					<li class="list-group-item">Summa nota: {{bill.amount_bill}}</li>
-					<li class="list-group-item">Summa total: {{bill.amount_total}}</li>
-					<li class="list-group-item">Summa taget totalt: {{ bill.claims |sum(attribute='amount_owed') }}</li>
-
-				</ul>
-				<p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-			</div>
-
-			<div class="card-body">
-				<a href="#" class="card-link">Card link</a>
-				<a href="#" class="card-link">Another link</a>
-			</div>
-		</div>
-	</div>
-</div>
-
-<article class="media content-section">
-	{% for image in bill.receipts %}
-	<img class="rounded bill-img" src="{{ url_for('bills.uploaded_file', folder=bill.filefolder, filename=image.filename) }}">
-	{% endfor %}
-	<div class="media-body">
-		<div class="article-metadata">
-			<h5 class="card-title">{{bill.title}}</h5>
-
-
-
-
-		</div>
-
-
-		<ul class="list-group list-group-flush">
-			<li class="list-group-item">Skapad: {{ bill.date_created.strftime('%Y-%m-%d') }}</li>
-			<li class="list-group-item">Summa nota: {{bill.amount_bill}}</li>
-			<li class="list-group-item">Summa total: {{bill.amount_total}}</li>
-			<li class="list-group-item">Summa taget totalt: {{ bill.claims |sum(attribute='amount_owed') }}</li>
-			{% for participant in bill.claims%}
-			<li class="list-group-item">{{participant.payer_screen_name}}</li>
-			{%endfor%}
-		</ul>
-	</div>
-</article>
+<h2>Nota{{bill.billid}}</h2>
 
 
 <div class="card flex-row flex-wrap">
 	<div class="card-header w-100 text-muted">
-	<h4 class="card-title">{{bill.title}}</h4>
+		<h4 class="card-title">{% for image in bill.receipts %}
+		<img class="rounded bill-img" src="{{ url_for('bills.uploaded_file', folder=bill.filefolder, filename=image.filename) }}">
+		{% endfor %}{{bill.title}}</h4><span class="badge badge-secondary bill-badge-date">{{ bill.date_created.strftime('%Y-%m-%d') }}</span>
+
+	<div class="row">
+	
+	{%if bill.statusid == 1%}
+	<span class="badge badge-warning bill-badge-status">Ej publicerad</span>
+	{%elif bill.statusid == 2%}
+	<span class="badge badge-primary bill-badge-status">Under behandling</span>
+	{%else%}
+	<span class="badge badge-success bill-badge-status">Avslutad</span>
+	{%endif%}
+	<button type="button" class="btn btn-success btn-sm m-1" data-toggle="modal" data-target="#deleteModal{{bill.billid}}">Publicera</button><button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#deleteModal{{bill.billid}}">Radera</button>
+	</div>
 
 </div>
-	<div class="w-20">
-		{% for image in bill.receipts %}
-		<img class="bill-img" src="{{ url_for('bills.uploaded_file', folder=bill.filefolder, filename=image.filename) }}">
-		{% endfor %}
-	</div>
-	<div class="w-80 card-body">
+	
+	<div class="card-body">
 		
 		
 	<div class="row">
@@ -92,10 +39,22 @@
  <div class="col col-sm-6"><li class="list-inline-item">&Sigma; total</li></div>
   <div class="col col-sm-6"><li class="list-inline-item">{{bill.amount_total}}</li></div>
   </div>
-  <div class="row">
- <div class="col col-sm-6"><li class="list-inline-item">&Sigma; Min del</li></div>
-  <div class="col col-sm-6"><li class="list-inline-item">{{ bill.claims |sum(attribute='amount_owed') }}</li></div>
+    <div class="row">
+ <div class="col col-sm-6"><li class="list-inline-item">&Sigma; taget</li></div>
+  <div class="col col-sm-6"><li class="list-inline-item">{{ bill.claims |sum(attribute='amount_owed') + bill.amount_payee}}</li></div>
   </div>
+  <div class="row">
+ <div class="col col-sm-6"><li class="list-inline-item">&Sigma; min del</li></div>
+  <div class="col col-sm-6"><li class="list-inline-item"><form class="form-inline" action="{{ url_for('bills.updateBill_MyShare', billid=bill.billid) }}" method="POST"><div class="input-group mb-3">
+  <input type="text" class="form-control form-control-sm col-4" onfocus="this.select();" id="myshare" name="myshare" value="{{ bill.amount_payee}}" placeholder="min del" aria-label="Min del" aria-describedby="button-addon2">
+  <div class="input-group-append">
+    <button class="btn btn-primary btn-sm" type="submit" >✅</button>
+  </div>
+</div>
+        
+        </form></li></div>
+  </div>
+
 	</div>
 	<div class="w-100"></div>
 	<div class="card-footer w-100">
@@ -106,7 +65,7 @@
 <div class="row">
  <div class="col col-sm-6"><li class="list-inline-item">{{participant.payer_screen_name}}</li></div>
   <div class="col col-sm-3"><li class="list-inline-item">{{participant.amount_owed}}kr</li></div>
-  <div class="col col-sm-3"><li class="list-inline-item">{{participant.amount_owed}}kr</li></div>
+  <div class="col col-sm-3"><li class="list-inline-item"><a class="nav-item nav-link" href="{{ url_for('bills.oneDebt', billdebtid=participant.billdebtid)}}">skuld</a><br></li></div>
 		
 		
 </div>
@@ -116,6 +75,29 @@
 	
 </div>
 
+<div class="modal fade" id="deleteModal{{bill.billid}}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel">Radera nota{{bill.billid}}?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        
+        Är du helt säker på att du vill radera notan? Allt går förlorat. Det är ju dina pengar det gäller ;)
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Stäng</button>
+        <form action="{{ url_for('bills.deleteBill', billid=bill.billid) }}" method="POST">
+          <input class="btn btn-danger" type="submit" value="Radera">
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 
 
 {% endblock %}

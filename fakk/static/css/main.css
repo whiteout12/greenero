@@ -90,11 +90,53 @@ a.article-title:hover {
   font-size: 2.5rem;
 }
 
-.bill-img {
-  height: 70px;
-  width: 70px;
-  margin-right: 10px;
+.bill_thumb {
+  padding-top: 20px;
+  padding-right: 0px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+    height: 100%;
+    width:70px;
+    /*background-color: blue;*/
+    /*position: middle;*/
+    overflow-x:auto;
+    overflow-y:auto;
 
+}
+.bill_thumb > img {
+    display: inline-block;
+    position: relative;
+    border:1px solid red
+    height: 100px;
+    width: 100px;
+
+}
+
+.bill-img {
+
+  height: 50px;
+  width: 50px;
+ 
+
+}
+
+.bill-badge-status {
+  padding: .2rem .3rem;
+  position: absolute;
+  /* You may need to change top and right. They depend on padding/widht of .badge */
+  top: -5px;
+  right: -5px;
+
+    
+}
+.bill-badge-date {
+  padding: .2rem .3rem;
+  position: absolute;
+  /* You may need to change top and right. They depend on padding/widht of .badge */
+  top: 44px;
+  left: 75px;
+
+    
 }
 
 .invoice-buttons {

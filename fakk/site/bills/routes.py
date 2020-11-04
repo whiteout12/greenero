@@ -42,10 +42,10 @@ def overviewBill():
 	bills = current_user.bills	
 	billdebts = current_user.billdebts
 	invoices = current_user.invoice_receiver
-	print(bills)
-	print(billdebts)
-	print(invoices)
-	return render_template('Bill_Overview_all.html')
+	#print(bills)
+	#print(billdebts)
+	#print(invoices)
+	return render_template('Bill_Overview_all.html', title='Notor')
 
 @bills.route('/<billid>/view', methods=['GET', 'POST'])
 @login_required
@@ -56,29 +56,7 @@ def oneBill(billid):
 	else:
 		return 'Not authorized'
 
-def save_receipt(form_receipt, folder):
-	random_filename = secrets.token_hex(8)
-	random_foldername = secrets.token_hex(8)
-	#f_name
-	_, f_ext = os.path.splitext(form_receipt.filename)
-	receipt_fn = random_filename + f_ext
-	receipt_path = os.path.join(app.config['RECEIPT_UPLOAD_FOLDER'], folder)
-	#path = '/Users/bjorncarlsson/Python/fakk-images'
-	if not os.path.isdir(receipt_path):
-		print('skapar dir: ', receipt_path)
-		os.mkdir(receipt_path)
 
-	filepath =os.path.join(receipt_path, receipt_fn)
-	output_size = (1000,1000)
-	i = Image.open(form_receipt)
-	i.thumbnail(output_size)
-	i = ImageOps.exif_transpose(i)
-	#i.rotate(270)
-
-	#form_receipt.save(filepath)
-	i.save(filepath)
-	#return 'Receipt sparat som '+receipt_fn+' i '+receipt_path
-	return receipt_fn
 
 
 @bills.route('/create', methods=['GET', 'POST'])
@@ -112,15 +90,17 @@ def createBillForm():
 			user = (participant, participant.username)
 			participants.append(user)
 		print('participants users to billdebt',participants)
-		if(form.phones.data):
+		print('form phones',form.phones.data and form.sms_bool)
+		print('sms bool form', form.sms_bool)
+		if(form.phones.data and form.sms_bool.data):
 			phone_partcipants = []
 			for i in range(len(form.phones)):
 				user = (form.names[i].data, form.phones[i].data)
 				phone_partcipants.append(user)
-		print('phone_partcipants', phone_partcipants)
-		for item in phone_partcipants:
-			user = (getUser(item[1]), item[0])
-			participants.append(user)
+			print('phone_partcipants', phone_partcipants)
+			for item in phone_partcipants:
+				user = (getUser(item[1]), item[0])
+				participants.append(user)
 		print('participants users to billdebt with phonesusers',participants)
 		#store receipt
 			#shex = save_receipt(form.receipt.data)
@@ -131,7 +111,7 @@ def createBillForm():
 			billdebt = createBillDebt(bill, participant)
 			print(billdebt)
 		flash('Nota skapad', category='success')
-		return redirect(url_for('bills.oneBill', bill=bill))
+		return redirect(url_for('bills.oneBill', billid=bill.billid))
 		
 
 	print('names',form.names.data)
@@ -189,6 +169,60 @@ def createInvoice(billdebt):
 
 	return invoice
 
+def save_receipt(form_receipt, folder):
+	random_filename = secrets.token_hex(8)
+	random_foldername = secrets.token_hex(8)
+	#f_name
+	_, f_ext = os.path.splitext(form_receipt.filename)
+	receipt_fn = random_filename + f_ext
+	receipt_path = os.path.join(app.config['RECEIPT_UPLOAD_FOLDER'], folder)
+	#path = '/Users/bjorncarlsson/Python/fakk-images'
+	if not os.path.isdir(receipt_path):
+		print('skapar dir: ', receipt_path)
+		os.mkdir(receipt_path)
+
+	filepath =os.path.join(receipt_path, receipt_fn)
+	output_size = (1000,1000)
+	i = Image.open(form_receipt)
+	i.thumbnail(output_size)
+	i = ImageOps.exif_transpose(i)
+	#i.rotate(270)
+
+	#form_receipt.save(filepath)
+	i.save(filepath)
+	#return 'Receipt sparat som '+receipt_fn+' i '+receipt_path
+	return receipt_fn
+
+def delete_receipt(path):
+	return
+
+def delete_receipts(bill):
+	
+	
+	receipt_path = os.path.join(app.config['RECEIPT_UPLOAD_FOLDER'], bill.filefolder)
+	#path = '/Users/bjorncarlsson/Python/fakk-images'
+	print('folder list', os.listdir(receipt_path))
+	print(len(os.listdir(receipt_path)))
+	for receipt in bill.receipts:
+		if os.path.exists(os.path.join(receipt_path, receipt.filename)):
+ 			 os.remove(os.path.join(receipt_path, receipt.filename))
+ 			 print("The file was removed: ", os.path.join(receipt_path, receipt.filename))
+		else:
+  			print("The file does not exist")
+
+	#removing folder if empty
+	if len(os.listdir(receipt_path)) == 0:
+		print(receipt_path)
+		print(len(receipt_path))
+
+		print("Empty directory")
+		os.rmdir(receipt_path)
+	else:
+		print(receipt_path)
+		print(len(receipt_path))
+		print("Not empty directory")
+
+	return
 
 @bills.route('/<billid>/send', methods=['GET', 'POST'])
 @login_required
@@ -236,9 +270,58 @@ def changeBill(billid):
 	form.participants.data = already_chosen
 	return render_template('createBill.html', form=form, title='Ändra nota')
 
+@bills.route('/<billid>/delete', methods=['GET', 'POST'])
+@login_required
+def deleteBill(billid):
+
+	if request.method == 'POST':
+		bill = Bill.query.filter_by(billid=billid).first()
+		delete_receipts(bill)
+		bill.delete()
+
+	return redirect(url_for('bills.overviewBill'))
+
+@bills.route('/<billid>/updateMyShare', methods=['GET', 'POST'])
+@login_required
+def updateBill_MyShare(billid):
+	print(request.form)
+	new_amount = request.form['myshare']
+	print(new_amount)
+	if request.method == 'POST':
+		Bill.query.filter_by(billid=billid).first().amount_payee = new_amount
+		db.session.commit()
+		flash('Uppdaterade din del till ' + request.form['myshare']+'kr', category='success')
+
+	return redirect(url_for('bills.oneBill', billid=billid))
+
 @bills.route('/uploads/<folder>/<filename>')
 def uploaded_file(folder, filename):
 
 
     #return send_from_directory(os.path.join(app.config['RECEIPT_UPLOAD_FOLDER'], folder, filename))
     return send_from_directory(os.path.join(app.config['RECEIPT_UPLOAD_FOLDER'], folder), filename)
+
+@bills.route('/debt/<billdebtid>/view', methods=['GET', 'POST'])
+@login_required
+def oneDebt(billdebtid):
+	debt=BillDebt.query.filter_by(billdebtid=billdebtid).first()
+	print(debt.bill)
+	#if debt.payer == current_user and debt.bill.statusid==2:
+	#	return render_template('DebtOverview.html', bill=bill)
+	return render_template('DebtOverview.html', debt=debt)
+	#else:
+	#	return 'Not authorized'
+
+@bills.route('/debt/<billdebtid>/updateMyShare', methods=['GET', 'POST'])
+@login_required
+def updateDebt_MyShare(billdebtid):
+	print(request.form)
+	new_amount = request.form['myshare']
+	print(new_amount)
+	if request.method == 'POST':
+		BillDebt.query.filter_by(billdebtid=billdebtid).first().amount_owed = new_amount
+		db.session.commit()
+		flash('Uppdaterade din del till ' + request.form['myshare']+'kr', category='success')
+
+	return redirect(url_for('bills.oneDebt', billdebtid=billdebtid))
+

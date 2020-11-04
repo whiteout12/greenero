@@ -3,7 +3,7 @@
 
 <h2>{{title}}</h2>
 <br>
-<a class="mr-2 btn btn-sm btn-primary" href="{{ url_for('invoices.createInvoice', embedded=false)}}">Skapa faktura</a>
+<a class="mr-2 btn btn-md btn-primary" href="{{ url_for('invoices.createInvoice', embedded=false)}}">Skapa faktura</a>
 <br></br>
 
 {% if received.inv_open|length > 0 or sent.inv_open|length > 0 or sent.inv_rejected|length > 0%}

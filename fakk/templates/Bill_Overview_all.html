@@ -3,41 +3,34 @@
 {% block content %}
 <h2>{{title}}</h2>
 <br>
-<a class="mr-2 btn btn-sm btn-primary" href="{{ url_for('bills.createBillForm')}}">Skapa Nota</a>
-
+<a class="mr-2 btn btn-md btn-primary" href="{{ url_for('bills.createBillForm')}}">Skapa Nota</a>
+<br></br>
 <h2>Skickade notor</h2>
 {%for bill in current_user.bills%}
 
-{{loop.index}}<br>
-<p>{{bill.title}}</p>
-Skapare: {{bill.payee.username}}<br>
-Skapad: {{ bill.date_created.strftime('%Y-%m-%d') }}<br>
-Mappnamn: {{bill.filefolder}}<br>
-Summa nota: {{bill.amount_bill}}<br>
-Summa total: {{bill.amount_total}}<br>
-Summa taget totalt: {{ bill.claims |sum(attribute='amount_owed') }}<br>
-<a class="nav-item nav-link" href="{{ url_for('bills.changeBill', billid=bill.billid) }}">Ändra nota</a><br>
-<a class="mr-2" href="{{ url_for('bills.oneBill', billid=bill.billid)}}">Nota</a><br>
-kvitto:
-{%if bill.receipts%}
-<img class="img-fluid" src="{{ url_for('bills.uploaded_file', folder=bill.filefolder, filename=bill.receipts[0].filename) }}">
-{%endif%}
+<div class="card flex-row flex-wrap">
+	<div class="card-header w-100 text-muted">
+		<h4 class="card-title">{% for image in bill.receipts %}
+		<img class="rounded bill-img" src="{{ url_for('bills.uploaded_file', folder=bill.filefolder, filename=image.filename) }}">
+		{% endfor %}<a href="{{ url_for('bills.oneBill', billid=bill.billid)}}">{{bill.title}}</a></h4>
+
+	<div class="row">
+	
+	{%if bill.statusid == 1%}
+	<span class="badge badge-warning bill-badge-status">Ej publicerad</span>
+	{%elif bill.statusid == 2%}
+	<span class="badge badge-primary bill-badge-status">Under behandling</span>
+	{%else%}
+	<span class="badge badge-success bill-badge-status">Avslutad</span>
+	{%endif%}
+	
+	</div>
+
+</div>
+</div>
 <br>
-Deltagare<br>
-{% for participant in bill.claims%}<br>
-{{loop.index}}<br>
-Notaskuld ID: {{participant.billdebtid}}<br>
-Skapad: {{participant.date_created.strftime('%Y-%m-%d')}}<br>
-Användare {{participant.payer.username}}<br>
-Summa taget: {{participant.amount_owed}}<br>
-Faktura{{participant.invoice[0].invoiceid}}<br>
-Utställare: {{participant.invoice[0].sender.username}}<br>
-Mottagare: {{participant.invoice[0].receiver.username}}<br>
-<br>
+	
 
-
-
-{%endfor%}
 {%endfor%}
 
 {% endblock %}
