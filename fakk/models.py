@@ -174,6 +174,9 @@ class Invoice(db.Model):
     receiver = relationship('User', foreign_keys='Invoice.frienduserid')
     billdebtid = db.Column(db.Integer, ForeignKey('billdebts.billdebtid'))
     
+    billdebt = relationship("BillDebt", back_populates="invoice")
+
+    
     #billdebt = relationship('BillDebt', backref=backref("BillDebt", cascade="all, delete"))
     
     #__table_args__ = (db.UniqueConstraint('frienduserid', 'userid', name='_frienduserid_uc'), )
@@ -270,7 +273,8 @@ class BillDebt(db.Model):
     
     billid = db.Column(db.Integer, ForeignKey('bills.billid'))
     #invoiceid = db.Column(db.Integer, ForeignKey('invoices.invoiceid'))
-    invoice = relationship('Invoice', backref='billdebt', cascade='all, delete')
+    #invoices = relationship('Invoice', backref='billdebt', cascade='all, delete')
+    invoice = relationship("Invoice", uselist=False, back_populates="billdebt", cascade='all, delete')
     #invoice = relationship("Invoice", back_populates="invoices")
     #payer = relationship("User", back_populates="users")
 

@@ -119,7 +119,11 @@ def createBillForm():
 	print(form.phones.data)
 	return render_template('createBill.html', form=form, img_url=shex, title='Skapa nota')
 
+@bills.route('/update', methods=['GET', 'POST'])
+@login_required
+def updateBillForm():
 
+	return
 
 def createBill(form):
 
@@ -270,6 +274,26 @@ def changeBill(billid):
 	form.participants.data = already_chosen
 	return render_template('createBill.html', form=form, title='Ändra nota')
 
+@bills.route('/<billid>/publish', methods=['GET', 'POST'])
+@login_required
+def publishBill(billid):
+
+	if request.method == 'POST':
+		bill = Bill.query.filter_by(billid=billid).first()
+		bill.statusid = 2
+		db.session.commit()
+	return redirect(url_for('bills.oneBill', billid=billid))
+
+@bills.route('/<billid>/close', methods=['GET', 'POST'])
+@login_required
+def closeBill(billid):
+
+	if request.method == 'POST':
+		bill = Bill.query.filter_by(billid=billid).first()
+		bill.statusid = 3
+		db.session.commit()
+	return redirect(url_for('bills.oneBill', billid=billid))
+
 @bills.route('/<billid>/delete', methods=['GET', 'POST'])
 @login_required
 def deleteBill(billid):
@@ -281,16 +305,31 @@ def deleteBill(billid):
 
 	return redirect(url_for('bills.overviewBill'))
 
-@bills.route('/<billid>/updateMyShare', methods=['GET', 'POST'])
+@bills.route('/<billid>/update', methods=['GET', 'POST'])
 @login_required
-def updateBill_MyShare(billid):
+def updateBill(billid):
 	print(request.form)
-	new_amount = request.form['myshare']
-	print(new_amount)
+	new_amount_payee = request.form['amount_payee']
+	new_amount_bill = request.form['amount_bill']
+	new_amount_total = request.form['amount_total']
+	
+
 	if request.method == 'POST':
-		Bill.query.filter_by(billid=billid).first().amount_payee = new_amount
+		bill=Bill.query.filter_by(billid=billid).first()
+		print('comapre share', str(bill.amount_payee) != str(new_amount_payee))
+		print(bill.amount_payee)
+		print(new_amount_payee)
+		if str(bill.amount_payee) != str(new_amount_payee):
+			bill.amount_payee = new_amount_payee
+			flash('Uppdaterade din del till ' + request.form['amount_payee']+'kr', category='success')
+		if str(bill.amount_bill) != str(new_amount_bill):
+			bill.amount_bill = new_amount_bill
+			flash('Uppdaterade notabelopp till ' + request.form['amount_bill']+'kr', category='success')
+		if str(bill.amount_total) != str(new_amount_total):
+			bill.amount_total = new_amount_total
+			flash('Uppdaterade totalbelopp till ' + request.form['amount_total']+'kr', category='success')
 		db.session.commit()
-		flash('Uppdaterade din del till ' + request.form['myshare']+'kr', category='success')
+		#flash('Uppdaterade din del till ' + request.form['amount_total']+'kr', category='success')
 
 	return redirect(url_for('bills.oneBill', billid=billid))
 

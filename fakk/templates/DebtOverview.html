@@ -48,6 +48,25 @@
 </div>
         </form></li></div>
   </div>
+  <small> <br> <a data-toggle="collapse" href="#collapseInvoice" role="button" aria-expanded="false" aria-controls="collapseExample">
+    Faktura
+  </a></small>
+  <div class="collapse" id="collapseInvoice">
+  
+<h4>Faktura:</h4>
+Summa: {{debt.invoice.amount}}
+   <br>
+   Titel: {{debt.invoice.description}}
+   <br>
+   Id: {{debt.invoice.invoiceid}}
+   <br>
+   Version: {{debt.invoice.invoice_version}}
+   <br>
+   Status: {{debt.invoice.statusid}}
+   <br>
+	
+ 
+ </div>
 
 	</div>
 	<div class="w-100">
@@ -102,7 +121,7 @@ function resizeImage() {
     <tr>
        <td><input type="button" class="btn btn-danger btn-circle btn-md" id="clear" name="clear" value="C" onclick="calculator.display.value = ''"></td>
        <td><input type="button" class="btn btn-primary btn-circle btn-md" name="zero" value="0" onclick="calculator.display.value += '0'"></td>
-       <td><input type="button" class="btn btn-success btn-circle btn-md" name="doit" value="&#61;" onclick="calculator.display.value = eval(calculator.display.value)"></td>
+       <td><input type="button" class="btn btn-success btn-circle btn-md" name="doit" id="equalsBtn" value="&#61;" onclick="calculator.display.value = eval(calculator.display.value)"></td>
        <td><input type="button" class="operator btn btn-warning btn-circle btn-md" name="div" value="&#247;" onclick="calculator.display.value += '/'"></td>
     </tr>
  </table>
@@ -112,8 +131,38 @@ function resizeImage() {
 <div class="d-flex justify-content-center">
 <small class="justify-content-center">Ditt resultat kopieras upp till fältet ovan</small>
 </div>
-	</div>	
+
+
+	</div>
+
 </div>
+
+<script>
+
+	//document.getElementById("equalsBtn").element.addEventListener("click", myFunction);
+document.getElementById('equalsBtn').addEventListener('click',function(){
+	console.log("= clicked")
+        var result = document.getElementById('display');
+        console.log(result.value)
+        var resultBox = document.getElementById('myshare');
+        if(isFinite(result.value)){
+        	resultBox.value = result.value;
+        	resultBox.style.color = "green"
+        }else{
+        	console.log('not a number')
+
+        }
+        
+
+        //fontcolor("green")
+        //var charCode = (evt.which) ? evt.which : evt.keyCode;
+        //phoneNumber.value = phoneFormat(phoneNumber.value);
+});
+
+	function myFunction() {
+  alert ("Hello World!");
+}
+</script>
 
 
 

@@ -56,9 +56,9 @@
         </div>
         <div class="navbar-nav" style="margin-left: 1px;">
           {% if current_user.is_authenticated %}
-          {% if current_user.username == 'bjorn' %}
+          
           <a class="nav-item nav-link" href="{{ url_for('bills.overviewBill')}}">Notor</a>
-          {% endif %}
+          
 
           
           {% endif %}
