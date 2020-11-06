@@ -67,7 +67,7 @@
 		{% for item in debt.invoice.items %}
 		{{item.description}} {{item.price|round|int}}<br>
 		{%endfor%}
-		Att betala till {{debt.bill.payee.username}}: {{debt.invoice.items |sum(attribute='price')|round|int}}kr
+		Att betala till {{debt.bill.payee.username}}: {{debt.invoice.items |sum(attribute='price')|round(1)}}kr
 	</div>
 
 
@@ -155,9 +155,15 @@
 				</button>
 			</div>
 			<div class="modal-body text-center">
+				{{debt.invoice.sender.phone}}<br>
+				faktura{{debt.invoice.invoiceid}}<br>
+				{{debt.invoice.description}}<br>
+				{{debt.invoice.items |sum(attribute='price')|round(1)}}<br>
+				{{(debt.invoice.items |sum(attribute='price')|round(1))|replace('.', ',')}}<br>
+				{{debt.invoice.items|sum(attribute='price')|replace('.', ',')}}<br>
+				{{debt.invoice.items|sum(attribute='price')|round|int}}<br>
 
-
-				<a class="btn btn-success" href="swish://payment?data=%7B%22version%22%3A%201%2C%20%22payee%22%3A%20%7B%22value%22%3A%20%22{{debt.invoice.sender.phone}}%22%7D%2C%20%22message%22%3A%20%7B%22value%22%3A%20%22faktura{{debt.invoice.invoiceid}}%2C%20{{debt.invoice.description}}%22%2C%20%22editable%22%3A%20false%7D%2C%20%22amount%22%3A%20%7B%22value%22%3A%20{{debt.invoice.items |sum(attribute='price')}}%2C%20%22editable%22%3A%20false%7D%7D&callbackurl={{url_for('invoices.test_callback', invoice_token=debt.invoice.invoiceid, callback=rest, _external=True)}}&callbackresultparameter=res"><img src="{{ url_for('static', filename='swish-logotype.svg') }}" width="100"></a><p></p><p></p>
+				<a class="btn btn-success" href="swish://payment?data=%7B%22version%22%3A%201%2C%20%22payee%22%3A%20%7B%22value%22%3A%20%22{{debt.invoice.sender.phone}}%22%7D%2C%20%22message%22%3A%20%7B%22value%22%3A%20%22faktura{{debt.invoice.invoiceid}}%2C%20{{debt.invoice.description}}%22%2C%20%22editable%22%3A%20false%7D%2C%20%22amount%22%3A%20%7B%22value%22%3A%20{{debt.invoice.items|sum(attribute='price')|round(2)}}%2C%20%22editable%22%3A%20false%7D%7D&callbackurl={{url_for('invoices.test_callback', invoice_token=debt.invoice.invoiceid, callback=rest, _external=True)}}&callbackresultparameter=res"><img src="{{ url_for('static', filename='swish-logotype.svg') }}" width="100"></a><p></p><p></p>
 
 				<a>
 					<img src="data:image/svg+xml;base64,{{ (debt.invoice.sender.phone)|qrbase64(debt.invoice.items |sum(attribute='price')|round|int, debt.invoice.description) }}" width="150"></img></a>
