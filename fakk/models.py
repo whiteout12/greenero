@@ -170,6 +170,7 @@ class Invoice(db.Model):
     #duedate = db.Column(db.Date)
     message = db.Column(db.String, default=None)
     invoice_version = db.Column(db.Integer, default=1)
+    items = relationship('InvoiceItem', backref='invoice')
     sender = relationship('User', foreign_keys='Invoice.userid')
     receiver = relationship('User', foreign_keys='Invoice.frienduserid')
     billdebtid = db.Column(db.Integer, ForeignKey('billdebts.billdebtid'))
@@ -226,6 +227,28 @@ class Invoice(db.Model):
         #return '<rel-invoiceid - {}>'.format(self.invoiceid)
         return 'Invoice(Id: %s, Receiver: %s, amount: %s, description: %s, sender: %s, receiver: %s)' % (self.invoiceid, self.frienduserid, self.amount, self.description, self.sender, self.receiver)
 
+class InvoiceItem(db.Model):
+
+    __tablename__ = "invoiceitems"
+
+    id = db.Column(db.Integer, primary_key=True)
+    date_created = db.Column(DateTime(timezone=True), server_default=func.now())
+    date_updated = db.Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    description = db.Column(db.String)
+    price = db.Column(db.Integer, default=0)
+    status = db.Column(db.Integer, default=1)
+    type = db.Column(db.Integer, default=1)
+    payed = db.Column(db.Boolean, nullable=True)
+    
+    invoice_version = db.Column(db.Integer, default=1)
+    
+    invoiceid = db.Column(db.Integer, ForeignKey('invoices.invoiceid'))
+    
+    def __repr__(self):
+        #return '<rel-invoiceid - {}>'.format(self.invoiceid)
+        return 'InvoiceItem(Id: %s, Description: %s, price: %s)' % (self.id, self.description, self.price)
+
+
 class Bill(db.Model):
 
     __tablename__ = "bills"
@@ -269,6 +292,8 @@ class BillDebt(db.Model):
     payer_screen_name = db.Column(db.String)
     
     amount_owed = db.Column(db.Numeric, default=0)
+    sms = db.Column(db.Boolean, nullable=True)
+    sms_attempts = db.Column(db.Integer, default=0)
     #invoice = relationship('Invoice', foreign_keys='Relationship.userid')
     
     billid = db.Column(db.Integer, ForeignKey('bills.billid'))
