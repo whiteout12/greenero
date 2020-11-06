@@ -235,7 +235,7 @@ class InvoiceItem(db.Model):
     date_created = db.Column(DateTime(timezone=True), server_default=func.now())
     date_updated = db.Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     description = db.Column(db.String)
-    
+    price = db.Column(db.Numeric, default=0)
     status = db.Column(db.Integer, default=1)
     type = db.Column(db.Integer, default=1)
     payed = db.Column(db.Boolean, nullable=True)
