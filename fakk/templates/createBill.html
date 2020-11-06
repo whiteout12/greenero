@@ -150,7 +150,7 @@
 
   <div class="form-group">
     {{ form.amount.label() }}
-    {{ form.amount(class="form-control", placeholder="belopp på nota") }}  
+    {{ form.amount(class="form-control", placeholder="belopp på nota", inputmode="decimal") }}  
     {% if form.amount.errors %}
 
     <span class="error col-sm-2 col-form-label text-danger">

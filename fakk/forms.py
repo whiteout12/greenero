@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import TextField, PasswordField, SelectField, TextAreaField, IntegerField, RadioField, SubmitField, SelectMultipleField, DecimalField, FieldList, Form, FormField, BooleanField
+from wtforms import TextField, PasswordField, SelectField, TextAreaField, IntegerField, RadioField, SubmitField, SelectMultipleField, DecimalField, FloatField, FieldList, Form, FormField, BooleanField
 from wtforms.fields.html5 import EmailField
 from flask_wtf.file import FileField, FileAllowed
 from wtforms.validators import DataRequired, Length, Email, EqualTo, NoneOf, ValidationError, Optional, NumberRange, StopValidation, Regexp
@@ -204,6 +204,12 @@ class phoneForm(FlaskForm):
     phone = TextField('Telefonnummer', validators=[is_sms_false, val_phone_format, validate_phone_self,  Length(min=10, max=10, message='Måste vara 10 siffror'),Regexp('^[0-9]*$', message='Får bara innehålla sifror')]
     )
 
+class FlexibleDecimalField(DecimalField):
+
+    def process_formdata(self, valuelist):
+        if valuelist:
+            valuelist[0] = valuelist[0].replace(",", ".")
+        return super(FlexibleDecimalField, self).process_formdata(valuelist)
 
 
 class CreateBill(FlaskForm):
@@ -227,17 +233,24 @@ class CreateBill(FlaskForm):
 
     names = FieldList(TextField('Namn', validators=[is_sms_false, DataRequired(message="Obligtoriskt fält")]), min_entries=1)
 
-    amount = DecimalField('Belopp på nota', validators=[DataRequired(message="Obligtoriskt fält"), NumberRange(min=1, message='Inte en siffra')]
+    amount = FlexibleDecimalField('Belopp på nota', validators=[]
     )
 
-    totalamount = DecimalField('Belopp som betalats (inkl. ev dricks)', validators=[DataRequired(message="Obligtoriskt fält"), NumberRange(min=1, message='Inte en siffra')]
+    totalamount = FlexibleDecimalField('Belopp som betalats (inkl. ev dricks)', validators=[DataRequired(message="Obligtoriskt fält"), NumberRange(min=1, message='Inte en siffra')]
     )
 
     receipt = FileField('ladda upp bild på kvitto', validators=[FileAllowed(['jpg', 'png', 'heif', 'jpeg'])])
 
     submit = SubmitField('Skapa nota')
 
-    
+class MyFloatField(FloatField):
+    def process_formdata(self, valuelist):
+        if valuelist:
+            try:
+                self.data = float(valuelist[0].replace(',', '.'))
+            except ValueError:
+                self.data = None
+                raise ValueError(self.gettext('Not a valid float value'))  
 
     
 

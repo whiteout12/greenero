@@ -310,10 +310,10 @@ def deleteBill(billid):
 @login_required
 def updateBill(billid):
 	print(request.form)
-	new_amount_payee = request.form['amount_payee']
-	new_amount_bill = request.form['amount_bill']
-	new_amount_total = request.form['amount_total']
-	
+	new_amount_payee = request.form['amount_payee'].replace(',','.')
+	new_amount_bill = request.form['amount_bill'].replace(',','.')
+	new_amount_total = request.form['amount_total'].replace(',','.')
+	print('new_amount_payee',new_amount_payee)
 
 	if request.method == 'POST':
 		bill=Bill.query.filter_by(billid=billid).first()
