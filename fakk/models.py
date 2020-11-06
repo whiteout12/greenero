@@ -170,7 +170,7 @@ class Invoice(db.Model):
     #duedate = db.Column(db.Date)
     message = db.Column(db.String, default=None)
     invoice_version = db.Column(db.Integer, default=1)
-    items = relationship('InvoiceItem', backref='invoice')
+    items = relationship('InvoiceItem', backref='invoice', cascade='all, delete')
     sender = relationship('User', foreign_keys='Invoice.userid')
     receiver = relationship('User', foreign_keys='Invoice.frienduserid')
     billdebtid = db.Column(db.Integer, ForeignKey('billdebts.billdebtid'))
@@ -235,18 +235,17 @@ class InvoiceItem(db.Model):
     date_created = db.Column(DateTime(timezone=True), server_default=func.now())
     date_updated = db.Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     description = db.Column(db.String)
-    price = db.Column(db.Integer, default=0)
+    price = db.Column(db.Numeric, default=0)
     status = db.Column(db.Integer, default=1)
     type = db.Column(db.Integer, default=1)
     payed = db.Column(db.Boolean, nullable=True)
     
-    invoice_version = db.Column(db.Integer, default=1)
     
     invoiceid = db.Column(db.Integer, ForeignKey('invoices.invoiceid'))
     
     def __repr__(self):
         #return '<rel-invoiceid - {}>'.format(self.invoiceid)
-        return 'InvoiceItem(Id: %s, Description: %s, price: %s)' % (self.id, self.description, self.price)
+        return 'InvoiceItem(Id: %s, Description: %s, price: %s, invoiceid: %s)' % (self.id, self.description, self.price, self.invoiceid)
 
 
 class Bill(db.Model):

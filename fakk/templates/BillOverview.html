@@ -134,34 +134,39 @@
   <form name="calculator" class="form-group">
    <table>
     <tr>
-     <td colspan="4">
+     <td colspan="5">
       <input type="text" class="form-control input-lg" name="display" id="display" disabled>
     </td>
   </tr>
-  <tr>
-   <td><input type="button" class="btn btn-primary btn-circle btn-md" name="one" value="1" onclick="calculator.display.value += '1'"></td>
-   <td><input type="button" class="btn btn-primary btn-circle btn-md"name="two" value="2" onclick="calculator.display.value += '2'"></td>
-   <td><input type="button" class="btn btn-primary btn-circle btn-md"name="three" value="3" onclick="calculator.display.value += '3'"></td>
-   <td><input type="button" class="operator btn btn-warning btn-circle btn-md" name="plus" value="&#43;" onclick="calculator.display.value += '+'"></td>
- </tr>
- <tr>
-   <td><input type="button" class="btn btn-primary btn-circle btn-md"name="four" value="4" onclick="calculator.display.value += '4'"></td>
-   <td><input type="button" class="btn btn-primary btn-circle btn-md"name="five" value="5" onclick="calculator.display.value += '5'"></td>
-   <td><input type="button" class="btn btn-primary btn-circle btn-md"name="six" value="6" onclick="calculator.display.value += '6'"></td>
-   <td><input type="button" class="operator btn btn-warning btn-circle btn-md" name="minus" value="&#8722;" onclick="calculator.display.value += '-'"></td>
- </tr>
- <tr>
-   <td><input type="button" class="btn btn-primary btn-circle btn-md"name="seven" value="7" onclick="calculator.display.value += '7'"></td>
-   <td><input type="button" class="btn btn-primary btn-circle btn-md"name="eight" value="8" onclick="calculator.display.value += '8'"></td>
-   <td><input type="button" class="btn btn-primary btn-circle btn-md"name="nine" value="9" onclick="calculator.display.value += '9'"></td>
-   <td><input type="button" class="operator btn btn-warning btn-circle btn-md" name="times" value="&#215;" onclick="calculator.display.value += '*'"></td>
- </tr>
- <tr>
-   <td><input type="button" class="btn btn-danger btn-circle btn-md" id="clear" name="clear" value="C" onclick="calculator.display.value = ''"></td>
-   <td><input type="button" class="btn btn-primary btn-circle btn-md" name="zero" value="0" onclick="calculator.display.value += '0'"></td>
-   <td><input type="button" class="btn btn-success btn-circle btn-md" id="equalsBtn" name="doit" value="&#61;" onclick="calculator.display.value = eval(calculator.display.value)"></td>
-   <td><input type="button" class="operator btn btn-warning btn-circle btn-md" name="div" value="&#247;" onclick="calculator.display.value += '/'"></td>
- </tr>
+          <tr>
+            <td><input type="button" class="btn btn-primary btn-circle btn-md" name="one" value="1" onclick="calculator.display.value += '1'"></td>
+            <td><input type="button" class="btn btn-primary btn-circle btn-md"name="two" value="2" onclick="calculator.display.value += '2'"></td>
+            <td><input type="button" class="btn btn-primary btn-circle btn-md"name="three" value="3" onclick="calculator.display.value += '3'"></td>        
+            <td><input type="button" class="operator btn btn-info btn-circle btn-md" name="(" value="(" onclick="calculator.display.value += '('"></td>
+            <td><input type="button" class="operator btn btn-info btn-circle btn-md" name=")" value=")" onclick="calculator.display.value += ')'"></td>
+          </tr>
+          <tr>
+            <td><input type="button" class="btn btn-primary btn-circle btn-md"name="four" value="4" onclick="calculator.display.value += '4'"></td>
+            <td><input type="button" class="btn btn-primary btn-circle btn-md"name="five" value="5" onclick="calculator.display.value += '5'"></td>
+            <td><input type="button" class="btn btn-primary btn-circle btn-md"name="six" value="6" onclick="calculator.display.value += '6'"></td>
+            <td><input type="button" class="operator btn btn-warning btn-circle btn-md" name="plus" value="&#43;" onclick="calculator.display.value += '+'"></td>
+            <td><input type="button" class="operator btn btn-warning btn-circle btn-md" name="minus" value="&#8722;" onclick="calculator.display.value += '-'"></td>
+            
+          </tr>
+          <tr>
+            <td><input type="button" class="btn btn-primary btn-circle btn-md"name="seven" value="7" onclick="calculator.display.value += '7'"></td>
+            <td><input type="button" class="btn btn-primary btn-circle btn-md"name="eight" value="8" onclick="calculator.display.value += '8'"></td>
+            <td><input type="button" class="btn btn-primary btn-circle btn-md"name="nine" value="9" onclick="calculator.display.value += '9'"></td>
+            <td><input type="button" class="operator btn btn-warning btn-circle btn-md" name="times" value="&#215;" onclick="calculator.display.value += '*'"></td>
+            <td><input type="button" class="operator btn btn-warning btn-circle btn-md" name="div" value="&#247;" onclick="calculator.display.value += '/'"></td>
+          </tr>
+          <tr>
+            <td><input type="button" class="btn btn-danger btn-circle btn-md" id="clear" name="clear" value="C" onclick="calculator.display.value = ''"></td>
+            <td><input type="button" class="btn btn-primary btn-circle btn-md" name="zero" value="0" onclick="calculator.display.value += '0'"></td>
+            <td><input type="button" class="btn btn-primary btn-circle btn-md" name="dot" value="." onclick="calculator.display.value += '.'"></td>
+            <td><input type="button" class="btn btn-danger btn-circle btn-md" name="dot" value="&#9003" onclick="calculator.display.value = calculator.display.value.substring(0, calculator.display.value.length-1)"></td>
+            <td><input type="button" class="btn btn-success btn-circle btn-md" name="doit" id="equalsBtn" value="&#61;" onclick="calculator.display.value = eval(calculator.display.value)"></td>
+          </tr>
 </table>
 </form>
 
@@ -250,6 +255,35 @@
 {%endfor%}
 
 
+</div>
+
+<div class="modal fade" id="receiptModal" tabindex="-1" role="dialog" aria-labelledby="receiptModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="swishModalLabel">Betala faktura med Swish?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body text-center">
+
+        
+       
+       
+       
+       </div>
+       <div class="modal-footer">
+        
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        
+        
+        
+        
+        
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="modal fade" id="deleteModal{{bill.billid}}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">

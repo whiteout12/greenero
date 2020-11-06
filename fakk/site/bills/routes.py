@@ -7,7 +7,7 @@ from flask_weasyprint import HTML, render_pdf
 from fakk import mail
 import io, os
 from fakk import db, mail, app
-from fakk.models import User, Invoice, Bill, Receipt, BillDebt
+from fakk.models import User, Invoice, Bill, Receipt, BillDebt, InvoiceItem
 import urllib.parse
 import json
 from fakk.utils.send_sms import sendSMS
@@ -15,6 +15,7 @@ from fakk.utils.tokens import load_invoice_token, generate_invoice_token
 from flask_mail import Message
 import secrets
 from PIL import Image, ImageOps
+from decimal import Decimal
 
 bills = Blueprint('bills', __name__, url_prefix='/site/bill')
 
@@ -319,6 +320,7 @@ def updateBill(billid):
 		print('comapre share', str(bill.amount_payee) != str(new_amount_payee))
 		print(bill.amount_payee)
 		print(new_amount_payee)
+
 		if str(bill.amount_payee) != str(new_amount_payee):
 			bill.amount_payee = new_amount_payee
 			flash('Uppdaterade din del till ' + request.form['amount_payee']+'kr', category='success')
@@ -329,6 +331,17 @@ def updateBill(billid):
 			bill.amount_total = new_amount_total
 			flash('Uppdaterade totalbelopp till ' + request.form['amount_total']+'kr', category='success')
 		db.session.commit()
+		for debt in bill.claims:
+			if len(debt.invoice.items)>0:
+				for item in debt.invoice.items:
+
+					if item.type == 2:
+						share = item.price 
+				for item in debt.invoice.items:	
+					if item.type == 3:
+						service_fee = share*((bill.amount_total/bill.amount_bill)-1)
+						item.price = service_fee
+						db.session.commit()
 		#flash('Uppdaterade din del till ' + request.form['amount_total']+'kr', category='success')
 
 	return redirect(url_for('bills.oneBill', billid=billid))
@@ -357,9 +370,36 @@ def updateDebt_MyShare(billdebtid):
 	print(request.form)
 	new_amount = request.form['myshare']
 	print(new_amount)
+	new_amount = Decimal(new_amount.replace(',','.'))
+	
 	if request.method == 'POST':
-		BillDebt.query.filter_by(billdebtid=billdebtid).first().amount_owed = new_amount
+		billdebt =BillDebt.query.filter_by(billdebtid=billdebtid).first()
+		print('tips', billdebt.bill.amount_total/billdebt.bill.amount_bill)
+		service_fee = new_amount*((billdebt.bill.amount_total/billdebt.bill.amount_bill)-1)
+		print('service_fee ', service_fee)
+		billdebt.amount_owed = new_amount
 		db.session.commit()
+		service = 0
+		amount = 0
+		if len(billdebt.invoice.items)>0:
+			for item in billdebt.invoice.items:
+				if item.type == 2:
+					item.price = new_amount
+					db.session.commit()
+				if item.type == 3:
+					item.price = service_fee
+					db.session.commit()
+
+		else:
+			invoiceitem_amount = InvoiceItem(description='Andelskostnad', type=2, price=new_amount, invoice=billdebt.invoice, payed=False)
+			invoiceitem_service = InvoiceItem(description='Servicekostnad', type=3, price=service_fee, invoice=billdebt.invoice, payed=False)
+			print('invoiceitem_amount', invoiceitem_amount)
+			#print('invoiceitem_service', invoiceitem_service)
+			db.session.add(invoiceitem_amount)
+			db.session.add(invoiceitem_service)
+
+			#db.session.add_all([invoiceitem_amount, invoiceitem_service])
+			db.session.commit()
 		flash('Uppdaterade din del till ' + request.form['myshare']+'kr', category='success')
 
 	return redirect(url_for('bills.oneDebt', billdebtid=billdebtid))

@@ -7,164 +7,196 @@
 <div class="card flex-row flex-wrap">
 	<div class="card-header w-100 text-muted">
 		<h4 class="card-title">{% for image in debt.bill.receipts %}
-		<img class="rounded bill-img" src="{{ url_for('bills.uploaded_file', folder=debt.bill.filefolder, filename=image.filename) }}">
+			<img class="rounded bill-img" src="{{ url_for('bills.uploaded_file', folder=debt.bill.filefolder, filename=image.filename) }}">
 		{% endfor %}{{debt.bill.title}}</h4><span class="badge badge-secondary bill-badge-date">{{ debt.bill.date_created.strftime('%Y-%m-%d') }}</span>
 
-	<div class="row">
-	
-	{%if debt.bill.statusid == 1%}
-	<span class="badge badge-warning bill-badge-status">Ej publicerad</span>
-	{%elif debt.bill.statusid == 2%}
-	<span class="badge badge-primary bill-badge-status">Under behandling</span>
-	{%else%}
-	<span class="badge badge-success bill-badge-status">Avslutad</span>
-	{%endif%}
-	
-	</div>
+		<div class="row">
 
-</div>
+			{%if debt.bill.statusid == 1%}
+			<span class="badge badge-warning bill-badge-status">Ej publicerad</span>
+			{%elif debt.bill.statusid == 2%}
+			<span class="badge badge-primary bill-badge-status">Under behandling</span>
+			{%else%}
+			<span class="badge badge-success bill-badge-status">Avslutad</span>
+			{%endif%}
+
+		</div>
+
+	</div>
 	
 	<div class="card-body">
 		
-  <div class="row">
- <div class="col col-sm-6"><li class="list-inline-item">&Sigma; nota</li></div>
-  <div class="col col-sm-6"><li class="list-inline-item">{{debt.bill.amount_bill}}</li></div>
-  </div>
-  <div class="row">
- <div class="col col-sm-6"><li class="list-inline-item">&Sigma; total</li></div>
-  <div class="col col-sm-6"><li class="list-inline-item">{{debt.bill.amount_total}}</li></div>
-  </div>
-    <div class="row">
- <div class="col col-sm-6"><li class="list-inline-item">&Sigma; taget</li></div>
-  <div class="col col-sm-6"><li class="list-inline-item">{{ debt.bill.claims |sum(attribute='amount_owed') + debt.bill.amount_payee}}</li></div>
-  </div>
-   <div class="row">
-   <div class="col col-sm-6"><li class="list-inline-item">&Sigma; min del</li></div>
-  <div class="col col-sm-6"><li class="list-inline-item"><form class="form-inline" action="{{ url_for('bills.updateDebt_MyShare', billdebtid=debt.billdebtid) }}" method="POST"><div class="input-group mb-3">
-  <input type="text" class="form-control form-control-sm col-4" onfocus="this.select();" id="myshare" name="myshare" value="{{ debt.amount_owed}}" placeholder="min del" aria-label="Min del" aria-describedby="button-addon2">
-  <div class="input-group-append">
-    <button class="btn btn-primary btn-sm" type="submit" >Uppdatera</button>
-  </div>
-</div>
-        </form></li></div>
-  </div>
-  <small> <br> <a data-toggle="collapse" href="#collapseInvoice" role="button" aria-expanded="false" aria-controls="collapseExample">
-    Faktura
-  </a></small>
-  <div class="collapse" id="collapseInvoice">
-  
-<h4>Faktura:</h4>
-Summa: {{debt.invoice.amount}}
-   <br>
-   Titel: {{debt.invoice.description}}
-   <br>
-   Id: {{debt.invoice.invoiceid}}
-   <br>
-   Version: {{debt.invoice.invoice_version}}
-   <br>
-   Status: {{debt.invoice.statusid}}
-   <br>
-	
- 
- </div>
-
+		<div class="row">
+			<div class="col col-sm-6"><li class="list-inline-item">&Sigma; Nota</li></div>
+			<div class="col col-sm-6"><li class="list-inline-item">{{debt.bill.amount_bill}}</li></div>
+		</div>
+		<div class="row">
+			<div class="col col-sm-6"><li class="list-inline-item">&Sigma; Total</li></div>
+			<div class="col col-sm-6"><li class="list-inline-item">{{debt.bill.amount_total}}</li></div>
+		</div>
+		<div class="row">
+			<div class="col col-sm-6"><li class="list-inline-item">&Sigma; Min del</li></div>
+			<div class="col col-sm-6"><li class="list-inline-item"><form class="form-inline" action="{{ url_for('bills.updateDebt_MyShare', billdebtid=debt.billdebtid) }}" method="POST"><div class="input-group mb-3">
+				<input type="text" class="form-control form-control-sm col-4" onfocus="this.select();" id="myshare" name="myshare" value="{{ debt.amount_owed|replace('.', ',')}}" placeholder="min del" aria-label="Min del" aria-describedby="button-addon2">
+				<div class="input-group-append">
+					<button class="btn btn-primary btn-sm" type="submit" >Uppdatera</button>
+				</div>
+			</div>
+		</form></li></div>
 	</div>
-	<div class="w-100">
-	<div class="w-100">
-	<div class="w-100 h-25 d-inline-block" style="overflow:scroll">
-  <div id="img-wrapper" style="width:350px; height:200px; ">
-  	{% for image in debt.bill.receipts %}
-    <img class="img-fluid" src="{{ url_for('bills.uploaded_file', folder=debt.bill.filefolder, filename=image.filename) }}">
-    {%endfor%}
-  </div>
-</div>
-<div class="d-flex justify-content-center">
-	<span class="font-weight-bold purple-text mr-2"><i class="fas fa-minus" aria-hidden="true"><small>&#128269;</small></i></span>
-<form class="range-field w-75">
-<input id="mySlider" class="custom-range" orient="vertical" class="input-range" type="range" min="1" max="2" step="0.01" value="1" oninput="resizeImage();">
-</form>
-<span class="font-weight-bold purple-text ml-2"><i class="fas fa-plus" aria-hidden="true"></i>&#128269;</span>
-</div>
-<script type="text/javascript">
-function resizeImage() {
-  var image = document.getElementById('img-wrapper'),
-      ranger = document.getElementById('mySlider');
-  image.style.width = 350*(mySlider.value / 1)+'px';
-}
-</script>
-<div class="d-flex justify-content-center">
-<form name="calculator" class="form-group">
- <table>
-    <tr>
-       <td colspan="4">
-          <input type="text" class="form-control input-lg" name="display" id="display" disabled>
-       </td>
-    </tr>
-    <tr>
-       <td><input type="button" class="btn btn-primary btn-circle btn-md" name="one" value="1" onclick="calculator.display.value += '1'"></td>
-       <td><input type="button" class="btn btn-primary btn-circle btn-md"name="two" value="2" onclick="calculator.display.value += '2'"></td>
-       <td><input type="button" class="btn btn-primary btn-circle btn-md"name="three" value="3" onclick="calculator.display.value += '3'"></td>
-       <td><input type="button" class="operator btn btn-warning btn-circle btn-md" name="plus" value="&#43;" onclick="calculator.display.value += '+'"></td>
-    </tr>
-    <tr>
-       <td><input type="button" class="btn btn-primary btn-circle btn-md"name="four" value="4" onclick="calculator.display.value += '4'"></td>
-       <td><input type="button" class="btn btn-primary btn-circle btn-md"name="five" value="5" onclick="calculator.display.value += '5'"></td>
-       <td><input type="button" class="btn btn-primary btn-circle btn-md"name="six" value="6" onclick="calculator.display.value += '6'"></td>
-       <td><input type="button" class="operator btn btn-warning btn-circle btn-md" name="minus" value="&#8722;" onclick="calculator.display.value += '-'"></td>
-    </tr>
-    <tr>
-       <td><input type="button" class="btn btn-primary btn-circle btn-md"name="seven" value="7" onclick="calculator.display.value += '7'"></td>
-       <td><input type="button" class="btn btn-primary btn-circle btn-md"name="eight" value="8" onclick="calculator.display.value += '8'"></td>
-       <td><input type="button" class="btn btn-primary btn-circle btn-md"name="nine" value="9" onclick="calculator.display.value += '9'"></td>
-       <td><input type="button" class="operator btn btn-warning btn-circle btn-md" name="times" value="&#215;" onclick="calculator.display.value += '*'"></td>
-    </tr>
-    <tr>
-       <td><input type="button" class="btn btn-danger btn-circle btn-md" id="clear" name="clear" value="C" onclick="calculator.display.value = ''"></td>
-       <td><input type="button" class="btn btn-primary btn-circle btn-md" name="zero" value="0" onclick="calculator.display.value += '0'"></td>
-       <td><input type="button" class="btn btn-success btn-circle btn-md" name="doit" id="equalsBtn" value="&#61;" onclick="calculator.display.value = eval(calculator.display.value)"></td>
-       <td><input type="button" class="operator btn btn-warning btn-circle btn-md" name="div" value="&#247;" onclick="calculator.display.value += '/'"></td>
-    </tr>
- </table>
-</form>
+	{%if debt.invoice.items |sum(attribute='price') > 0 %}
+	<button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#swishModal"><img src="{{ url_for('static', filename='swish-logotype.svg') }}" width="50"></button>
+	{%endif%}
+	<small> <br> <a data-toggle="collapse" href="#collapseInvoice" role="button" aria-expanded="false" aria-controls="collapseExample">
+		Faktura     
+	</a></small>
+	<div class="collapse" id="collapseInvoice">
 
-</div>
-<div class="d-flex justify-content-center">
-<small class="justify-content-center">Ditt resultat kopieras upp till fältet ovan</small>
-</div>
-
-
+		<h4>Faktura:</h4>
+		Summa: {{debt.invoice.amount}}
+		<br>
+		Titel: {{debt.invoice.description}}
+		<br>
+		Id: {{debt.invoice.invoiceid}}
+		<br>
+		Version: {{debt.invoice.invoice_version}}
+		<br>
+		Status: {{debt.invoice.statusid}}
+		<br>
+		Artiklar:<br>
+		{% for item in debt.invoice.items %}
+		{{item.description}} {{item.price}}<br>
+		{%endfor%}
+		Att betala till {{debt.bill.payee.username}}: {{debt.invoice.items |sum(attribute='price')}}kr
 	</div>
 
+
+</div>
+<div class="w-100">
+	<div class="w-100">
+		<div class="w-100 h-25 d-inline-block" style="overflow:scroll">
+			<div id="img-wrapper" style="width:350px; height:200px; ">
+				{% for image in debt.bill.receipts %}
+				<img class="img-fluid" src="{{ url_for('bills.uploaded_file', folder=debt.bill.filefolder, filename=image.filename) }}">
+				{%endfor%}
+			</div>
+		</div>
+		<div class="d-flex justify-content-center">
+			<span class="font-weight-bold purple-text mr-2"><i class="fas fa-minus" aria-hidden="true"><small>&#128269;</small></i></span>
+			<form class="range-field w-75">
+				<input id="mySlider" class="custom-range" orient="vertical" class="input-range" type="range" min="1" max="2" step="0.01" value="1" oninput="resizeImage();">
+			</form>
+			<span class="font-weight-bold purple-text ml-2"><i class="fas fa-plus" aria-hidden="true"></i>&#128269;</span>
+		</div>
+		<script type="text/javascript">
+			function resizeImage() {
+				var image = document.getElementById('img-wrapper'),
+				ranger = document.getElementById('mySlider');
+				image.style.width = 350*(mySlider.value / 1)+'px';
+			}
+		</script>
+		<div class="d-flex justify-content-center">
+			<form name="calculator" class="form-group">
+				<table>
+					<tr>
+						<td colspan="5">
+							<input type="text" class="form-control input-lg" name="display" id="display" disabled>
+						</td>
+					</tr>
+					<tr>
+						<td><input type="button" class="btn btn-primary btn-circle btn-md" name="one" value="1" onclick="calculator.display.value += '1'"></td>
+						<td><input type="button" class="btn btn-primary btn-circle btn-md"name="two" value="2" onclick="calculator.display.value += '2'"></td>
+						<td><input type="button" class="btn btn-primary btn-circle btn-md"name="three" value="3" onclick="calculator.display.value += '3'"></td>				
+						<td><input type="button" class="operator btn btn-secondary btn-circle btn-md" name="(" value="(" onclick="calculator.display.value += '('"></td>
+						<td><input type="button" class="operator btn btn-secondary btn-circle btn-md" name=")" value=")" onclick="calculator.display.value += ')'"></td>
+					</tr>
+					<tr>
+						<td><input type="button" class="btn btn-primary btn-circle btn-md"name="four" value="4" onclick="calculator.display.value += '4'"></td>
+						<td><input type="button" class="btn btn-primary btn-circle btn-md"name="five" value="5" onclick="calculator.display.value += '5'"></td>
+						<td><input type="button" class="btn btn-primary btn-circle btn-md"name="six" value="6" onclick="calculator.display.value += '6'"></td>
+						<td><input type="button" class="operator btn btn-warning btn-circle btn-md" name="plus" value="&#43;" onclick="calculator.display.value += '+'"></td>
+						<td><input type="button" class="operator btn btn-warning btn-circle btn-md" name="minus" value="&#8722;" onclick="calculator.display.value += '-'"></td>
+						
+					</tr>
+					<tr>
+						<td><input type="button" class="btn btn-primary btn-circle btn-md"name="seven" value="7" onclick="calculator.display.value += '7'"></td>
+						<td><input type="button" class="btn btn-primary btn-circle btn-md"name="eight" value="8" onclick="calculator.display.value += '8'"></td>
+						<td><input type="button" class="btn btn-primary btn-circle btn-md"name="nine" value="9" onclick="calculator.display.value += '9'"></td>
+						<td><input type="button" class="operator btn btn-warning btn-circle btn-md" name="times" value="&#215;" onclick="calculator.display.value += '*'"></td>
+						<td><input type="button" class="operator btn btn-warning btn-circle btn-md" name="div" value="&#247;" onclick="calculator.display.value += '/'"></td>
+					</tr>
+					<tr>
+						<td><input type="button" class="btn btn-danger btn-circle btn-md" id="clear" name="clear" value="C" onclick="calculator.display.value = ''"></td>
+						<td><input type="button" class="btn btn-primary btn-circle btn-md" name="zero" value="0" onclick="calculator.display.value += '0'"></td>
+						<td><input type="button" class="btn btn-primary btn-circle btn-md" name="comma" value="," onclick="calculator.display.value += ','"></td>
+						<td><input type="button" class="btn btn-danger btn-circle btn-md" name="erase" value="&#9003" onclick="calculator.display.value = calculator.display.value.substring(0, calculator.display.value.length-1)"></td>
+						<td><input type="button" class="btn btn-success btn-circle btn-md" name="doit" id="equalsBtn" value="&#61;" onclick="calculator.display.value = String(eval(String( calculator.display.value ).replace(/\,/g,'.'))).replace(/\./g,',');"></td>
+					</tr>
+				</table>
+			</form>
+
+		</div>
+		<div class="d-flex justify-content-center">
+			<small class="justify-content-center">Ditt resultat kopieras upp till fältet ovan</small>
+		</div>
+
+
+	</div>
+
 </div>
 
-<script>
+<div class="modal fade" id="swishModal" tabindex="-1" role="dialog" aria-labelledby="swishModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="swishModalLabel">Betala faktura{{debt.invoice.invoiceid}} med Swish?</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body text-center">
 
-	//document.getElementById("equalsBtn").element.addEventListener("click", myFunction);
-document.getElementById('equalsBtn').addEventListener('click',function(){
-	console.log("= clicked")
-        var result = document.getElementById('display');
-        console.log(result.value)
-        var resultBox = document.getElementById('myshare');
-        if(isFinite(result.value)){
-        	resultBox.value = result.value;
-        	resultBox.style.color = "green"
-        }else{
-        	console.log('not a number')
 
-        }
-        
+				<a class="btn btn-success" href="swish://payment?data=%7B%22version%22%3A%201%2C%20%22payee%22%3A%20%7B%22value%22%3A%20%22{{debt.invoice.sender.phone}}%22%7D%2C%20%22message%22%3A%20%7B%22value%22%3A%20%22faktura{{debt.invoice.invoiceid}}%2C%20{{debt.invoice.description}}%22%2C%20%22editable%22%3A%20false%7D%2C%20%22amount%22%3A%20%7B%22value%22%3A%20{{debt.invoice.items |sum(attribute='price')}}%2C%20%22editable%22%3A%20false%7D%7D&callbackurl={{url_for('invoices.test_callback', invoice_token=debt.invoice.invoiceid, callback=rest, _external=True)}}&callbackresultparameter=res"><img src="{{ url_for('static', filename='swish-logotype.svg') }}" width="100"></a><p></p><p></p>
 
-        //fontcolor("green")
-        //var charCode = (evt.which) ? evt.which : evt.keyCode;
-        //phoneNumber.value = phoneFormat(phoneNumber.value);
-});
+				<a>
+					<img src="data:image/svg+xml;base64,{{ (debt.invoice.sender.phone)|qrbase64(debt.invoice.items |sum(attribute='price'), debt.invoice.description) }}" width="150"></img></a>
+				</div>
+				<div class="modal-footer">
 
-	function myFunction() {
-  alert ("Hello World!");
-}
-</script>
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
 
 
 
 
-{% endblock %}
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+
+		document.getElementById('equalsBtn').addEventListener('click',function(){
+			console.log("= clicked")
+			var result = document.getElementById('display');
+			result_string = String(result.value).replace(/\,/g,'.')
+			result_number = Number(result_string)
+			console.log(result.value)
+			console.log(result_string)
+			console.log(result_number)
+//String(eval(String( calculator.display.value ).replace(/\,/g,'.'))).replace(/\./g,',');
+
+			var resultBox = document.getElementById('myshare');
+			if(isFinite(result_number)){
+				resultBox.value = result.value;
+				resultBox.style.color = "green"
+			}  
+		});
+
+	</script>
+
+
+
+
+	{% endblock %}
