@@ -253,6 +253,9 @@ class MyFloatField(FloatField):
                 self.data = None
                 raise ValueError(self.gettext('Not a valid float value'))  
 
-    
+class LobbyForm(FlaskForm):
+    nickname = TextField('Jag väljer att kalla mig', validators=[DataRequired()])
+    submit = SubmitField('Till notan')
+    #password = PasswordField('Password', validators=[DataRequired()])    
 
 

@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, render_template, url_for, redirect, flash, send_from_directory
 from flask_login import login_required, current_user
-from fakk.forms import CreateBill
+from fakk.forms import CreateBill, LobbyForm
 #from swish_qr_gen import swishQR, swishQRbase64
 from fakk.utils.swish_qr_gen import swishQR, swishQRbase64
 from flask_weasyprint import HTML, render_pdf
@@ -18,7 +18,7 @@ from PIL import Image, ImageOps
 from decimal import Decimal
 from fakk.utils.tokens import generate_bill_token, load_bill_token, generate_billdebt_token, load_billdebt_token
 
-bills = Blueprint('bills', __name__, url_prefix='/site/bill')
+bills = Blueprint('bills', __name__, url_prefix='/bills')
 
 
 
@@ -172,8 +172,11 @@ def getUser(phone):
 	db.session.commit()
 	return newdummyuser
 
-def createDummyUser():
-	return
+def createDebtUser(username):
+	newddebtuser = User(username=username, password='dummy', usertype=3, credits=None)
+	db.session.add(newddebtuser)
+	db.session.commit()
+	return newddebtuser
 
 def createBillDebt(bill, participant):
 		billdebt = BillDebt(payer=participant[0], bill=bill, payer_screen_name=participant[1])
@@ -183,7 +186,7 @@ def createBillDebt(bill, participant):
 		db.session.commit()
 		invoice = createInvoice(billdebt)
 
-		return billdebt, invoice
+		return billdebt
 
 def createInvoice(billdebt):
 	invoice =Invoice(userid=billdebt.bill.payee.userid, frienduserid=billdebt.payer.userid, amount=0, description=billdebt.bill.title, billdebtid=billdebt.billdebtid)
@@ -224,8 +227,8 @@ def delete_receipts(bill):
 	
 	receipt_path = os.path.join(app.config['RECEIPT_UPLOAD_FOLDER'], bill.filefolder)
 	#path = '/Users/bjorncarlsson/Python/fakk-images'
-	print('folder list', os.listdir(receipt_path))
-	print(len(os.listdir(receipt_path)))
+	#print('folder list', os.listdir(receipt_path))
+	#print(len(os.listdir(receipt_path)))
 	for receipt in bill.receipts:
 		if os.path.exists(os.path.join(receipt_path, receipt.filename)):
  			 os.remove(os.path.join(receipt_path, receipt.filename))
@@ -319,9 +322,17 @@ def deleteBill(billid):
 
 	if request.method == 'POST':
 		bill = Bill.query.filter_by(billid=billid).first()
-		delete_receipts(bill)
-		bill.delete()
+		#delete_receipts(bill)
+		users_to_be_deleted = []
+		for claim in bill.claims:
+			if claim.payer.usertype == 3:
+				users_to_be_deleted.append(claim.payer.userid)
+				print('delete user', claim.payer)
+				#claim.payer.delete()
 
+		bill.delete()
+		for userid in users_to_be_deleted:
+			User.query.filter_by(userid=userid).first().delete()
 	return redirect(url_for('bills.overviewBill'))
 
 @bills.route('/<billid>/update', methods=['GET', 'POST'])
@@ -371,73 +382,103 @@ def uploaded_file(folder, filename):
     #return send_from_directory(os.path.join(app.config['RECEIPT_UPLOAD_FOLDER'], folder, filename))
     return send_from_directory(os.path.join(app.config['RECEIPT_UPLOAD_FOLDER'], folder), filename)
 
-@bills.route('/debt/<billdebtid>/view', methods=['GET', 'POST'])
-@login_required
-def oneDebt(billdebtid):
-	debt=BillDebt.query.filter_by(billdebtid=billdebtid).first()
-	print(debt.bill)
-	#if debt.payer == current_user and debt.bill.statusid==2:
-	#	return render_template('DebtOverview.html', bill=bill)
-	return render_template('DebtOverview.html', debt=debt)
-	#else:
-	#	return 'Not authorized'
-
-@bills.route('/debt/<billdebtid>/updateMyShare', methods=['GET', 'POST'])
-@login_required
-def updateDebt_MyShare(billdebtid):
-	print(request.form)
-	new_amount = request.form['myshare']
-	print(new_amount)
-	new_amount = Decimal(new_amount.replace(',','.'))
+@bills.route('/debt/<billdebtToken>/view', methods=['GET', 'POST'])
+#@login_required
+def oneDebt(billdebtToken):
+	try:
+		billdebtid = load_billdebt_token(billdebtToken)
+		print('billdebid' ,billdebtid)
+	except:
+		flash('Länken ej gilitg.', category='danger')
+		return 'Länken ej gilitg.'
 	
-	if request.method == 'POST':
-		billdebt =BillDebt.query.filter_by(billdebtid=billdebtid).first()
-		print('tips', billdebt.bill.amount_total/billdebt.bill.amount_bill)
-		service_fee = new_amount*((billdebt.bill.amount_total/billdebt.bill.amount_bill)-1)
-		print('service_fee ', service_fee)
-		billdebt.amount_owed = new_amount
-		db.session.commit()
-		service = 0
-		amount = 0
-		if len(billdebt.invoice.items)>0:
-			for item in billdebt.invoice.items:
-				if item.type == 2:
-					item.price = new_amount
-					db.session.commit()
-				if item.type == 3:
-					item.price = service_fee
-					db.session.commit()
+	else:
+		debt=BillDebt.query.filter_by(billdebtid=billdebtid).first()
+		print(debt.bill)
+		#if debt.payer == current_user and debt.bill.statusid==2:
+		#	return render_template('DebtOverview.html', bill=bill)
+		return render_template('DebtOverview.html', debt=debt)
+		#else:
+		#	return 'Not authorized'
 
-		else:
-			invoiceitem_amount = InvoiceItem(description='Andelskostnad', type=2, price=new_amount, invoice=billdebt.invoice, payed=False)
-			invoiceitem_service = InvoiceItem(description='Servicekostnad', type=3, price=service_fee, invoice=billdebt.invoice, payed=False)
-			print('invoiceitem_amount', invoiceitem_amount)
-			#print('invoiceitem_service', invoiceitem_service)
-			db.session.add(invoiceitem_amount)
-			db.session.add(invoiceitem_service)
-
-			#db.session.add_all([invoiceitem_amount, invoiceitem_service])
+@bills.route('/debt/<billdebtToken>/updateMyShare', methods=['GET', 'POST'])
+#@login_required
+def updateDebt_MyShare(billdebtToken):
+	try:
+		billdebtid = load_billdebt_token(billdebtToken)
+	except:
+		flash('Länken ej gilitg.', category='danger')
+		return redirect(url_for('send-password-reset-link'))
+	
+	else:	
+		print(request.form)
+		new_amount = request.form['myshare']
+		print(new_amount)
+		new_amount = Decimal(new_amount.replace(',','.'))
+		
+		if request.method == 'POST':
+			billdebt = BillDebt.query.filter_by(billdebtid=billdebtid).first()
+			print('tips', billdebt.bill.amount_total/billdebt.bill.amount_bill)
+			service_fee = new_amount*((billdebt.bill.amount_total/billdebt.bill.amount_bill)-1)
+			print('service_fee ', service_fee)
+			billdebt.amount_owed = new_amount
 			db.session.commit()
-		flash('Uppdaterade din del till ' + request.form['myshare']+'kr', category='success')
+			service = 0
+			amount = 0
+			if len(billdebt.invoice.items)>0:
+				for item in billdebt.invoice.items:
+					if item.type == 2:
+						item.price = new_amount
+						db.session.commit()
+					if item.type == 3:
+						item.price = service_fee
+						db.session.commit()
 
-	return redirect(url_for('bills.oneDebt', billdebtid=billdebtid))
+			else:
+				invoiceitem_amount = InvoiceItem(description='Andelskostnad', type=2, price=new_amount, invoice=billdebt.invoice, payed=False)
+				invoiceitem_service = InvoiceItem(description='Servicekostnad', type=3, price=service_fee, invoice=billdebt.invoice, payed=False)
+				print('invoiceitem_amount', invoiceitem_amount)
+				#print('invoiceitem_service', invoiceitem_service)
+				db.session.add(invoiceitem_amount)
+				db.session.add(invoiceitem_service)
+
+				#db.session.add_all([invoiceitem_amount, invoiceitem_service])
+				db.session.commit()
+			flash('Uppdaterade din del till ' + request.form['myshare']+'kr', category='success')
+
+		return redirect(url_for('bills.oneDebt', billdebtToken=billdebt.token))
 
 @bills.route('/lobby/<billToken>', methods=['GET', 'POST'])
 #@login_required
 def billLobby(billToken):
 	try:
 		billid = load_bill_token(billToken)
-	except:
-		flash('Länken ej gilitg.', category='danger')
-		return redirect(url_for('send-password-reset-link'))
+		print('billid', billid)
+		if billid == False:
+			raise ValueError
+	except ValueError:
+		
+			flash('Länken ej gilitg.', category='danger')
+			return render_template('billNotFound.html', title='404 ogilting länk')
 	
 	else:
 
-
+		print('newuser?')
+		if not Bill.query.filter_by(billid=billid).first():
+			return render_template('billNotFound.html', title='404 inget här')
 		bill=Bill.query.filter_by(billid=billid).first()
+		
+			
+		form = LobbyForm()
+		print(form.nickname.data)
 		if form.validate_on_submit():
-			for participant in participants:
-				billdebt = createBillDebt(bill, participant)
-				print(billdebt)
+			print('creating new participant')
+			newuser = createDebtUser(form.nickname.data)
+			user = (newuser, newuser.username)
+			
+			billdebt = createBillDebt(bill, user)
+			print(billdebt.token)
+			print(billdebt)
+			return redirect(url_for('bills.oneDebt', billdebtToken=billdebt.token))
 
 		return render_template('billLobby.html', form=form, bill=bill, title='Lobby')	

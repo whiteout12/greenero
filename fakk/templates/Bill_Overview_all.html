@@ -37,7 +37,7 @@
 <h2>Notor som jag deltar i</h2>
 {%for debt in current_user.billdebts%}
 {%if debt.bill.statusid != 1%}
-<a class="article-title" href="{{ url_for('bills.oneDebt', billdebtid=debt.billdebtid)}}">
+<a class="article-title" href="{{ url_for('bills.oneDebt', billdebtToken=debt.token)}}">
 <div class="card flex-row flex-wrap">
 	<div class="card-header w-100 text-muted">
 		<h4 class="card-title">{% for image in debt.bill.receipts %}

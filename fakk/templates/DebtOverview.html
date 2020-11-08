@@ -36,7 +36,7 @@
 		</div>
 		<div class="row">
 			<div class="col col-sm-6"><li class="list-inline-item">&Sigma; Min andel</li></div>
-			<div class="col col-sm-6"><li class="list-inline-item"><form class="form-inline" action="{{ url_for('bills.updateDebt_MyShare', billdebtid=debt.billdebtid) }}" method="POST"><div class="input-group mb-3">
+			<div class="col col-sm-6"><li class="list-inline-item"><form class="form-inline" action="{{ url_for('bills.updateDebt_MyShare', billdebtToken=debt.token) }}" method="POST"><div class="input-group mb-3">
 				<input type="number" step="any" pattern="[0-9]+([\.,][0-9]+)?" class="form-control form-control-sm col-8" inputmode="decimal" onfocus="this.select();" id="myshare" name="myshare" value="{{ debt.amount_owed|round(1)}}" placeholder="min del" aria-label="Min del" aria-describedby="button-addon2">
 				<div class="input-group-append">
 					<button class="btn btn-primary btn-sm" type="submit" >&#8635;</button>

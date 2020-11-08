@@ -1,4 +1,4 @@
-from itsdangerous import URLSafeTimedSerializer, URLSafeSerializer
+from itsdangerous import URLSafeTimedSerializer, URLSafeSerializer, BadSignature
 #import os
 from flask import flash, url_for, render_template
 from fakk import app
@@ -51,12 +51,12 @@ def generate_billdebt_token(billDebtID):
 def load_billdebt_token(token):
     serializer = URLSafeSerializer(app.config['SECRET_KEY'])
     try:
-        package = serializer.loads(
+        billdebtid = serializer.loads(
             token,
             salt=app.config['SECURITY_BILLDEBT_SALT']
             
         )
     except:
         return False
-    return token
+    return billdebtid
 

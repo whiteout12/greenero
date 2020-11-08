@@ -14,74 +14,96 @@
 
      {%if bill.statusid == 1%}
      <span class="badge badge-warning bill-badge-status">Ej publicerad</span>
-     <form action="{{ url_for('bills.publishBill', billid=bill.billid) }}" method="POST">
-          <input class="btn btn-success btn-sm m-1" type="submit" value="Publicera">
-      </form>
+     
      {%elif bill.statusid == 2%}
      <span class="badge badge-primary bill-badge-status">Under behandling</span>
-     <form action="{{ url_for('bills.closeBill', billid=bill.billid) }}" method="POST">
-          <input class="btn btn-primary btn-sm m-1" type="submit" value="Avsluta">
-      </form>
+
      {%elif bill.statusid == 3%}
      <span class="badge badge-success bill-badge-status">Avslutad</span>
-     <form action="{{ url_for('bills.publishBill', billid=bill.billid) }}" method="POST">
-          <input class="btn btn-primary btn-sm m-1" type="submit" value="Återöppna">
-      </form>
+
      {%endif%}
-     
-     <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#deleteModal{{bill.billid}}">Radera</button>
+
+
+
+
    </div>
+<div class="row">
+   {%if bill.statusid == 1%}
 
- </div>
- <div class="w-100">
-   <div class="card-body">
-    <h4 class="card-title">Nota</h4>
+   <form action="{{ url_for('bills.publishBill', billid=bill.billid) }}" method="POST">
+    <input class="btn btn-success btn-sm m-1" type="submit" value="Publicera">
+  </form>
+  {%elif bill.statusid == 2%}
 
-    <div class="row">
-     <div class="col col-sm-6">
-      <li class="list-inline-item">Skapad</li>
-    </div>
-    <div class="col col-sm-6">
-      <li class="list-inline-item">{{ bill.date_created.strftime('%Y-%m-%d') }}</li>
+  <form action="{{ url_for('bills.closeBill', billid=bill.billid) }}" method="POST">
+    <input class="btn btn-primary btn-sm m-1" type="submit" value="Avsluta">
+  </form>
+  {%elif bill.statusid == 3%}
+
+  <form action="{{ url_for('bills.publishBill', billid=bill.billid) }}" method="POST">
+    <input class="btn btn-primary btn-sm m-1" type="submit" value="Återöppna">
+  </form>
+  {%endif%}
+  <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#deleteModal{{bill.billid}}">Radera</button>
+  <br>
+</div>
+  <small style="color: #6a3594;">Bjud in deltagare genom att dela länken</small><br>
+  <div class="input-group mb-3">
+    <input type="text" class="form-control form-control-sm" id="billLink" name="billLink" value="{{url_for('bills.billLobby', billToken=bill.token, _external=True)}}" disabled>
+    <div class="input-group-append">
+      <button class="btn btn-primary btn-sm" name="button_2" onfocus="this.select();" onclick="copyLink()" type="" >Kopiera länk</button>
     </div>
   </div>
-  <form action="{{ url_for('bills.updateBill', billid=bill.billid) }}" method="POST">
-    <div class="row">
-     <div class="col col-sm-6">
-      <li class="list-inline-item">&Sigma; nota</li>
-    </div>
-    <div class="col col-sm-6">
-      <li class="list-inline-item">{{bill.amount_bill|replace('.', ',')}}kr<small> <a data-toggle="collapse" href="#amount_bill" role="button" aria-expanded="false" aria-controls="collapseExample">ändra</a></small>
-
-        <div class="collapse" id="amount_bill">
-          <div class="input-group mb-3">
-            <input type="number" step="any" pattern="[0-9]+([\.,][0-9]+)?" class="form-control form-control-sm col-8" inputmode="decimal" onfocus="this.select();" name="amount_bill" value="{{bill.amount_bill}}" placeholder="nota" aria-label="Min del" aria-describedby="button-addon2">
-            <div class="input-group-append">
-              <button class="btn btn-primary btn-sm" name="button_1" type="submit" >&#8635;</button>
-            </div>
-          </div>
-        </div>
-      </li>
-    </div>
-  </div>
+</div>
+<div class="w-100">
+ <div class="card-body">
+  <h4 class="card-title">Nota</h4>
 
   <div class="row">
    <div class="col col-sm-6">
-    <li class="list-inline-item">&Sigma; total</li>
+    <li class="list-inline-item">Skapad</li>
   </div>
   <div class="col col-sm-6">
-    <li class="list-inline-item">{{bill.amount_total|replace('.', ',')}}kr<small> <a data-toggle="collapse" href="#amount_total" role="button" aria-expanded="false" aria-controls="collapseExample">ändra</a></small>
+    <li class="list-inline-item">{{ bill.date_created.strftime('%Y-%m-%d') }}</li>
+  </div>
+</div>
+<form action="{{ url_for('bills.updateBill', billid=bill.billid) }}" method="POST">
+  <div class="row">
+   <div class="col col-sm-6">
+    <li class="list-inline-item">&Sigma; nota</li>
+  </div>
+  <div class="col col-sm-6">
+    <li class="list-inline-item">{{bill.amount_bill|replace('.', ',')}}kr<small> <a data-toggle="collapse" href="#amount_bill" role="button" aria-expanded="false" aria-controls="collapseExample">ändra</a></small>
 
-      <div class="collapse" id="amount_total">
+      <div class="collapse" id="amount_bill">
         <div class="input-group mb-3">
-          <input type="number" step="any" pattern="[0-9]+([\.,][0-9]+)?" class="form-control form-control-sm col-8" inputmode="decimal" onfocus="this.select();" name="amount_total" value="{{bill.amount_total}}" placeholder="total" aria-label="Min del" aria-describedby="button-addon2">
+          <input type="number" step="any" pattern="[0-9]+([\.,][0-9]+)?" class="form-control form-control-sm col-8" inputmode="decimal" onfocus="this.select();" name="amount_bill" value="{{bill.amount_bill}}" placeholder="nota" aria-label="Min del" aria-describedby="button-addon2">
           <div class="input-group-append">
-            <button class="btn btn-primary btn-sm" name="button_2" type="submit" >&#8635;</button>
+            <button class="btn btn-primary btn-sm" name="button_1" type="submit" >&#8635;</button>
           </div>
         </div>
       </div>
     </li>
   </div>
+</div>
+
+<div class="row">
+ <div class="col col-sm-6">
+  <li class="list-inline-item">&Sigma; total</li>
+</div>
+<div class="col col-sm-6">
+  <li class="list-inline-item">{{bill.amount_total|replace('.', ',')}}kr<small> <a data-toggle="collapse" href="#amount_total" role="button" aria-expanded="false" aria-controls="collapseExample">ändra</a></small>
+
+    <div class="collapse" id="amount_total">
+      <div class="input-group mb-3">
+        <input type="number" step="any" pattern="[0-9]+([\.,][0-9]+)?" class="form-control form-control-sm col-8" inputmode="decimal" onfocus="this.select();" name="amount_total" value="{{bill.amount_total}}" placeholder="total" aria-label="Min del" aria-describedby="button-addon2">
+        <div class="input-group-append">
+          <button class="btn btn-primary btn-sm" name="button_2" type="submit" >&#8635;</button>
+        </div>
+      </div>
+    </div>
+  </li>
+</div>
 </div>
 
 
@@ -138,42 +160,42 @@
       <input type="text" class="form-control input-lg" name="display" id="display" disabled>
     </td>
   </tr>
-          <tr>
-            <td><input type="button" class="btn btn-primary btn-circle btn-md" name="one" value="1" onclick="calculator.display.value += '1'"></td>
-            <td><input type="button" class="btn btn-primary btn-circle btn-md"name="two" value="2" onclick="calculator.display.value += '2'"></td>
-            <td><input type="button" class="btn btn-primary btn-circle btn-md"name="three" value="3" onclick="calculator.display.value += '3'"></td>        
-            <td><input type="button" class="operator btn btn-secondary btn-circle btn-md" name="(" value="(" onclick="calculator.display.value += '('"></td>
-            <td><input type="button" class="operator btn btn-secondary btn-circle btn-md" name=")" value=")" onclick="calculator.display.value += ')'"></td>
-          </tr>
-          <tr>
-            <td><input type="button" class="btn btn-primary btn-circle btn-md"name="four" value="4" onclick="calculator.display.value += '4'"></td>
-            <td><input type="button" class="btn btn-primary btn-circle btn-md"name="five" value="5" onclick="calculator.display.value += '5'"></td>
-            <td><input type="button" class="btn btn-primary btn-circle btn-md"name="six" value="6" onclick="calculator.display.value += '6'"></td>
-            <td><input type="button" class="operator btn btn-warning btn-circle btn-md" name="plus" value="&#43;" onclick="calculator.display.value += '+'"></td>
-            <td><input type="button" class="operator btn btn-warning btn-circle btn-md" name="minus" value="&#8722;" onclick="calculator.display.value += '-'"></td>
-            
-          </tr>
-          <tr>
-            <td><input type="button" class="btn btn-primary btn-circle btn-md"name="seven" value="7" onclick="calculator.display.value += '7'"></td>
-            <td><input type="button" class="btn btn-primary btn-circle btn-md"name="eight" value="8" onclick="calculator.display.value += '8'"></td>
-            <td><input type="button" class="btn btn-primary btn-circle btn-md"name="nine" value="9" onclick="calculator.display.value += '9'"></td>
-            <td><input type="button" class="operator btn btn-warning btn-circle btn-md" name="times" value="&#215;" onclick="calculator.display.value += '*'"></td>
-            <td><input type="button" class="operator btn btn-warning btn-circle btn-md" name="div" value="&#247;" onclick="calculator.display.value += '/'"></td>
-          </tr>
-          <tr>
-            <td><input type="button" class="btn btn-danger btn-circle btn-md" id="clear" name="clear" value="C" onclick="calculator.display.value = ''"></td>
-            <td><input type="button" class="btn btn-primary btn-circle btn-md" name="zero" value="0" onclick="calculator.display.value += '0'"></td>
-            <td><input type="button" class="btn btn-primary btn-circle btn-md" name="comma" value="," onclick="calculator.display.value += ','"></td>
-            <td><input type="button" class="btn btn-danger btn-circle btn-md" name="erase" value="&#9003" onclick="calculator.display.value = calculator.display.value.substring(0, calculator.display.value.length-1)"></td>
-            <td><input type="button" class="btn btn-success btn-circle btn-md" name="doit" id="equalsBtn" value="&#61;" onclick="calculator.display.value = String(eval(String( calculator.display.value ).replace(/\,/g,'.'))).replace(/\./g,',');"></td>
-          </tr>
+  <tr>
+    <td><input type="button" class="btn btn-primary btn-circle btn-md" name="one" value="1" onclick="calculator.display.value += '1'"></td>
+    <td><input type="button" class="btn btn-primary btn-circle btn-md"name="two" value="2" onclick="calculator.display.value += '2'"></td>
+    <td><input type="button" class="btn btn-primary btn-circle btn-md"name="three" value="3" onclick="calculator.display.value += '3'"></td>        
+    <td><input type="button" class="operator btn btn-secondary btn-circle btn-md" name="(" value="(" onclick="calculator.display.value += '('"></td>
+    <td><input type="button" class="operator btn btn-secondary btn-circle btn-md" name=")" value=")" onclick="calculator.display.value += ')'"></td>
+  </tr>
+  <tr>
+    <td><input type="button" class="btn btn-primary btn-circle btn-md"name="four" value="4" onclick="calculator.display.value += '4'"></td>
+    <td><input type="button" class="btn btn-primary btn-circle btn-md"name="five" value="5" onclick="calculator.display.value += '5'"></td>
+    <td><input type="button" class="btn btn-primary btn-circle btn-md"name="six" value="6" onclick="calculator.display.value += '6'"></td>
+    <td><input type="button" class="operator btn btn-warning btn-circle btn-md" name="plus" value="&#43;" onclick="calculator.display.value += '+'"></td>
+    <td><input type="button" class="operator btn btn-warning btn-circle btn-md" name="minus" value="&#8722;" onclick="calculator.display.value += '-'"></td>
+
+  </tr>
+  <tr>
+    <td><input type="button" class="btn btn-primary btn-circle btn-md"name="seven" value="7" onclick="calculator.display.value += '7'"></td>
+    <td><input type="button" class="btn btn-primary btn-circle btn-md"name="eight" value="8" onclick="calculator.display.value += '8'"></td>
+    <td><input type="button" class="btn btn-primary btn-circle btn-md"name="nine" value="9" onclick="calculator.display.value += '9'"></td>
+    <td><input type="button" class="operator btn btn-warning btn-circle btn-md" name="times" value="&#215;" onclick="calculator.display.value += '*'"></td>
+    <td><input type="button" class="operator btn btn-warning btn-circle btn-md" name="div" value="&#247;" onclick="calculator.display.value += '/'"></td>
+  </tr>
+  <tr>
+    <td><input type="button" class="btn btn-danger btn-circle btn-md" id="clear" name="clear" value="C" onclick="calculator.display.value = ''"></td>
+    <td><input type="button" class="btn btn-primary btn-circle btn-md" name="zero" value="0" onclick="calculator.display.value += '0'"></td>
+    <td><input type="button" class="btn btn-primary btn-circle btn-md" name="comma" value="," onclick="calculator.display.value += ','"></td>
+    <td><input type="button" class="btn btn-danger btn-circle btn-md" name="erase" value="&#9003" onclick="calculator.display.value = calculator.display.value.substring(0, calculator.display.value.length-1)"></td>
+    <td><input type="button" class="btn btn-success btn-circle btn-md" name="doit" id="equalsBtn" value="&#61;" onclick="calculator.display.value = String(eval(String( calculator.display.value ).replace(/\,/g,'.'))).replace(/\./g,',');"></td>
+  </tr>
 </table>
 </form>
 
 </div>
 <div class="d-flex justify-content-center">
   <small class="justify-content-center">Ditt resultat kopieras upp till fältet ovan</small><br>
-        
+
 </div>
 
 </div>
@@ -231,7 +253,7 @@
   </div>
   <div class="col col-sm-3">
     <li class="list-inline-item">
-      <a class="nav-item nav-link" href="{{ url_for('bills.oneDebt', billdebtid=participant.billdebtid)}}">skuld</a>
+      <a class="nav-item nav-link" href="{{ url_for('bills.oneDebt', billdebtToken=participant.token)}}">skuld</a>
       <a data-toggle="collapse" href="#collapseFaktura{{participant.invoice.invoiceid}}" role="button" aria-expanded="false" aria-controls="collapseExample">Faktura</a>
     </li>
 
@@ -268,13 +290,13 @@
       </div>
       <div class="modal-body text-center">
 
-        
-       
-       
-       
-       </div>
-       <div class="modal-footer">
-        
+
+
+
+
+      </div>
+      <div class="modal-footer">
+
         <button type="button" class="close" data-dismiss="modal">&times;</button>
         
         
@@ -309,24 +331,39 @@
     </div>
   </div>
 </div>
-  <script>
+<script>
 
-    document.getElementById('equalsBtn').addEventListener('click',function(){
-      console.log("= clicked")
-      var result = document.getElementById('display');
-      result_string = String(result.value).replace(/\,/g,'.')
-      result_number = Number(result_string)
-      console.log(result.value)
-      console.log(result_string)
-      console.log(result_number)
+  document.getElementById('equalsBtn').addEventListener('click',function(){
+    console.log("= clicked")
+    var result = document.getElementById('display');
+    result_string = String(result.value).replace(/\,/g,'.')
+    result_number = Number(result_string)
+    console.log(result.value)
+    console.log(result_string)
+    console.log(result_number)
 //String(eval(String( calculator.display.value ).replace(/\,/g,'.'))).replace(/\./g,',');
 
-      var resultBox = document.getElementById('myshare');
-      if(isFinite(result_number)){
-        resultBox.value = result_string;
-        resultBox.style.color = "green"
-      }  
-    });
+var resultBox = document.getElementById('myshare');
+if(isFinite(result_number)){
+  resultBox.value = result_string;
+  resultBox.style.color = "green"
+}  
+});
 
-  </script>
+  function copyLink() {
+    /* Get the text field */
+    var copyText = document.getElementById("billLink");
+
+    /* Select the text field */
+    copyText.select(); 
+    copyText.setSelectionRange(0, 99999); /*For mobile devices*/
+
+    /* Copy the text inside the text field */
+    document.execCommand("copy");
+
+    /* Alert the copied text */
+    alert("Kopierade: " + copyText.value);
+  }
+
+</script>
 {% endblock %}
