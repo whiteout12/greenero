@@ -37,16 +37,16 @@ def overviewBill():
 	#	db.session.commit()
 	
 
-	bills = Bill.query.all()
-	for bill in bills:
-		bill.token = generate_bill_token(bill.billid)
-		print('bill', bill)
-		print('billtoken', bill.token)
-		for debt in bill.claims:
-			debt.token = generate_billdebt_token(debt.billdebtid)
-			print('debt', debt)
-			print('debttoken', debt.token)
-	db.session.commit()	
+	#bills = Bill.query.all()
+	#for bill in bills:
+	#	bill.token = generate_bill_token(bill.billid)
+	#	print('bill', bill)
+	#	print('billtoken', bill.token)
+	#	for debt in bill.claims:
+	#		debt.token = generate_billdebt_token(debt.billdebtid)
+	#		print('debt', debt)
+	#		print('debttoken', debt.token)
+	#db.session.commit()	
 	##self, userid, receiving_user, amount, description
 	#billdebt = BillDebt(payer=current_user, bill=bill)
 	#db.session.add(billdebt)
@@ -178,6 +178,8 @@ def createDummyUser():
 def createBillDebt(bill, participant):
 		billdebt = BillDebt(payer=participant[0], bill=bill, payer_screen_name=participant[1])
 		db.session.add(billdebt)
+		db.session.commit()
+		billdebt.token = generate_billdebt_token(billdebt.billdebtid)
 		db.session.commit()
 		invoice = createInvoice(billdebt)
 
