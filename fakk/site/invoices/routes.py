@@ -462,11 +462,11 @@ def test_callback(invoice_token):
 		print(invoice_to_pay)
 		invoice_to_pay.change_status(2)
 		flash('Fakturan är markerad som betald', category='success')
-		return redirect(url_for('invoices.result_payment'), success="True")
+		return redirect(url_for('invoices.result_payment', success="True"))
 	#return render_template('swishcallback.html', token=invoice_token, callback=result['result'])
 	else:
 
-		return redirect(url_for('invoices.result_payment'), success="False")
+		return redirect(url_for('invoices.result_payment', success="False"))
 
 @invoices.route('/swish/callback/<success>')
 def result_payment(success):
