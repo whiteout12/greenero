@@ -37,7 +37,7 @@ def overviewBill():
 	#	db.session.commit()
 	
 
-	bills = Bill.query.all()
+	#bills = Bill.query.all()
 	for bill in bills:
 		bill.token = generate_bill_token(bill.billid)
 		print('bill', bill)
@@ -46,6 +46,7 @@ def overviewBill():
 			debt.token = generate_billdebt_token(debt.billdebtid)
 			print('debt', debt)
 			print('debttoken', debt.token)
+	db.session.commit()	
 	##self, userid, receiving_user, amount, description
 	#billdebt = BillDebt(payer=current_user, bill=bill)
 	#db.session.add(billdebt)
