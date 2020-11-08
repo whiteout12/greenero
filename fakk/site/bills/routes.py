@@ -16,7 +16,7 @@ from flask_mail import Message
 import secrets
 from PIL import Image, ImageOps
 from decimal import Decimal
-from fakk.utils.tokens import generate_bill_token, load_bill_token
+from fakk.utils.tokens import generate_bill_token, load_bill_token, generate_billdebt_token, load_billdebt_token
 
 bills = Blueprint('bills', __name__, url_prefix='/site/bill')
 
@@ -40,8 +40,12 @@ def overviewBill():
 	bills = Bill.query.all()
 	for bill in bills:
 		bill.token = generate_bill_token(bill.billid)
-		print(bill)
-		print(bill.token)
+		print('bill', bill)
+		print('billtoken', bill.token)
+		for debt in bill.claims:
+			debt.token = generate_billdebt_token(debt.billdebtid)
+			print('debt', debt)
+			print('debttoken', debt.token)
 	##self, userid, receiving_user, amount, description
 	#billdebt = BillDebt(payer=current_user, bill=bill)
 	#db.session.add(billdebt)
@@ -49,10 +53,9 @@ def overviewBill():
 	#invoice =Invoice(userid=current_user.userid, receiving_user=current_user.userid, amount=0, description=bill.title, billdebtid=billdebt.billdebtid)
 	#db.session.add(invoice)
 	#db.session.commit()
-	bills = current_user.bills	
-	billdebts = current_user.billdebts
-	invoices = current_user.invoice_receiver
-	print('load token billid', load_bill_token('bnVsbA.X6a-WQ.Jk0tfC_wX33nI3mUY88uCBbaMRQ'))
+	#bills = current_user.bills	
+	#billdebts = current_user.billdebts
+	#invoices = current_user.invoice_receiver
 	#print(bills)
 	#print(billdebts)
 	#print(invoices)

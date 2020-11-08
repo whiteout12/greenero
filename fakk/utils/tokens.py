@@ -42,10 +42,10 @@ def load_bill_token(token):
         return False
     return billid
 
-def generate_billdebt_token(billDebtID, userID):
-    package = [invoiceID, userID]
+def generate_billdebt_token(billDebtID):
+    
     serializer = URLSafeSerializer(app.config['SECRET_KEY'])
-    return serializer.dumps(package, salt=app.config['SECURITY_PASSWORD_SALT'])
+    return serializer.dumps(billDebtID, salt=app.config['SECURITY_BILLDEBT_SALT'])
 
 
 def load_billdebt_token(token):
@@ -53,10 +53,10 @@ def load_billdebt_token(token):
     try:
         package = serializer.loads(
             token,
-            salt=app.config['SECURITY_PASSWORD_SALT']
+            salt=app.config['SECURITY_BILLDEBT_SALT']
             
         )
     except:
         return False
-    return package
+    return token
 
