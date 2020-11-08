@@ -16,6 +16,7 @@ from flask_mail import Message
 import secrets
 from PIL import Image, ImageOps
 from decimal import Decimal
+from fakk.utils.tokens import generate_bill_token, load_bill_token
 
 bills = Blueprint('bills', __name__, url_prefix='/site/bill')
 
@@ -31,8 +32,16 @@ def overviewBill():
 	#db.session.add(bill)
 	#db.session.commit()
 	#for bill in current_user.bills:
-	#	bill.delete()
+	
+		#bill.delete()
 	#	db.session.commit()
+	
+
+	bills = Bill.query.all()
+	for bill in bills:
+		bill.token = generate_bill_token(bill.billid)
+		print(bill)
+		print(bill.token)
 	##self, userid, receiving_user, amount, description
 	#billdebt = BillDebt(payer=current_user, bill=bill)
 	#db.session.add(billdebt)
@@ -43,6 +52,7 @@ def overviewBill():
 	bills = current_user.bills	
 	billdebts = current_user.billdebts
 	invoices = current_user.invoice_receiver
+	print('load token billid', load_bill_token('bnVsbA.X6a-WQ.Jk0tfC_wX33nI3mUY88uCBbaMRQ'))
 	#print(bills)
 	#print(billdebts)
 	#print(invoices)
@@ -130,6 +140,8 @@ def createBill(form):
 
 	bill = Bill(payee=current_user, amount_bill=form.amount.data, amount_total=form.totalamount.data, title=form.description.data)
 	db.session.add(bill)
+	db.session.commit()
+	bill.token = generate_bill_token(bill.billid)
 	db.session.commit()
 	if form.receipt.data:
 		shex = save_receipt(form.receipt.data, bill.filefolder)
@@ -404,3 +416,22 @@ def updateDebt_MyShare(billdebtid):
 
 	return redirect(url_for('bills.oneDebt', billdebtid=billdebtid))
 
+@bills.route('/lobby/<billToken>', methods=['GET', 'POST'])
+#@login_required
+def billLobby(billToken):
+	try:
+		billid = load_bill_token(billToken)
+	except:
+		flash('Länken ej gilitg.', category='danger')
+		return redirect(url_for('send-password-reset-link'))
+	
+	else:
+
+
+		bill=Bill.query.filter_by(billid=billid).first()
+		if form.validate_on_submit():
+			for participant in participants:
+				billdebt = createBillDebt(bill, participant)
+				print(billdebt)
+
+		return render_template('billLobby.html', form=form, bill=bill, title='Lobby')	

@@ -219,7 +219,8 @@ class CreateBill(FlaskForm):
         validators=[DataRequired(message="Obligtoriskt fält"), Length(min=2, max=160, message="Lite längre är nog bra för tydlighetens skull :)")]
     )
 
-    contact_bool = BooleanField('Kontakt på fakk.', validators=[validate_any_participants])
+    contact_bool = BooleanField('Kontakt på fakk.', validators=[])
+    #validate_any_participants
 
     sms_bool = BooleanField('SMS', validators=[])
     

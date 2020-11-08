@@ -51,9 +51,15 @@
 
       <body>
         <header class="site-header"></header>
-        <p>Klart å betart</p>
+        {%if success%}
+        <p>Klart å betart!</p>
         <p>faktura{{token}} betalades med swish och ska ha blivit markerad som betald på fakk.</p>
         <br>
+        {%else%}
+        <p>Betalningen fullföljdes ej</p>
+        <p>Något gick fel eller så avbröts betalningen. Du kan försöka igen på fakk.</p>
+        <br>
+        {%endif%}
         <h1>Du kan stänga detta fönster</h1>
       </body>
     </div>

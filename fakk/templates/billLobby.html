@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>{{title}}</h1>
+<br>
+
+<form class="form-signin" role="form" method="post" action="">
+  {{ form.csrf_token }}
+  <p>
+    <label for="exampleInputEmail1">Användarnamn</label>
+    {{ form.username(class_="form-control", placeholder="användarnamn") }}
+     {% if form.username.errors %}
+    <span class="error col-sm-2 col-form-label text-danger">{% if error %}{{error}}{%endif%}
+     
+      {% for error in form.username.errors %}
+      {{ error }}
+      {% endfor %}
+      {% endif %}
+    </span>
+ <br>
+    <label for="exampleInputEmail1">Lösenord</label>
+    {{ form.password(class_="form-control", placeholder="lösenord") }}
+     {% if form.password.errors %}
+    <span class="error col-sm-2 col-form-label text-danger">{% if error %}{{error}}{%endif%}
+     
+      {% for error in form.password.errors %}
+      {{ error }}
+      {% endfor %}
+      {% endif %}
+    </span>
+  </p>
+  
+  <button class="btn btn-sm btn-primary" type="submit">Logga in</button>
+</form>
+<br>
+<br>
+<p><a href="{{url_for('user.send_password_reset_link')}}">Glömt lösenord</a></p>
+
+{% endblock %}

@@ -263,6 +263,7 @@ class Bill(db.Model):
     amount_total = db.Column(db.Numeric)
     amount_payee = db.Column(db.Numeric, default=0)
     filefolder = db.Column(db.String, default=secrets.token_hex(8))
+    token = db.Column(db.String)
     #amount_claimed = db.Column(db.Numeric)
 
     claims = relationship('BillDebt', backref='bill', cascade='all, delete')
@@ -286,7 +287,7 @@ class BillDebt(db.Model):
     billdebtid = db.Column(db.Integer, primary_key=True)
     date_created = db.Column(DateTime(timezone=True), server_default=func.now())
     statusid = db.Column(db.Integer, default=0)
-    
+    token = db.Column(db.String)
     payerid = db.Column(db.Integer, db.ForeignKey('users.userid'), nullable=False)
     payer_screen_name = db.Column(db.String)
     
