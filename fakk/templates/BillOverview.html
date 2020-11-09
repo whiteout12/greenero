@@ -50,6 +50,7 @@
   <small style="color: #6a3594;">Bjud in deltagare genom att dela länken</small><br>
   <div class="input-group mb-3">
     <input type="text" class="form-control form-control-sm" id="billLink" name="billLink" value="{{url_for('bills.billLobby', billToken=bill.token, _external=True)}}" disabled>
+    <input type="hidden" id="billLinkHidden" name="billLinkHidden" value="{{url_for('bills.billLobby', billToken=bill.token, _external=True)}}" readonly>
     <div class="input-group-append">
       <button class="btn btn-primary btn-sm" name="button_2" onfocus="this.select();" onclick="copyLink()" type="" >Kopiera länk</button>
     </div>
@@ -352,14 +353,19 @@ if(isFinite(result_number)){
 
   function copyLink() {
     /* Get the text field */
-    var copyText = document.getElementById("billLink");
+    var copyText = document.getElementById("billLinkHidden");
 
     /* Select the text field */
-    copyText.select(); 
-    copyText.setSelectionRange(0, 99999); /*For mobile devices*/
+    //copyText.select(); 
+    //copyText.setSelectionRange(0, 99999); /*For mobile devices*/
 
-    /* Copy the text inside the text field */
+    copyText.type = 'text';
+    copyText.select();
     document.execCommand("copy");
+    copyText.setSelectionRange(0, 99999); /*For mobile devices*/
+    copyText.type = 'hidden';
+    /* Copy the text inside the text field */
+    //document.execCommand("copy");
 
     /* Alert the copied text */
     alert("Kopierade: " + copyText.value);
