@@ -15,7 +15,7 @@ from fakk.utils.tokens import load_invoice_token, generate_invoice_token
 from flask_mail import Message
 
 
-invoices = Blueprint('invoices', __name__, url_prefix='/site/invoice')
+invoices = Blueprint('invoices', __name__, url_prefix='/invoices')
 
 #, url_prefix='/site'
 
@@ -234,7 +234,7 @@ def createInvoice(embedded):
 
 
 
-@invoices.route('/getall')
+@invoices.route('/')
 @login_required
 def getAll():
 	#print(current_user.invoice_receiver)

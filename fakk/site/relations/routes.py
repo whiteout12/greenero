@@ -5,7 +5,7 @@ from fakk.models import User, Relationship
 
 
 
-contacts = Blueprint('contacts', __name__, url_prefix='/site/contacts')
+contacts = Blueprint('contacts', __name__, url_prefix='/contacts')
 
 
 @contacts.route('/users/<query>')
@@ -19,7 +19,7 @@ def users(query):
 	return jsonify([i.serialize() for i in User.query.filter(User.username.ilike(search), current_user.username!=User.username).all()])
 
 
-@contacts.route('/friends')
+@contacts.route('/')
 @login_required
 def friends():
 	friends = current_user.friend_requester

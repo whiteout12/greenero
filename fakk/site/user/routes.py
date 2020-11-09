@@ -10,7 +10,7 @@ from fakk.utils.send_sms import sendSMS
 
 
 
-user = Blueprint('user', __name__, url_prefix='/site/user')
+user = Blueprint('user', __name__, url_prefix='/user')
 
 
 
@@ -64,7 +64,7 @@ def profile():
 	return render_template("user_profile.html")
 
 
-@user.route('/changeuser', methods=['GET', 'POST'])
+@user.route('/change', methods=['GET', 'POST'])
 @login_required
 def changeuser():
 	form = ChangeUserForm()
