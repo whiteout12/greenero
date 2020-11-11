@@ -481,4 +481,4 @@ def billLobby(billToken):
 			print(billdebt)
 			return redirect(url_for('bills.oneDebt', billdebtToken=billdebt.token))
 
-		return render_template('billLobby.html', form=form, bill=bill, title='Nota '+bill.title)	
+		return render_template('billLobby.html', form=form, bill=bill, title='Dela kostnad för '+bill.title, lobbylink=True)	
