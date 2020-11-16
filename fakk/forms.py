@@ -240,7 +240,7 @@ class CreateBill(FlaskForm):
     totalamount = FlexibleDecimalField('Belopp som betalats (inkl. ev dricks)', validators=[DataRequired(message="Obligtoriskt fält"), NumberRange(min=1, message='Inte en siffra')]
     )
 
-    receipt = FileField('ladda upp bild på kvitto', validators=[FileAllowed(['jpg', 'png', 'heif', 'jpeg'])])
+    receipt = FileField('ladda upp bild på kvitto', validators=[DataRequired(message="Obligtoriskt fält"), FileAllowed(['jpg', 'png', 'heif', 'jpeg'])])
 
     submit = SubmitField('Skapa nota')
 
