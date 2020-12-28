@@ -315,13 +315,12 @@ def view_invoice_site(invoice_id):
 	return render_template('invoice2.html', title='Fakturor',invoice=invoice, qr_code=swish_qr_base64)
 
 @invoices.route('/<invoice_token>/')
-
 def view_open_invoice_site(invoice_token):
 	
 	package = load_invoice_token(invoice_token)
 	print(package)
 	
-	invoice = Invoice.query.filter_by(invoiceid=package[1]).first()
+	invoice = Invoice.query.filter_by(invoiceid=package).first()
 	if not invoice:
 		return "ingen faktura hittad."
 	

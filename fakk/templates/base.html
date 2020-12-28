@@ -8,35 +8,35 @@
     <!-- Bootstrap CSS 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
      <link href="{{url_for('static', filename='css/bootstrap.min.css')}}" rel="stylesheet">
-  -->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
- 
+   -->
+   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+   
 
-  <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/main.css') }}">
+   <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/main.css') }}">
 
-  <link rel="apple-touch-icon" sizes="180x180" href="{{url_for('static', filename='icons/apple-touch-icon.png') }}">
-  <link rel="icon" type="image/png" sizes="32x32" href="{{url_for('static', filename='icons/favicon-32x32.png') }}">
-  <link rel="icon" type="image/png" sizes="16x16" href="{{url_for('static', filename='icons/favicon-32x32.png') }}">
-  <link rel="manifest" href="{{url_for('static', filename='icons/site.webmanifest') }}">
-  <link rel="mask-icon" href="{{url_for('static', filename='icons/safari-pinned-tab.svg') }}" color="#5bbad5">
-  <meta name="msapplication-TileColor" content="#da532c">
-  <meta name="theme-color" content="#ffffff">
-  {%if lobbylink == True%}
-  
+   <link rel="apple-touch-icon" sizes="180x180" href="{{url_for('static', filename='icons/apple-touch-icon.png') }}">
+   <link rel="icon" type="image/png" sizes="32x32" href="{{url_for('static', filename='icons/favicon-32x32.png') }}">
+   <link rel="icon" type="image/png" sizes="16x16" href="{{url_for('static', filename='icons/favicon-32x32.png') }}">
+   <link rel="manifest" href="{{url_for('static', filename='icons/site.webmanifest') }}">
+   <link rel="mask-icon" href="{{url_for('static', filename='icons/safari-pinned-tab.svg') }}" color="#5bbad5">
+   <meta name="msapplication-TileColor" content="#da532c">
+   <meta name="theme-color" content="#ffffff">
+   {%if lobbylink == True%}
+   
 
-  
-  <meta property="og:type"               content="website" />
-  <meta property="og:title"              content="{{ bill.date_created.strftime('%Y-%m-%d') }} {{bill.title}}: {{bill.payee.username}} vill dela en kostnad med dig" />
-  <meta property="og:description"        content="Här kan du plocka din del från kostnaden som {{bill.payee.username}} hade och sedan betala med Swish" />
-  <meta property="og:image"              content="https://fakk.tech/static/link_img_big.png" />
-  <meta property="og:image:width" content="1000" />
-  <meta property="og:image:height" content="1000" />
+   
+   <meta property="og:type"               content="website" />
+   <meta property="og:title"              content="{{ bill.date_created.strftime('%Y-%m-%d') }} {{bill.title}}: {{bill.payee.username}} vill dela en kostnad med dig" />
+   <meta property="og:description"        content="Här kan du plocka din del från kostnaden som {{bill.payee.username}} hade och sedan betala med Swish" />
+   <meta property="og:image"              content="https://fakk.tech/static/link_img_big.png" />
+   <meta property="og:image:width" content="1000" />
+   <meta property="og:image:height" content="1000" />
 
-  {%endif%}
+   {%endif%}
 
-  <!-- Optional JavaScript -->
-  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-  
+   <!-- Optional JavaScript -->
+   <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+   
   <!--
   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
   <script src="https://code.jquery.com/jquery-3.2.1.js" crossorigin="anonymous"></script>
@@ -122,15 +122,15 @@
             {% block content %}
             {% endblock %}
             <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.css" />
+            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.css" />
 
-<!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.css" />-->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
+            <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.css" />-->
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
 
 
-<script src="{{url_for('static', filename='javascript/friends.js')}}" async></script>
-<script src="{{url_for('static', filename='javascript/invoice.js')}}" async></script>
+            <script src="{{url_for('static', filename='javascript/friends.js')}}" async></script>
+            <script src="{{url_for('static', filename='javascript/invoice.js')}}" async></script>
         </div><!-- Optional Sidebar
         <div class="col-md-4">
           <div class="content-section">

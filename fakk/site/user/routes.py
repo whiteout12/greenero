@@ -101,17 +101,7 @@ def changeuser():
 					update = True
 			else:
 				current_user.phone = form.phone.data
-				n = random.randint(1000,9999)
-				print(n)
-				message = 'ange koden för att bekräfta telefonnummer. Kod: ' + str(n)
-				sms_status = sendSMS(form.phone.data, message)
-				print('sms_status', sms_status)
-				#send_confirmation_link_email2(form.email.data, n)
-				current_user.confirmed_phone_otp = n
-				current_user.confirmed_phone_on = None
-				current_user.confirmed_phone = None
-				flash('Telefonnumret uppdaterat', category='success')
-				flash('Ett SMS har skickats till ' +str(form.phone.data), category='success')
+				send_sms_confirmation_code(form.phone.data)
 				update = True
 		
 		if(form.password.data):
@@ -269,7 +259,7 @@ def confirm_phone():
 					db.session.commit()
 				flash('Telefonummer bekräftat', category='success')
 				print('letar fakturor')
-				if User.query.filter_by(usertype=1, phone=current_user.phone).first_or_404():
+				if User.query.filter_by(usertype=1, phone=current_user.phone).first():
 					print('hittade anv')
 					#print(user)
 					#print(user.userid)
@@ -284,6 +274,7 @@ def confirm_phone():
 					db.session.commit()
 					flash('Hittade en eller flera fakturor som tidigare varit kopplade till ditt telefonnummer. De är nu kopplade till ditt konto.', category='success')
 			else:
+				print('Kod ej gilitg. Du kan skicka efter en ny')
 				flash('Kod ej gilitg. Du kan skicka efter en ny', category='warning')
 		except ValueError:
 			flash('Kod har fel format.', category='danger')
@@ -298,18 +289,24 @@ def send_email_confirmation_link():
 
 @user.route('/send-sms-confirmation-code')
 @login_required
-def send_sms_confirmation_code():
+def send_sms_code_current():
+	send_sms_confirmation_code(current_user.phone)
+	return redirect(url_for('user.profile'))
+	
 
+def send_sms_confirmation_code(number):
+	print('send SMS code')
 	n = random.randint(1000,9999)
+	print('otp code: ', n)
 	current_user.confirmed_phone_otp = n
 	current_user.confirmed_phone_on = None
 	current_user.confirmed_phone = None
 	db.session.commit()
 	message = 'Ange koden för att bekräfta telefonnummer. Kod: ' + str(n)
-	sms_status = sendSMS(current_user.phone, message)
-	print('sms_status', sms_status)
-	flash('Ett SMS har skickats till ' +str(current_user.phone), category='success')
-	return redirect(url_for('user.profile'))
+	sms_status = sendSMS(number, message)
+	flash('Ett SMS har skickats till ' +str(number), category='success')
+	return 
+
 
 @user.route('/send-password-reset-link', methods=['GET', 'POST'])
 def send_password_reset_link():
