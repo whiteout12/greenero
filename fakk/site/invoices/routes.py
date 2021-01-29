@@ -184,7 +184,7 @@ def createInvoice(embedded):
 				db.session.add(invoice)
 				db.session.commit()
 				#print(invoice.invoiceid)
-				package_locked = generate_invoice_token(form.receiver.data, invoice.invoiceid)
+				package_locked = generate_invoice_token(invoice.invoiceid, dummyuser.userid)
 
 			else:
 
@@ -212,11 +212,13 @@ def createInvoice(embedded):
 				db.session.add(invoice)
 				db.session.commit()
 				#print(invoice.invoiceid)
-				package_locked = generate_invoice_token(form.receiver.data, invoice.invoiceid)
+				
+				package_locked = generate_invoice_token(invoice.invoiceid, newdummyuser.userid)
 
 			confirm_url = url_for('main.invoice_site', invoice_token=package_locked, _external=True)
 			message = 'Du har fått en faktura av ' + current_user.phone + ' ' + confirm_url
-			#flash('Faktura skickad!', category='success')
+		
+			
 			sms_status = sendSMS(form.phone.data, message)
 			#print('sms_status', sms_status)
 			current_user.credits -= 5
@@ -318,9 +320,9 @@ def view_invoice_site(invoice_id):
 def view_open_invoice_site(invoice_token):
 	
 	package = load_invoice_token(invoice_token)
-	print(package)
+	#print(package)
 	
-	invoice = Invoice.query.filter_by(invoiceid=package).first()
+	invoice = Invoice.query.filter_by(invoiceid=package[0]).first()
 	if not invoice:
 		return "ingen faktura hittad."
 	
